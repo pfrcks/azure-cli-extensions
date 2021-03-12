@@ -31,6 +31,7 @@ def ExtensionFactory(extension_name):
     extension_map = {
         'microsoft.azuremonitor.containers': ContainerInsights,
         'microsoft.azuredefender.kubernetes': AzureDefender,
+        'microsoft.openservicemesh': OpenServiceMesh,
     }
 
     # Return the extension if we find it in the map, else return the default
