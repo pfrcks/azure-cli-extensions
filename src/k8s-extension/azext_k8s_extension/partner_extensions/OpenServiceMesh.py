@@ -8,7 +8,7 @@
 from azure.cli.core.azclierror import InvalidArgumentValueError, RequiredArgumentMissingError
 from knack.log import get_logger
 
-from azext_k8s_extension.vendored_sdks.models import ExtensionInstanceForCreate
+from azext_k8s_extension.vendored_sdks.models import ExtensionInstance
 from azext_k8s_extension.vendored_sdks.models import ExtensionInstanceUpdate
 from azext_k8s_extension.vendored_sdks.models import ScopeCluster
 from azext_k8s_extension.vendored_sdks.models import Scope
@@ -25,7 +25,7 @@ class OpenServiceMesh(PartnerExtensionModel):
                configuration_settings_file, configuration_protected_settings_file):
 
         """ExtensionType 'microsoft.openservicemesh' specific validations & defaults for Create
-           Must create and return a valid 'ExtensionInstanceForCreate' object.
+           Must create and return a valid 'ExtensionInstance' object.
 
         """
         # NOTE-1: Replace default scope creation with your customization, if required
@@ -60,9 +60,9 @@ class OpenServiceMesh(PartnerExtensionModel):
                 "Invalid release-train '{}'.  Valid values are 'staging', 'pilot'.".format(release_train)
             )
 
-        # NOTE-2: Return a valid ExtensionInstanceForCreate object, Instance name and flag for Identity
+        # NOTE-2: Return a valid ExtensionInstance object, Instance name and flag for Identity
         create_identity = False
-        extension_instance = ExtensionInstanceForCreate(
+        extension_instance = ExtensionInstance(
             extension_type=extension_type,
             auto_upgrade_minor_version=auto_upgrade_minor_version,
             release_train=release_train,
