@@ -11,15 +11,18 @@ from knack.log import get_logger
 from msrestazure.azure_exceptions import CloudError
 
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
-    InvalidArgumentValueError, CommandNotFoundError
+    InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
 from azure.cli.core.commands.client_factory import get_subscription_id
 from azext_k8s_extension.vendored_sdks.models import ConfigurationIdentity
 from azext_k8s_extension.vendored_sdks.models import ErrorResponseException
+from azext_k8s_extension.vendored_sdks.models import Scope
 
 from azext_k8s_extension.partner_extensions.ContainerInsights import ContainerInsights
 from azext_k8s_extension.partner_extensions.AzureDefender import AzureDefender
+from azext_k8s_extension.partner_extensions.Cassandra import Cassandra
 from azext_k8s_extension.partner_extensions.OpenServiceMesh import OpenServiceMesh
 from azext_k8s_extension.partner_extensions.DefaultExtension import DefaultExtension
+import azext_k8s_extension._consts as consts
 
 from ._client_factory import cf_resources
 
@@ -32,6 +35,7 @@ def ExtensionFactory(extension_name):
         'microsoft.azuremonitor.containers': ContainerInsights,
         'microsoft.azuredefender.kubernetes': AzureDefender,
         'microsoft.openservicemesh': OpenServiceMesh,
+        'cassandradatacentersoperator': Cassandra
     }
 
     # Return the extension if we find it in the map, else return the default
@@ -67,7 +71,7 @@ def show_k8s_extension(client, resource_group_name, cluster_name, name, cluster_
 
 
 def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, cluster_type,
-                         extension_type, scope='cluster', auto_upgrade_minor_version=None, release_train=None,
+                         extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
                          version=None, target_namespace=None, release_namespace=None, configuration_settings=None,
                          configuration_protected_settings=None, configuration_settings_file=None,
                          configuration_protected_settings_file=None, tags=None):
@@ -113,7 +117,6 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
 
     # Identity is not created by default.  Extension type must specify if identity is required.
     create_identity = False
-
     extension_instance = None
 
     # Scope & Namespace validation - common to all extension-types
@@ -130,6 +133,7 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
 
     # Common validations
     __validate_version_and_auto_upgrade(extension_instance.version, extension_instance.auto_upgrade_minor_version)
+    __validate_scope_after_customization(extension_instance.scope)
 
     # Create identity, if required
     if create_identity:
@@ -154,8 +158,8 @@ def update_k8s_extension(client, resource_group_name, cluster_type, cluster_name
 
     # TODO: Remove this after we eventually get PATCH implemented for update and uncomment
     raise CommandNotFoundError(
-        "\"k8s-extension update\" currently is not available. "
-        "Use \"k8s-extension create\" to update a previously created extension instance."
+        f"\"{consts.EXTENSION_NAME} update\" currently is not available. "
+        f"Use \"{consts.EXTENSION_NAME} create\" to update a previously created extension instance."
     )
 
     # # Ensure some values are provided for update
@@ -190,10 +194,7 @@ def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluste
     """
     # Determine ClusterRP
     cluster_rp = __get_cluster_rp(cluster_type)
-
-    k8s_extension_instance_name = name
-
-    return client.delete(resource_group_name, cluster_rp, cluster_type, cluster_name, k8s_extension_instance_name)
+    return client.delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
 
 def __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp):
@@ -243,12 +244,18 @@ def __get_cluster_rp(cluster_type):
 def __validate_scope_and_namespace(scope, release_namespace, target_namespace):
     if scope == 'cluster':
         if target_namespace is not None:
-            message = "When Scope is 'cluster', target-namespace must not be given."
+            message = "When --scope is 'cluster', --target-namespace must not be given."
             raise MutuallyExclusiveArgumentError(message)
     else:
         if release_namespace is not None:
-            message = "When Scope is 'namespace', release-namespace must not be given."
+            message = "When --scope is 'namespace', --release-namespace must not be given."
             raise MutuallyExclusiveArgumentError(message)
+
+
+def __validate_scope_after_customization(scope_obj: Scope):
+    if scope_obj is not None and scope_obj.namespace is not None and scope_obj.namespace.target_namespace is None:
+        message = "When --scope is 'namespace', --target-namespace must be given."
+        raise RequiredArgumentMissingError(message)
 
 
 def __validate_version_and_auto_upgrade(version, auto_upgrade_minor_version):
