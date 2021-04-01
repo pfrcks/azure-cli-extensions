@@ -16,6 +16,7 @@ from azure.cli.core.commands.client_factory import get_subscription_id
 from azext_k8s_extension.vendored_sdks.models import ConfigurationIdentity
 from azext_k8s_extension.vendored_sdks.models import ErrorResponseException
 from azext_k8s_extension.vendored_sdks.models import Scope
+from azext_k8s_extension._validators import check_cc_registration
 
 from azext_k8s_extension.partner_extensions.ContainerInsights import ContainerInsights
 from azext_k8s_extension.partner_extensions.AzureDefender import AzureDefender
@@ -76,9 +77,8 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
     """Create a new Extension Instance.
 
     """
-    extension_type_lower = extension_type.lower()
 
-    # Determine ClusterRP
+    extension_type_lower = extension_type.lower()
     cluster_rp = __get_cluster_rp(cluster_type)
 
     # Configuration Settings & Configuration Protected Settings
@@ -132,6 +132,9 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
     # Common validations
     __validate_version_and_auto_upgrade(extension_instance.version, extension_instance.auto_upgrade_minor_version)
     __validate_scope_after_customization(extension_instance.scope)
+
+    # Check that registration has been done on Microsoft.KubernetesConfiguration for the subscription
+    check_cc_registration(cmd)
 
     # Create identity, if required
     if create_identity:

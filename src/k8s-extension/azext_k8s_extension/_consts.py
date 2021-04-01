@@ -6,3 +6,4 @@
 
 EXTENSION_NAME = 'k8s-extension'
 VERSION = "0.2.0"
+PROVIDER_NAMESPACE = 'Microsoft.KubernetesConfiguration'
