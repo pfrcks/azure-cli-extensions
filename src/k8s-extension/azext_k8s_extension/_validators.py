@@ -11,7 +11,8 @@ import azext_k8s_extension._consts as consts
 logger = get_logger(__name__)
 
 
-def check_cc_registration(cmd):
+# pylint: disable=broad-except
+def _validate_cc_registration(cmd):
     try:
         rp_client = _resource_providers_client(cmd.cli_ctx)
         registration_state = rp_client.get(consts.PROVIDER_NAMESPACE).registration_state
