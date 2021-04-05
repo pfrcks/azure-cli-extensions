@@ -3,11 +3,11 @@
 Release History
 ===============
 
-0.2.1PP.1
+0.2.1-beta.2
 ++++++++++++++++++
 * Add support for microsoft.policyinsights extension type
 
-0.2.1PP.0
+0.2.1-beta.1
 ++++++++++++++++++
 * Add support for microsoft.azureml.kubernetes extension type
 
