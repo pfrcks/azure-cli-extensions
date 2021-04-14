@@ -17,7 +17,7 @@ import azure.mgmt.storage
 import azure.mgmt.storage.models
 import azure.mgmt.loganalytics
 import azure.mgmt.loganalytics.models
-from azext_k8s_extension.vendored_sdks.models import (
+from ..vendored_sdks.models import (
     ExtensionInstance, ExtensionInstanceUpdate, Scope, ScopeCluster)
 from azure.cli.core.azclierror import InvalidArgumentValueError
 from azure.cli.core.commands.client_factory import get_mgmt_service_client, get_subscription_id

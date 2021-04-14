@@ -8,10 +8,10 @@
 from azure.cli.core.azclierror import InvalidArgumentValueError, RequiredArgumentMissingError
 from knack.log import get_logger
 
-from azext_k8s_extension.vendored_sdks.models import ExtensionInstance
-from azext_k8s_extension.vendored_sdks.models import ExtensionInstanceUpdate
-from azext_k8s_extension.vendored_sdks.models import ScopeCluster
-from azext_k8s_extension.vendored_sdks.models import Scope
+from ..vendored_sdks.models import ExtensionInstance
+from ..vendored_sdks.models import ExtensionInstanceUpdate
+from ..vendored_sdks.models import ScopeCluster
+from ..vendored_sdks.models import Scope
 
 from .PartnerExtensionModel import PartnerExtensionModel
 
