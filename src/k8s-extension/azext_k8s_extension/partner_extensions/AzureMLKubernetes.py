@@ -30,7 +30,7 @@ from .PartnerExtensionModel import PartnerExtensionModel
 
 logger = get_logger(__name__)
 
-resource_tag = {'managed_by': 'amlk8s'}
+resource_tag = {'created_by': 'amlk8s-extension'}
 
 
 class AzureMLKubernetes(PartnerExtensionModel):
