@@ -272,8 +272,8 @@ def _get_relay_connection_str(
     hybrid_connection_object = relay_client.hybrid_connections.create_or_update(
         resource_group_name, relay_namespace_name, hybrid_connection_name, requires_client_authorization=True)
 
-    relay_namespace_ojbect = relay_client.namespaces.get(resource_group_name, relay_namespace_name)
-    relay_namespace_resource_id = relay_namespace_ojbect.id
+    # relay_namespace_ojbect = relay_client.namespaces.get(resource_group_name, relay_namespace_name)
+    # relay_namespace_resource_id = relay_namespace_ojbect.id
     # _lock_resource(cmd, lock_scope=relay_namespace_resource_id)
 
     # create authorization rule
@@ -349,12 +349,12 @@ def _get_log_analytics_ws_connection_string(
     async_poller = log_analytics_ws_client.workspaces.begin_create_or_update(
         resource_group_name, log_analytics_ws_name, log_analytics_ws)
     customer_id = ''
-    log_analytics_ws_resource_id = ''
+    # log_analytics_ws_resource_id = ''
     while True:
         log_analytics_ws_object = async_poller.result(15)
         if async_poller.done():
             customer_id = log_analytics_ws_object.customer_id
-            log_analytics_ws_resource_id = log_analytics_ws_object.id
+            # log_analytics_ws_resource_id = log_analytics_ws_object.id
             break
 
     # _lock_resource(cmd, log_analytics_ws_resource_id)
