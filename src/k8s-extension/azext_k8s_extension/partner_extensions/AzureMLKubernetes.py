@@ -274,7 +274,7 @@ def _get_relay_connection_str(
 
     relay_namespace_ojbect = relay_client.namespaces.get(resource_group_name, relay_namespace_name)
     relay_namespace_resource_id = relay_namespace_ojbect.id
-    _lock_resource(cmd, lock_scope=relay_namespace_resource_id)
+    # _lock_resource(cmd, lock_scope=relay_namespace_resource_id)
 
     # create authorization rule
     auth_rule_rights = [azure.mgmt.relay.models.AccessRights.manage,
@@ -325,7 +325,7 @@ def _get_service_bus_connection_string(cmd, subscription_id, resource_group_name
 
     service_bus_object = service_bus_client.namespaces.get(resource_group_name, service_bus_namespace_name)
     service_bus_resource_id = service_bus_object.id
-    _lock_resource(cmd, service_bus_resource_id)
+    # _lock_resource(cmd, service_bus_resource_id)
 
     # get connection string
     auth_rules = service_bus_client.namespaces.list_authorization_rules(
@@ -357,7 +357,7 @@ def _get_log_analytics_ws_connection_string(
             log_analytics_ws_resource_id = log_analytics_ws_object.id
             break
 
-    _lock_resource(cmd, log_analytics_ws_resource_id)
+    # _lock_resource(cmd, log_analytics_ws_resource_id)
 
     # get workspace shared keys
     shared_key = log_analytics_ws_client.shared_keys.get_shared_keys(
