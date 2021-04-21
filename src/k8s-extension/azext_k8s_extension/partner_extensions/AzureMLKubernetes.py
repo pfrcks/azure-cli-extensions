@@ -167,7 +167,9 @@ class AzureMLKubernetes(PartnerExtensionModel):
 
         if not (enable_training or enable_inference):
             raise InvalidArgumentValueError(
-                f"Please choose at least one component to install by specifying --config {self.ENABLE_TRAINING}=true or -config {self.ENABLE_INFERENCE}=true")
+                "Please create Microsoft.AzureML.Kubernetes extension instance either "
+                "for Machine Learning training or inference by specifying "
+                f"'--configuration-settings {self.ENABLE_TRAINING}=true' or '--configuration-settings {self.ENABLE_INFERENCE}=true'")
 
         configuration_settings[self.ENABLE_TRAINING] = configuration_settings.get(self.ENABLE_TRAINING, enable_training)
         configuration_settings[self.ENABLE_INFERENCE] = configuration_settings.get(

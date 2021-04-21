@@ -7,6 +7,7 @@ Release History
 ++++++++++++++++++
 * Change the tag created for the resources when creating the microsoft.azureml.kubernete extension
 * Remove the add lock logic for the created resources when creating the microsoft.azureml.kubernete extension
+* Add better error message for microsoft.azureml.kubernete
 
 0.2.1-beta.2
 ++++++++++++++++++
