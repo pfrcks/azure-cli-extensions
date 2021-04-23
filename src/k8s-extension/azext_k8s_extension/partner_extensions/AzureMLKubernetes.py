@@ -30,7 +30,7 @@ from .PartnerExtensionModel import PartnerExtensionModel
 
 logger = get_logger(__name__)
 
-resource_tag = {'managed_by': 'amlk8s'}
+resource_tag = {'created_by': 'amlk8s-extension'}
 
 
 class AzureMLKubernetes(PartnerExtensionModel):
@@ -167,7 +167,9 @@ class AzureMLKubernetes(PartnerExtensionModel):
 
         if not (enable_training or enable_inference):
             raise InvalidArgumentValueError(
-                f"Please choose at least one component to install by specifying --config {self.ENABLE_TRAINING}=true or -config {self.ENABLE_INFERENCE}=true")
+                "Please create Microsoft.AzureML.Kubernetes extension instance either "
+                "for Machine Learning training or inference by specifying "
+                f"'--configuration-settings {self.ENABLE_TRAINING}=true' or '--configuration-settings {self.ENABLE_INFERENCE}=true'")
 
         configuration_settings[self.ENABLE_TRAINING] = configuration_settings.get(self.ENABLE_TRAINING, enable_training)
         configuration_settings[self.ENABLE_INFERENCE] = configuration_settings.get(
@@ -272,9 +274,9 @@ def _get_relay_connection_str(
     hybrid_connection_object = relay_client.hybrid_connections.create_or_update(
         resource_group_name, relay_namespace_name, hybrid_connection_name, requires_client_authorization=True)
 
-    relay_namespace_ojbect = relay_client.namespaces.get(resource_group_name, relay_namespace_name)
-    relay_namespace_resource_id = relay_namespace_ojbect.id
-    _lock_resource(cmd, lock_scope=relay_namespace_resource_id)
+    # relay_namespace_ojbect = relay_client.namespaces.get(resource_group_name, relay_namespace_name)
+    # relay_namespace_resource_id = relay_namespace_ojbect.id
+    # _lock_resource(cmd, lock_scope=relay_namespace_resource_id)
 
     # create authorization rule
     auth_rule_rights = [azure.mgmt.relay.models.AccessRights.manage,
@@ -325,7 +327,7 @@ def _get_service_bus_connection_string(cmd, subscription_id, resource_group_name
 
     service_bus_object = service_bus_client.namespaces.get(resource_group_name, service_bus_namespace_name)
     service_bus_resource_id = service_bus_object.id
-    _lock_resource(cmd, service_bus_resource_id)
+    # _lock_resource(cmd, service_bus_resource_id)
 
     # get connection string
     auth_rules = service_bus_client.namespaces.list_authorization_rules(
@@ -349,15 +351,15 @@ def _get_log_analytics_ws_connection_string(
     async_poller = log_analytics_ws_client.workspaces.begin_create_or_update(
         resource_group_name, log_analytics_ws_name, log_analytics_ws)
     customer_id = ''
-    log_analytics_ws_resource_id = ''
+    # log_analytics_ws_resource_id = ''
     while True:
         log_analytics_ws_object = async_poller.result(15)
         if async_poller.done():
             customer_id = log_analytics_ws_object.customer_id
-            log_analytics_ws_resource_id = log_analytics_ws_object.id
+            # log_analytics_ws_resource_id = log_analytics_ws_object.id
             break
 
-    _lock_resource(cmd, log_analytics_ws_resource_id)
+    # _lock_resource(cmd, log_analytics_ws_resource_id)
 
     # get workspace shared keys
     shared_key = log_analytics_ws_client.shared_keys.get_shared_keys(
