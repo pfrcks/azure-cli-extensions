@@ -1,9 +1,3 @@
-parameters:
-- name: testbranch
-  displayName: Test Branch
-  type: string
-  default: master
-
 resources:
   repositories:
   - repository: K8sPartnerExtensionTest
@@ -11,6 +5,10 @@ resources:
     endpoint: AzureReposConnection
     name: One/compute-HybridMgmt-K8sPartnerExtensionTest
     ref: ${{ parameters.testbranch }}
+    trigger:
+      branches:
+        include:
+          - '*'
 
 trigger:
   batch: true
