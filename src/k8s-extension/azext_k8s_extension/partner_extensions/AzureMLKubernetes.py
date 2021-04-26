@@ -171,6 +171,8 @@ class AzureMLKubernetes(PartnerExtensionModel):
                 "for Machine Learning training or inference by specifying "
                 f"'--configuration-settings {self.ENABLE_TRAINING}=true' or '--configuration-settings {self.ENABLE_INFERENCE}=true'")
 
+        self.__validate_scoring_fe_settings(configuration_settings, configuration_protected_settings)
+
         configuration_settings[self.ENABLE_TRAINING] = configuration_settings.get(self.ENABLE_TRAINING, enable_training)
         configuration_settings[self.ENABLE_INFERENCE] = configuration_settings.get(
             self.ENABLE_INFERENCE, enable_inference)
