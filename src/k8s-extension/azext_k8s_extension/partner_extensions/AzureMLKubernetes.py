@@ -200,8 +200,6 @@ class AzureMLKubernetes(PartnerExtensionModel):
                 "Otherwise explicitly allow insecure connection by specifying "
                 "'--configuration-settings allowInsecureConnections=true'")
 
-        feIsNodeport = _get_value_from_config_protected_config(
-            'scoringFe.serviceType.nodePort', configuration_settings, configuration_protected_settings)
         feIsInternalLoadBalancer = _get_value_from_config_protected_config(
             'scoringFe.serviceType.internalLoadBalancer', configuration_settings, configuration_protected_settings)
         feIsInternalLoadBalancer = str(feIsInternalLoadBalancer).lower() == 'true'
