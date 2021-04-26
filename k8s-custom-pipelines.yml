@@ -10,7 +10,7 @@ resources:
     type: git
     endpoint: AzureReposConnection
     name: One/compute-HybridMgmt-K8sPartnerExtensionTest
-    ref: {{ parameters.testbranch }}
+    ref: ${{ parameters.testbranch }}
 
 trigger:
   batch: true
