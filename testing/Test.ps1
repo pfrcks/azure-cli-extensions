@@ -5,8 +5,8 @@ param (
     [switch] $OnlyPublicTests,
 
     [Parameter(Mandatory=$True)]
-    [ValidateSet('Public','Private')]
-    [string]$ExtensionType
+    [ValidateSet('k8s-extension','k8s-configuration', 'k8s-extension-private')]
+    [string]$Type
 )
 
 # Disable confirm prompt for script
@@ -18,7 +18,7 @@ az account set --subscription $ENVCONFIG.subscriptionId
 
 $Env:KUBECONFIG="$PSScriptRoot/tmp/KUBECONFIG"
 
-if ($ExtensionType -eq "Public") {
+if ($Type -eq 'k8s-extension') {
     $k8sExtensionVersion = $ENVCONFIG.extensionVersion.'k8s-extension'
     $Env:K8sExtensionName = "k8s-extension"
 
@@ -32,7 +32,12 @@ if ($ExtensionType -eq "Public") {
             exit 1
         }
     }
-} else {
+    if ($OnlyPublicTests) {
+        $testFilePath = "$PSScriptRoot/test/extensions/public"
+    } else {
+        $testFilePath = "$PSScriptRoot/test/extensions"
+    }
+} elseif ($Type -eq 'k8s-extension-private') {
     $k8sExtensionPrivateVersion = $ENVCONFIG.extensionVersion.'k8s-extension-private'
     $Env:K8sExtensionName = "k8s-extension-private"
 
@@ -46,31 +51,32 @@ if ($ExtensionType -eq "Public") {
             exit 1
         }
     }
+    if ($OnlyPublicTests) {
+        $testFilePath = "$PSScriptRoot/test/extensions/public"
+    } else {
+        $testFilePath = "$PSScriptRoot/test/extensions"
+    }
+} elseif ($Type -eq 'k8s-configuration') {
+    $k8sConfigurationVersion = $ENVCONFIG.extensionVersion.'k8s-configuration'
+    if (!$SkipInstall) {
+        Write-Host "Removing the old k8s-configuration extension..."
+        az extension remove -n k8s-configuration
+        Write-Host "Installing k8s-configuration version $k8sConfigurationVersion..."
+        az extension add --source ./bin/k8s_configuration-$k8sConfigurationVersion-py3-none-any.whl
+    }
+    $testFilePath = "$PSScriptRoot/test/configurations"
 }
 
 if ($CI) {
-    if ($OnlyPublicTests) {
-        Write-Host "Invoking Pester to run tests from '$PSScriptRoot/test/extensions/public'"
-        $testResult = Invoke-Pester $PSScriptRoot/test/extensions/public -Passthru -Output Detailed
-        $testResult | Export-JUnitReport -Path TestResults.xml
-    }
-    else {
-        Write-Host "Invoking Pester to run tests from '$PSScriptRoot/test/extensions'"
-        $testResult = Invoke-Pester $PSScriptRoot/test/extensions -Passthru -Output Detailed
-        $testResult | Export-JUnitReport -Path TestResults.xml
-    }
+    Write-Host "Invoking Pester to run tests from '$testFilePath'..."
+    $testResult = Invoke-Pester $testFilePath -Passthru -Output Detailed
+    $testResult | Export-JUnitReport -Path TestResults.xml
 } else {
     if ($Path) {
         Write-Host "Invoking Pester to run tests from '$PSScriptRoot/$Path'"
         Invoke-Pester -Output Detailed $PSScriptRoot/$Path
     } else {
-        if ($OnlyPublicTests) {
-            Write-Host "Invoking Pester to run tests from '$PSScriptRoot/test/extensions/public'"
-            Invoke-Pester -Output Detailed $PSScriptRoot/test/extensions/public
-        }
-        else {
-            Write-Host "Invoking Pester to run tests from '$PSScriptRoot/test/extensions'"
-            Invoke-Pester -Output Detailed $PSScriptRoot/test/extensions
-        }
+        Write-Host "Invoking Pester to run tests from '$testFilePath'..."
+        Invoke-Pester -Output Detailed $testFilePathc
     }
 }
