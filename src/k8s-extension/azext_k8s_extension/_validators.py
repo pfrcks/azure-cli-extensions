@@ -20,7 +20,7 @@ def _validate_cc_registration(cmd):
         if registration_state != "Registered":
             logger.warning("'Extensions' cannot be used because '%s' provider has not been registered."
                            "More details for registering this provider can be found here - "
-                           "https://aka.ms/EnableCustomLocations", consts.PROVIDER_NAMESPACE)
+                           "https://aka.ms/RegisterKubernetesConfigurationProvider", consts.PROVIDER_NAMESPACE)
     except Exception:
         logger.warning("Unable to fetch registration state of '%s' provider. "
                        "Failed to enable 'extensions' feature...", consts.PROVIDER_NAMESPACE)
