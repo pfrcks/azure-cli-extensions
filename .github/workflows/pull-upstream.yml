@@ -1,0 +1,57 @@
+on: 
+  schedule:
+    - cron:  '0 0 * * 0'
+
+jobs:
+  pull-upstream-k8s-configuration:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: k8s-configuration
+          fetch-depth: 0 
+          token: ${{ secrets.PULL_UPSTREAM_SECRET }}
+      - name: Pull (Fast-Forward) upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v2.1
+        with:
+          upstream_repository: Azure/azure-cli-extensions
+          upstream_branch: master
+          target_branch: k8s-configuration
+          github_token: ${{ secrets.PULL_UPSTREAM_SECRET }}
+  pull-upstream-k8s-extension-public:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: k8s-extension/public
+          fetch-depth: 0 
+          token: ${{ secrets.PULL_UPSTREAM_SECRET }}
+      - name: Pull (Fast-Forward) upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v2.1
+        with:
+          upstream_repository: Azure/azure-cli-extensions
+          upstream_branch: master
+          target_branch: k8s-extension/public
+          github_token: ${{ secrets.PULL_UPSTREAM_SECRET }}
+  pull-upstream-k8s-extension-private:
+    runs-on: ubuntu-latest
+    needs: pull-upstream-k8s-extension-public
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: k8s-extension/private
+          fetch-depth: 0 
+          token: ${{ secrets.PULL_UPSTREAM_SECRET }}
+      - name: Pull (Fast-Forward) upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v2.1
+        with:
+          upstream_repository: AzureArcForKubernetes/azure-cli-extensions
+          upstream_branch: k8s-extension/public
+          target_branch: k8s-extension/private
+          github_token: ${{ secrets.PULL_UPSTREAM_SECRET }}
