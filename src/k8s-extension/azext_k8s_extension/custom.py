@@ -18,11 +18,12 @@ from azext_k8s_extension.vendored_sdks.models import ErrorResponseException
 from azext_k8s_extension.vendored_sdks.models import Scope
 from azext_k8s_extension._validators import _validate_cc_registration
 
-from azext_k8s_extension.partner_extensions.ContainerInsights import ContainerInsights
-from azext_k8s_extension.partner_extensions.AzureDefender import AzureDefender
-from azext_k8s_extension.partner_extensions.Cassandra import Cassandra
-from azext_k8s_extension.partner_extensions.DefaultExtension import DefaultExtension
-import azext_k8s_extension._consts as consts
+from .partner_extensions.ContainerInsights import ContainerInsights
+from .partner_extensions.AzureDefender import AzureDefender
+from .partner_extensions.Cassandra import Cassandra
+from .partner_extensions.AzureMLKubernetes import AzureMLKubernetes
+from .partner_extensions.DefaultExtension import DefaultExtension
+from . import consts
 
 from ._client_factory import cf_resources
 
@@ -34,7 +35,8 @@ def ExtensionFactory(extension_name):
     extension_map = {
         'microsoft.azuremonitor.containers': ContainerInsights,
         'microsoft.azuredefender.kubernetes': AzureDefender,
-        'cassandradatacentersoperator': Cassandra
+        'microsoft.azureml.kubernetes': AzureMLKubernetes,
+        'cassandradatacentersoperator': Cassandra,
     }
 
     # Return the extension if we find it in the map, else return the default
