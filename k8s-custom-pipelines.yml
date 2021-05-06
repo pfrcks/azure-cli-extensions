@@ -51,12 +51,12 @@ stages:
           echo "Building extension ${EXTENSION_NAME}..."
 
           # prepare and activate virtualenv
-          pip install --upgrade pip
           pip install virtualenv
           python3 -m venv env/
           source env/bin/activate
 
           # clone azure-cli
+          pip install --upgrade pip
           pip install azdev
 
           ls $(CLI_REPO_PATH)
@@ -192,12 +192,12 @@ stages:
         echo "Building extension ${EXTENSION_NAME}..."
 
         # prepare and activate virtualenv
-        pip install --upgrade pip
         pip install virtualenv
         python3 -m venv env/
         source env/bin/activate
 
         # clone azure-cli
+        pip install --upgrade pip
         pip install azdev
 
         ls $(CLI_REPO_PATH)
