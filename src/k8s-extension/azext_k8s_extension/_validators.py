@@ -5,7 +5,7 @@
 
 from knack.log import get_logger
 from azext_k8s_extension._client_factory import _resource_providers_client
-import azext_k8s_extension._consts as consts
+from . import consts
 
 
 logger = get_logger(__name__)
