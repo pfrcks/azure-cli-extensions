@@ -3,6 +3,10 @@
 Release History
 ===============
 
+0.3.0-beta.2
+++++++++++++++++++
+* Only validate scoring fe settings when inference is enabled in microsoft.azureml.kubernetes
+
 0.3.0-beta.1
 ++++++++++++++++++
 * Release customization for microsoft.azureml.kubernetes
