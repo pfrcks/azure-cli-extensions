@@ -77,7 +77,7 @@ if ($CI) {
 
     Write-Host "Invoking Pester to run tests from '$testFilePath'..."
     $testFiles = Get-ChildItem $testFilePath
-    $testFiles = "$PSScriptRoot/test/extensions/public/AzureDefender.Tests.ps1"
+    $testFiles = "$PSScriptRoot/test/extensions/public/OpenServiceMesh.Tests.ps1"
     $resultFileNumber = 0
     foreach ($testFile in $testFiles)
     {

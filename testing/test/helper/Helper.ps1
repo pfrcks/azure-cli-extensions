@@ -45,3 +45,11 @@ function Get-ExtensionConfigurationSettings {
     }
     return $null
 }
+
+function Check-Error {
+    param(
+        [string]$output
+    )
+    Write-Output $output
+    return $output -Contains "ERROR"
+}
