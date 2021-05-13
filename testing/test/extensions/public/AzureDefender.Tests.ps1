@@ -10,10 +10,8 @@ Describe 'Azure Defender Testing' {
 
     It 'Creates the extension and checks that it onboards correctly' {
         $output = az $Env:K8sExtensionName create -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --extension-type $extensionType -n $extensionName
-        $? | Should -BeTrue
 
         $output = az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
-        $? | Should -BeTrue
 
         $isAutoUpgradeMinorVersion = ($output | ConvertFrom-Json).autoUpgradeMinorVersion 
         $isAutoUpgradeMinorVersion.ToString() -eq "True" | Should -BeTrue
@@ -34,7 +32,6 @@ Describe 'Azure Defender Testing' {
 
     It "Performs a show on the extension" {
         $output = az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
-        $? | Should -BeTrue
         $output | Should -Not -BeNullOrEmpty
     }
 
