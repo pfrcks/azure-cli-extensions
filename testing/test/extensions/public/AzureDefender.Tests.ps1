@@ -10,8 +10,10 @@ Describe 'Azure Defender Testing' {
 
     It 'Creates the extension and checks that it onboards correctly' {
         $output = az $Env:K8sExtensionName create -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --extension-type $extensionType -n $extensionName
+        $output | Should -Not -BeNullOrEmpty
 
         $output = az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
+        $output | Should -Not -BeNullOrEmpty
 
         $isAutoUpgradeMinorVersion = ($output | ConvertFrom-Json).autoUpgradeMinorVersion 
         $isAutoUpgradeMinorVersion.ToString() -eq "True" | Should -BeTrue
@@ -67,7 +69,7 @@ Describe 'Azure Defender Testing' {
 
     It "Lists the extensions on the cluster" {
         $output = az $Env:K8sExtensionName list -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters
-        $? | Should -BeTrue
+        $output | Should -Not -BeNullOrEmpty
 
         $extensionExists = $output | ConvertFrom-Json | Where-Object { $_.extensionType -eq $extensionType }
         $extensionExists | Should -Not -BeNullOrEmpty
@@ -75,15 +77,15 @@ Describe 'Azure Defender Testing' {
 
     It "Deletes the extension from the cluster" {
         az $Env:K8sExtensionName delete -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
-        $? | Should -BeTrue
 
         # Extension should not be found on the cluster
         az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
-        $? | Should -BeFalse
+        $output | Should -BeNullOrEmpty
     }
 
     It "Performs another list after the delete" {
         $output = az $Env:K8sExtensionName list -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters
+        $output | Should -Not -BeNullOrEmpty
         $extensionExists = $output | ConvertFrom-Json | Where-Object { $_.extensionType -eq $extensionName }
         $extensionExists | Should -BeNullOrEmpty
     }

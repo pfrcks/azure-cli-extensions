@@ -77,7 +77,6 @@ if ($CI) {
 
     Write-Host "Invoking Pester to run tests from '$testFilePath'..."
     $testFiles = Get-ChildItem $testFilePath
-    $testFiles = "$PSScriptRoot/test/extensions/public/OpenServiceMesh.Tests.ps1"
     $resultFileNumber = 0
     foreach ($testFile in $testFiles)
     {
@@ -96,7 +95,7 @@ if ($CI) {
         Write-Host ">> Still running tests @ $(Get-Date –Format "HH:mm:ss")" –ForegroundColor Blue
         Get-Job | Where-Object { $_.State -eq "Running" } | Format-Table –AutoSize 
         Start-Sleep –Seconds 15
-    } while((Get-Job | Where-Object { $_.State -eq "Running" } | Measure-Object).Count -gt 1)
+    } while((Get-Job | Where-Object { $_.State -eq "Running" } | Measure-Object).Count -ge 1)
 
     Get-Job | Wait-Job
     $failedJobs = Get-Job | Where-Object { -not ($_.State -eq "Completed")}

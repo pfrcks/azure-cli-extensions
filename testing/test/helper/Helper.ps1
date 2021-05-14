@@ -50,6 +50,6 @@ function Check-Error {
     param(
         [string]$output
     )
-    Write-Output $output
-    return $output -Contains "ERROR"
+    $hasError = $output -CMatch "ERROR"
+    return $hasError
 }

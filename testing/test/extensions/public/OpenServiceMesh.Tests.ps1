@@ -2,30 +2,36 @@ Describe 'Azure OpenServiceMesh Testing' {
     BeforeAll {
         $extensionType = "microsoft.openservicemesh"
         $extensionName = "openservicemesh"
-        $extensionAgentNamespace = "azuredefender"
-        $releaseTrain = "badtrain"
+        $extensionVersion = "0.8.3"
+        $extensionAgentName = "osm-controller"
+        $extensionAgentNamespace = "arc-osm-system"
+        $releaseTrain = "staging"
         
         . $PSScriptRoot/../../helper/Constants.ps1
         . $PSScriptRoot/../../helper/Helper.ps1
     }
 
-    It 'Creates the extension and checks that it onboards correctly' {
-        $output = & az $Env:K8sExtensionName create -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --extension-type $extensionType -n $extensionName --release-train $releaseTrain 2>&1
-        Check-Error $output | Should -BeFalse
+    # Should Not BeNullOrEmpty checks if the command returns JSON output
 
-        $output = & az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName 2>&1
-        Check-Error $output | Should -BeFalse
+    It 'Creates the extension and checks that it onboards correctly' {
+        $output = az $Env:K8sExtensionName create -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --extension-type $extensionType -n $extensionName --release-train $releaseTrain --version $extensionVersion
+        $output | Should -Not -BeNullOrEmpty
+        
+
+        $output = az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
+        $output | Should -Not -BeNullOrEmpty
 
         $isAutoUpgradeMinorVersion = ($output | ConvertFrom-Json).autoUpgradeMinorVersion 
-        $isAutoUpgradeMinorVersion.ToString() -eq "True" | Should -BeTrue
+        $isAutoUpgradeMinorVersion.ToString() -eq "False" | Should -BeTrue
 
         # Loop and retry until the extension installs
         $n = 0
         do 
         {
-            # Only check the extension config, not the pod since this doesn't bring up pods
             if (Get-ExtensionStatus $extensionName -eq $SUCCESS_MESSAGE) {
-                break
+                if (Get-PodStatus $extensionAgentName -Namespace $extensionAgentNamespace -eq $POD_RUNNING) {
+                    break
+                }
             }
             Start-Sleep -Seconds 10
             $n += 1
@@ -35,7 +41,6 @@ Describe 'Azure OpenServiceMesh Testing' {
 
     It "Performs a show on the extension" {
         $output = az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
-        $? | Should -BeTrue
         $output | Should -Not -BeNullOrEmpty
     }
 
@@ -71,23 +76,22 @@ Describe 'Azure OpenServiceMesh Testing' {
 
     It "Lists the extensions on the cluster" {
         $output = az $Env:K8sExtensionName list -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters
-        $? | Should -BeTrue
-
+        $output | Should -Not -BeNullOrEmpty
         $extensionExists = $output | ConvertFrom-Json | Where-Object { $_.extensionType -eq $extensionType }
         $extensionExists | Should -Not -BeNullOrEmpty
     }
 
     It "Deletes the extension from the cluster" {
-        az $Env:K8sExtensionName delete -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
-        $? | Should -BeTrue
+        $output = az $Env:K8sExtensionName delete -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
 
         # Extension should not be found on the cluster
-        az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
-        $? | Should -BeFalse
+        $output = az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
+        $output | Should -BeNullOrEmpty
     }
 
     It "Performs another list after the delete" {
         $output = az $Env:K8sExtensionName list -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters
+        $output | Should -Not -BeNullOrEmpty
         $extensionExists = $output | ConvertFrom-Json | Where-Object { $_.extensionType -eq $extensionName }
         $extensionExists | Should -BeNullOrEmpty
     }
