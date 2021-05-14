@@ -5,7 +5,7 @@ Describe 'Azure OpenServiceMesh Testing' {
         $extensionVersion = "0.8.3"
         $extensionAgentName = "osm-controller"
         $extensionAgentNamespace = "arc-osm-system"
-        $releaseTrain = "staging"
+        $releaseTrain = "pilot"
         
         . $PSScriptRoot/../../helper/Constants.ps1
         . $PSScriptRoot/../../helper/Helper.ps1
@@ -77,12 +77,13 @@ Describe 'Azure OpenServiceMesh Testing' {
     It "Lists the extensions on the cluster" {
         $output = az $Env:K8sExtensionName list -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters
         $output | Should -Not -BeNullOrEmpty
+
         $extensionExists = $output | ConvertFrom-Json | Where-Object { $_.extensionType -eq $extensionType }
         $extensionExists | Should -Not -BeNullOrEmpty
     }
 
     It "Deletes the extension from the cluster" {
-        $output = az $Env:K8sExtensionName delete -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
+        az $Env:K8sExtensionName delete -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
 
         # Extension should not be found on the cluster
         $output = az $Env:K8sExtensionName show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters -n $extensionName
@@ -92,6 +93,7 @@ Describe 'Azure OpenServiceMesh Testing' {
     It "Performs another list after the delete" {
         $output = az $Env:K8sExtensionName list -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters
         $output | Should -Not -BeNullOrEmpty
+        
         $extensionExists = $output | ConvertFrom-Json | Where-Object { $_.extensionType -eq $extensionName }
         $extensionExists | Should -BeNullOrEmpty
     }
