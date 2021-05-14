@@ -11,11 +11,11 @@ Describe 'AzureML Kubernetes Testing' {
     }
 
     It 'Creates the extension and checks that it onboards correctly with training enabled' {
-        $output = az k8s-extension create -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --extension-type $extensionType --name $extensionName --release-train staging --config enableTraining=true
-        $output | Should -Not -BeNullOrEmpty
+        Invoke-Expression "az $Env:K8sExtensionName create -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters --extension-type $extensionType -n $extensionName --release-train staging --config enableTraining=true" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty        
 
-        $output = az k8s-extension show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --name $extensionName
-        $output | Should -Not -BeNullOrEmpty
+        $output = Invoke-Expression "az $Env:K8sExtensionName show -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters -n $extensionName" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty
 
         $isAutoUpgradeMinorVersion = ($output | ConvertFrom-Json).autoUpgradeMinorVersion 
         $isAutoUpgradeMinorVersion.ToString() -eq "True" | Should -BeTrue
@@ -38,7 +38,8 @@ Describe 'AzureML Kubernetes Testing' {
     }
 
     It "Performs a show on the extension" {
-        $output = az k8s-extension show --cluster-name $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --name $extensionName
+        $output = Invoke-Expression "az $Env:K8sExtensionName show -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters -n $extensionName" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty
         $output | Should -Not -BeNullOrEmpty
     }
 
@@ -70,9 +71,10 @@ Describe 'AzureML Kubernetes Testing' {
     }
 
     It "Lists the extensions on the cluster" {
-        $output = az k8s-extension list --cluster-name $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters
-        $output | Should -Not -BeNullOrEmpty
+        $output = Invoke-Expression "az $Env:K8sExtensionName list -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty
 
+        $output | Should -Not -BeNullOrEmpty
         $extensionExists = $output | ConvertFrom-Json | Where-Object { $_.extensionType -eq $extensionType }
         $extensionExists | Should -Not -BeNullOrEmpty
     }
@@ -86,27 +88,30 @@ Describe 'AzureML Kubernetes Testing' {
         az relay namespace delete --resource-group $ENVCONFIG.resourceGroup --name $relayNamespaceName
         az servicebus namespace delete --resource-group $ENVCONFIG.resourceGroup --name $serviceBusNamespaceName
 
-        az k8s-extension delete --cluster-name $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --name $extensionName
+        $output = Invoke-Expression "az $Env:K8sExtensionName delete -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters -n $extensionName" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty
 
         # Extension should not be found on the cluster
-        $output = az k8s-extension show --cluster-name $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --name $extensionName
+        $output = Invoke-Expression "az $Env:K8sExtensionName show -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters -n $extensionName" -ErrorVariable badOut
+        $badOut | Should -Not -BeNullOrEmpty
         $output | Should -BeNullOrEmpty
     }
 
     It "Performs another list after the delete" {
-        $output = az k8s-extension list --cluster-name $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters
+        $output = Invoke-Expression "az $Env:K8sExtensionName list -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty
         $output | Should -Not -BeNullOrEmpty
-
+        
         $extensionExists = $output | ConvertFrom-Json | Where-Object { $_.extensionType -eq $extensionName }
         $extensionExists | Should -BeNullOrEmpty
     }
 
     It 'Creates the extension and checks that it onboards correctly with inference enabled' {
-        $output = az k8s-extension create -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --extension-type $extensionType --name $extensionName --release-train staging --config enableInference=true identity.proxy.remoteEnabled=True identity.proxy.remoteHost=https://master.experiments.azureml-test.net allowInsecureConnections=True clusterPurpose=DevTest
-        $output | Should -Not -BeNullOrEmpty
+        Invoke-Expression "az $Env:K8sExtensionName create -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters --extension-type $extensionType -n $extensionName --release-train staging --config enableInference=true identity.proxy.remoteEnabled=True identity.proxy.remoteHost=https://master.experiments.azureml-test.net allowInsecureConnections=True clusterPurpose=DevTest" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty        
 
-        $output = az k8s-extension show -c $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --name $extensionName
-        $output | Should -Not -BeNullOrEmpty
+        $output = Invoke-Expression "az $Env:K8sExtensionName show -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters -n $extensionName" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty
 
         $isAutoUpgradeMinorVersion = ($output | ConvertFrom-Json).autoUpgradeMinorVersion 
         $isAutoUpgradeMinorVersion.ToString() -eq "True" | Should -BeTrue
@@ -129,10 +134,12 @@ Describe 'AzureML Kubernetes Testing' {
     }
 
     It "Deletes the extension from the cluster with inference enabled" {
-        az k8s-extension delete --cluster-name $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --name $extensionName
+        $output = Invoke-Expression "az $Env:K8sExtensionName delete -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters -n $extensionName" -ErrorVariable badOut
+        $badOut | Should -BeNullOrEmpty
 
         # Extension should not be found on the cluster
-        az k8s-extension show --cluster-name $ENVCONFIG.arcClusterName -g $ENVCONFIG.resourceGroup --cluster-type connectedClusters --name $extensionName
+        $output = Invoke-Expression "az $Env:K8sExtensionName show -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters -n $extensionName" -ErrorVariable badOut
+        $badOut | Should -Not -BeNullOrEmpty
         $output | Should -BeNullOrEmpty
     }
 }

@@ -10,7 +10,9 @@ param (
 )
 
 # Disable confirm prompt for script
+# Only show errors, don't show warnings
 az config set core.disable_confirm_prompt=true
+az config set core.only_show_errors=true
 
 $ENVCONFIG = Get-Content -Path $PSScriptRoot/settings.json | ConvertFrom-Json
 
@@ -94,7 +96,7 @@ if ($CI) {
     do {
         Write-Host ">> Still running tests @ $(Get-Date –Format "HH:mm:ss")" –ForegroundColor Blue
         Get-Job | Where-Object { $_.State -eq "Running" } | Format-Table –AutoSize 
-        Start-Sleep –Seconds 15
+        Start-Sleep –Seconds 30
     } while((Get-Job | Where-Object { $_.State -eq "Running" } | Measure-Object).Count -ge 1)
 
     Get-Job | Wait-Job
