@@ -3,6 +3,11 @@
 Release History
 ===============
 
+0.4.0-beta.2
+++++++++++++++++++
+
+* Change resource tag from 'amlk8s' to 'Azure Arc-enabled ML' in microsoft.azureml.kubernetes
+
 0.4.0-beta.1
 ++++++++++++++++++
 
