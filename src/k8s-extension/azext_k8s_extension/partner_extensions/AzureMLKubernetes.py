@@ -194,8 +194,6 @@ class AzureMLKubernetes(PartnerExtensionModel):
             configuration_settings['clusterPurpose'] = 'DevTest'
         else:
             configuration_settings['clusterPurpose'] = 'FastProd'
-        print(configuration_settings)
-        print(configuration_protected_settings)
         feSslCertFile = configuration_protected_settings.get(self.sslCertPemFile)
         feSslKeyFile = configuration_protected_settings.get(self.sslKeyPemFile)
         allowInsecureConnections = _get_value_from_config_protected_config(
