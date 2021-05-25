@@ -16,8 +16,14 @@ def load_command_table(self, _):
         client_factory=cf_k8s_configuration)
 
     with self.command_group('k8s-configuration', k8s_configuration_sdk, client_factory=cf_k8s_configuration_operation) as g:
-        g.custom_command('create', 'create_k8s_configuration')
+        g.custom_command('create', 'create_k8s_configuration', supports_local_cache=True)
         g.custom_command('update', 'update_k8s_configuration')
         g.custom_command('delete', 'delete_k8s_configuration', confirmation=True)
         g.custom_command('list', 'list_k8s_configuration', table_transformer=k8s_configuration_list_table_format)
         g.custom_show_command('show', 'show_k8s_configuration', table_transformer=k8s_configuration_show_table_format)
+
+    with self.command_group('k8s-configuration source', k8s_configuration_sdk, client_factory=cf_k8s_configuration_operation) as g:
+        g.custom_command('create', 'create_k8s_configuration_flux_source')
+    
+    with self.command_group('k8s-configuration kustomization', k8s_configuration_sdk, client_factory=cf_k8s_configuration_operation) as g:
+        g.custom_command('create', 'create_k8s_configuration_flux_kustomization')

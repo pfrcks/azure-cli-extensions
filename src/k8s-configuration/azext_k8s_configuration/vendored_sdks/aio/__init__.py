@@ -7,13 +7,4 @@
 # --------------------------------------------------------------------------
 
 from ._source_control_configuration_client import SourceControlConfigurationClient
-from ._version import VERSION
-
-__version__ = VERSION
 __all__ = ['SourceControlConfigurationClient']
-
-try:
-    from ._patch import patch_sdk  # type: ignore
-    patch_sdk()
-except ImportError:
-    pass
