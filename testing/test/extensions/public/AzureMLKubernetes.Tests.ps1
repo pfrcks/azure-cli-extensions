@@ -152,7 +152,9 @@ Describe 'AzureML Kubernetes Testing' {
     }
 
     It 'Creates the extension and checks that it onboards correctly with inference and SSL enabled' {
-        Invoke-Expression "az $Env:K8sExtensionName create -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters --extension-type $extensionType -n $extensionName --release-train staging --config enableInference=true identity.proxy.remoteEnabled=True identity.proxy.remoteHost=https://master.experiments.azureml-test.net experimental=True --config-protected sslKeyPemFile=../data/test_key.pem sslCertPemFile=../data/test_cert.pem" -ErrorVariable badOut
+        $sslKeyPemFile = (Split-Path $PSScriptRoot -Parent) + "\data\test_key.pem"
+        $sslCertPemFile = (Split-Path $PSScriptRoot -Parent) + "\data\test_cert.pem"
+        Invoke-Expression "az $Env:K8sExtensionName create -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters --extension-type $extensionType -n $extensionName --release-train staging --config enableInference=true identity.proxy.remoteEnabled=True identity.proxy.remoteHost=https://master.experiments.azureml-test.net experimental=True --config-protected sslKeyPemFile=$sslKeyPemFile sslCertPemFile=$sslCertPemFile" -ErrorVariable badOut
         $badOut | Should -BeNullOrEmpty        
 
         $output = Invoke-Expression "az $Env:K8sExtensionName show -c $($ENVCONFIG.arcClusterName) -g $($ENVCONFIG.resourceGroup) --cluster-type connectedClusters -n $extensionName" -ErrorVariable badOut
