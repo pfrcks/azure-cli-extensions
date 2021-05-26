@@ -191,3 +191,4 @@
 /src/cloudservice/ @qwordy
 
 /src/webpubsub/ @zackliu
+/src/azext_k8s-config/ @(env) PS C:\Users\joinnis.REDMOND\github\azure-cli-extensions> azdev extension create k8s-config
