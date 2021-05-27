@@ -56,13 +56,16 @@ stages:
           source env/bin/activate
 
           # clone azure-cli
+          git clone --single-branch -b dev https://github.com/Azure/azure-cli.git ../azure-cli
+
           pip install --upgrade pip
           pip install azdev
+          
 
           ls $(CLI_REPO_PATH)
 
           azdev --version
-          azdev setup -r $(CLI_REPO_PATH) -e $(EXTENSION_NAME)
+          azdev setup -c ../azure-cli -r $(CLI_REPO_PATH) -e $(EXTENSION_NAME)
           azdev extension build $(EXTENSION_NAME)
 
         workingDirectory: $(CLI_REPO_PATH)
