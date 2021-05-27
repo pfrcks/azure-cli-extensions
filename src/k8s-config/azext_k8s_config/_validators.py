@@ -3,18 +3,43 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
+import re
+from azure.cli.core.azclierror import InvalidArgumentValueError
 
-def example_name_or_id_validator(cmd, namespace):
-    # Example of a storage account name or ID validator.
-    # See: https://github.com/Azure/azure-cli/blob/dev/doc/authoring_command_modules/authoring_commands.md#supporting-name-or-id-parameters
-    from azure.cli.core.commands.client_factory import get_subscription_id
-    from msrestazure.tools import is_valid_resource_id, resource_id
-    if namespace.storage_account:
-        if not is_valid_resource_id(namespace.RESOURCE):
-            namespace.storage_account = resource_id(
-                subscription=get_subscription_id(cmd.cli_ctx),
-                resource_group=namespace.resource_group_name,
-                namespace='Microsoft.Storage',
-                type='storageAccounts',
-                name=namespace.storage_account
-            )
+
+# Parameter-Level Validation
+def validate_configuration_type(configuration_type):
+    if configuration_type.lower() != 'sourcecontrolconfiguration':
+        raise InvalidArgumentValueError(
+            'Invalid configuration-type',
+            'Try specifying the valid value "sourceControlConfiguration"')
+
+
+def validate_namespace(namespace):
+    if namespace.namespace:
+        __validate_k8s_name(namespace.namespace, "--namespace", 23)
+
+
+def validate_operator_instance_name(namespace):
+    if namespace.operator_instance_name:
+        __validate_k8s_name(namespace.operator_instance_name, "--operator-instance-name", 23)
+
+
+def validate_configuration_name(namespace):
+    __validate_k8s_name(namespace.name, "--name", 63)
+
+
+# Helper
+def __validate_k8s_name(param_value, param_name, max_len):
+    if len(param_value) > max_len:
+        raise InvalidArgumentValueError(
+            'Error! Invalid {0}'.format(param_name),
+            'Parameter {0} can be a maximum of {1} characters'.format(param_name, max_len))
+    if not re.match(r'^[a-z0-9]([-a-z0-9]*[a-z0-9])?$', param_value):
+        if param_value[0] == "-" or param_value[-1] == "-":
+            raise InvalidArgumentValueError(
+                'Error! Invalid {0}'.format(param_name),
+                'Parameter {0} cannot begin or end with a hyphen'.format(param_name))
+        raise InvalidArgumentValueError(
+            'Error! Invalid {0}'.format(param_name),
+            'Parameter {0} can only contain lowercase alphanumeric characters and hyphens'.format(param_name))
