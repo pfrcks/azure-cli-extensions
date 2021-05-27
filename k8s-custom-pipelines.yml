@@ -27,7 +27,7 @@ stages:
   - job: K8sExtensionTestSuite
     displayName: "Run the Test Suite"
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     steps:
       - checkout: self
       - bash: |
@@ -66,9 +66,6 @@ stages:
           azdev --version
           azdev setup -c ../azure-cli -r $(CLI_REPO_PATH) -e $(EXTENSION_NAME)
           azdev extension build $(EXTENSION_NAME)
-
-          az upgrade
-
         workingDirectory: $(CLI_REPO_PATH)
         displayName: "Setup and Build Extension with azdev"
       
@@ -102,6 +99,10 @@ stages:
           chmod +x ./kind
           ./kind create cluster
         displayName: "Create and Start the Kind cluster"
+      
+      - bash: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        displayName: "Upgrade az to latest version"
 
       - task: AzureCLI@2
         displayName: Bootstrap
@@ -112,7 +113,7 @@ stages:
           inlineScript: |
             .\Bootstrap.ps1 -CI
           workingDirectory: $(TEST_PATH)
-      
+            
       - task: AzureCLI@2
         displayName: Run the Test Suite Public Extensions Only
         inputs:
@@ -157,7 +158,7 @@ stages:
 
   - job: BuildPublishExtension
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     displayName: "Build and Publish the Extension Artifact"
     variables: 
       CLI_REPO_PATH: $(Agent.BuildDirectory)/s
@@ -211,8 +212,6 @@ stages:
         azdev --version
         azdev setup -c ../azure-cli -r $(CLI_REPO_PATH) -e $(EXTENSION_NAME)
         azdev extension build $(EXTENSION_NAME)
-
-        az upgrade
       workingDirectory: $(CLI_REPO_PATH)
       displayName: "Setup and Build Extension with azdev"
     - task: PublishBuildArtifacts@1
@@ -226,7 +225,7 @@ stages:
   - job: CheckLicenseHeader
     displayName: "Check License"
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     steps:
     - task: UsePythonVersion@0
       displayName: 'Use Python 3.6'
@@ -257,7 +256,7 @@ stages:
   - job: StaticAnalysis
     displayName: "Static Analysis"
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     steps:
       - task: UsePythonVersion@0
         displayName: 'Use Python 3.6'
@@ -271,7 +270,7 @@ stages:
   - job: IndexVerify
     displayName: "Verify Extensions Index"
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     steps:
     - task: UsePythonVersion@0
       displayName: 'Use Python 3.7'
@@ -288,7 +287,7 @@ stages:
   - job: SourceTests
     displayName: "Integration Tests, Build Tests"
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     strategy:
       matrix:
         Python36:
@@ -311,7 +310,7 @@ stages:
   - job: LintModifiedExtensions
     displayName: "CLI Linter on Modified Extensions"
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     steps:
       - task: UsePythonVersion@0
         displayName: 'Use Python 3.6'
