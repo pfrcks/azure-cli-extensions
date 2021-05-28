@@ -24,7 +24,7 @@ class TestAzureMlExtension(unittest.TestCase):
         azremlk8sInstance._AzureMLKubernetes__set_up_inference_ssl(config, protected_config)
         self.assertTrue('scoringFe.sslCert' in protected_config)
         self.assertTrue('scoringFe.sslKey' in protected_config)
-        encoded_cert_and_key_file = os.path.join(TEST_DIR, 'data', 'cert_and_key_encoded.txt')
+        encoded_cert_and_key_file = os.path.join(TEST_DIR, 'data', 'azure_ml', 'cert_and_key_encoded.txt')
         with open(encoded_cert_and_key_file, "rb") as text_file:
             cert = text_file.readline().rstrip()
             self.assertEquals(cert, protected_config['scoringFe.sslCert'])

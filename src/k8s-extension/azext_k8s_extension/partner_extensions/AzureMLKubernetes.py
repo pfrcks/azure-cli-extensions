@@ -233,7 +233,7 @@ class AzureMLKubernetes(PartnerExtensionModel):
                 configuration_protected_settings['scoringFe.sslKey'] = ssl_key
         else:
             logger.warning(
-                'SSL is not set up. Allowing insecure connection to the deployed services')
+                'SSL is not enabled. Allowing insecure connections to the deployed services.')
 
     def __create_required_resource(
             self, cmd, configuration_settings, configuration_protected_settings, subscription_id, resource_group_name,
