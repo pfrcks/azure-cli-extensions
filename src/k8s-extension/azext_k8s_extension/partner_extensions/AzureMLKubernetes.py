@@ -70,6 +70,7 @@ class AzureMLKubernetes(PartnerExtensionModel):
         self.sslKeyPemFile = 'sslKeyPemFile'
         self.sslCertPemFile = 'sslCertPemFile'
         self.allowInsecureConnections = 'allowInsecureConnections'
+        self.privateEndpointILB = 'privateEndpointILB'
 
         # reference mapping
         self.reference_mapping = {
@@ -206,12 +207,12 @@ class AzureMLKubernetes(PartnerExtensionModel):
                 "'--configuration-settings allowInsecureConnections=true'")
 
         feIsInternalLoadBalancer = _get_value_from_config_protected_config(
-            'privateEndpointILB', configuration_settings, configuration_protected_settings)
+            self.privateEndpointILB, configuration_settings, configuration_protected_settings)
         feIsInternalLoadBalancer = str(feIsInternalLoadBalancer).lower() == 'true'
         if feIsInternalLoadBalancer:
             logger.warning(
                 'Internal load balancer only supported on AKS and AKS Engine Clusters.')
-            configuration_protected_settings['scoringFe.privateEndpointILB'] = feIsInternalLoadBalancer
+            configuration_protected_settings['scoringFe.%s' % self.privateEndpointILB] = feIsInternalLoadBalancer
 
     def __set_up_inference_ssl(self, configuration_settings, configuration_protected_settings):
         allowInsecureConnections = _get_value_from_config_protected_config(
