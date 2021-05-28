@@ -18,8 +18,8 @@ class TestAzureMlExtension(unittest.TestCase):
         azremlk8sInstance = AzureMLKubernetes()
         config = {'allowInsecureConnections': 'false'}
         # read and encode dummy cert and key
-        sslKeyPemFile = os.path.join(TEST_DIR, 'data', 'test_key.pem')
-        sslCertPemFile = os.path.join(TEST_DIR, 'data', 'test_cert.pem')
+        sslKeyPemFile = os.path.join(TEST_DIR, 'data', 'azure_ml', 'test_key.pem')
+        sslCertPemFile = os.path.join(TEST_DIR, 'data', 'azure_ml', 'test_cert.pem')
         protected_config = {'sslKeyPemFile': sslKeyPemFile, 'sslCertPemFile': sslCertPemFile}
         azremlk8sInstance._AzureMLKubernetes__set_up_inference_ssl(config, protected_config)
         self.assertTrue('scoringFe.sslCert' in protected_config)

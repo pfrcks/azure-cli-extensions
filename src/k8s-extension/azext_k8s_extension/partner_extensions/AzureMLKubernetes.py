@@ -66,7 +66,7 @@ class AzureMLKubernetes(PartnerExtensionModel):
         self.SERVICE_BUS_JOB_STATE_TOPIC = 'jobstate-updatedby-computeprovider'
         self.SERVICE_BUS_JOB_STATE_SUB = 'compute-scheduler-jobstate'
 
-        # constants for enableing SSL in inference
+        # constants for enabling SSL in inference
         self.sslKeyPemFile = 'sslKeyPemFile'
         self.sslCertPemFile = 'sslCertPemFile'
         self.allowInsecureConnections = 'allowInsecureConnections'
