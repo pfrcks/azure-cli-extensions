@@ -5,6 +5,8 @@
 
 # pylint: disable=line-too-long
 
+# ERROR/HELP TEXT DEFINITIONS -----------------------------------------
+
 KUSTOMIZATION_REQUIRED_VALUES_MISSING_ERROR = "Error! Kustomization definition is invalid, required values {} not found"
 KUSTOMIZATION_REQUIRED_VALUES_MISSING_HELP = "Add the required values to the Kustomization object and try again"
 
@@ -62,19 +64,23 @@ KEY_FILE_READ_HELP = "Verify that the filepath specified exists and contains val
 KEY_AND_FILE_TOGETHER_ERROR = "Error! Both textual key and key filepath cannot be provided"
 KEY_AND_FILE_TOGETHER_HELP = "Try providing the file parameter without providing the plaintext parameter"
 
+HTTP_URL_NO_AUTH_WARNING = "Warning! https url is being used without https auth params, ensure the repository url provided is not a private repo"
+
+# PROVIDER REGISTRATION -----------------------------------------
+
 CC_REGISTRATION_WARNING = "'Flux Configuration' cannot be used because '{0}' provider has not been registered. More details for registering this provider can be found here - {1}"
 CC_REGISTRATION_LINK = "https://aka.ms/RegisterKubernetesConfigurationProvider"
 CC_REGISTRATION_ERROR = "Unable to fetch registration state of '{0}' provider. Failed to enable 'flux configuration' feature..."
 CC_PROVIDER_NAMESPACE = 'Microsoft.KubernetesConfiguration'
 REGISTERED = "Registered"
 
-HTTP_URL_NO_AUTH_WARNING = "Warning! https url is being used without https auth params, ensure the repository url provided is not a private repo"
-
+SSH_PRIVATE_KEY_KEY = "sshPrivateKey"
+HTTPS_USER_KEY = "httpsUser"
+HTTPS_KEY_KEY = "httpsKey"
 
 DEPENDENCY_KEYS = ["dependencies", "depends_on"]
 SYNC_INTERVAL_KEYS = ["interval", "sync_interval"]
 TIMEOUT_KEY = "timeout"
-SSH_PRIVATE_KEY_KEY = "sshPrivateKey"
 REQUIRED_KUSTOMIZATION_KEYS = {"name", "path"}
 
 VALID_ISO8601_DURATION_REGEX = r"^P(?!$)(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)?$"
@@ -85,6 +91,7 @@ GIT_CLI_KIND = "git"
 GIT_DP_KIND = "GitRepository"
 
 CONNECTED_CLUSTERS = "connectedclusters"
+MANAGED_CLUSTERS = "managedclusters"
 
 MANAGED_RP_NAMESPACE = "Microsoft.ContainerService"
 CONNECTED_RP_NAMESPACE = "Microsoft.Kubernetes"
