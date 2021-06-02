@@ -87,8 +87,8 @@ VALID_ISO8601_DURATION_REGEX = r"^P(?!$)(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(?=\d)(\d+
 VALID_URL_REGEX = r"^(((http|https|ssh)://)|(git@))"
 VALID_KUBERNETES_NAME_REGEX = r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
 
-GIT_CLI_KIND = "git"
-GIT_DP_KIND = "GitRepository"
+GIT = "git"
+GIT_REPOSITORY = "GitRepository"
 
 CONNECTED_CLUSTERS = "connectedclusters"
 MANAGED_CLUSTERS = "managedclusters"

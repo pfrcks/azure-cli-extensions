@@ -12,9 +12,7 @@ from azure.cli.core.commands.parameters import (
 )
 from .validators import validate_configuration_name, validate_namespace
 from .action import KustomizationAddAction
-from .consts import (
-    GIT_CLI_KIND
-)
+from . import consts
 
 
 def load_arguments(self, _):
@@ -43,7 +41,7 @@ def load_arguments(self, _):
                    options_list=['--namespace', '--ns'],
                    validator=validate_namespace)
         c.argument('kind',
-                   arg_type=get_enum_type([GIT_CLI_KIND]),
+                   arg_type=get_enum_type([consts.GIT]),
                    help='Source kind to reconcile')
         c.argument('url',
                    options_list=['--url', '-u'],

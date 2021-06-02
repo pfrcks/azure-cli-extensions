@@ -59,7 +59,7 @@ def flux_config_show(client, resource_group_name, cluster_name, cluster_type, na
 
 # pylint: disable=too-many-locals
 def flux_config_create(cmd, client, resource_group_name, cluster_name, name, cluster_type, url=None,
-                       scope='cluster', namespace='default', kind=consts.GIT_CLI_KIND, timeout=None, sync_interval=None,
+                       scope='cluster', namespace='default', kind=consts.GIT, timeout=None, sync_interval=None,
                        branch=None, tag=None, semver=None, commit=None, auth_ref_override=None, ssh_private_key=None,
                        ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
                        known_hosts_file=None, kustomization=None):
@@ -88,9 +88,9 @@ def flux_config_create(cmd, client, resource_group_name, cluster_name, name, clu
     validate_cc_registration(cmd)
 
     git_repository = GitRepositoryDefinition()
-    dp_source_kind = consts.GIT_DP_KIND
+    dp_source_kind = consts.GIT_REPOSITORY
 
-    if kind == consts.GIT_CLI_KIND:
+    if kind == consts.GIT:
         validate_git_repository(url)
         validate_url_with_params(url, ssh_private_key, ssh_private_key_file,
                                  known_hosts, known_hosts_file, https_user, https_key)
