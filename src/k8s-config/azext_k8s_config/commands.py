@@ -5,18 +5,17 @@
 
 # pylint: disable=line-too-long
 from azure.cli.core.commands import CliCommandType
-from azext_k8s_config._client_factory import cf_k8s_config_fc_operations
+from azext_k8s_config._client_factory import k8s_config_fluxconfig_client
 
 
 def load_command_table(self, _):
-    k8s_config_fc_sdk = CliCommandType(
-       operations_tmpl='azext_k8s_config.vendored_sdks.operations#FluxConfigurationsOperations.{}',
-       client_factory=cf_k8s_config_fc_operations)
+    k8s_config_fluxconfig_sdk = CliCommandType(
+        operations_tmpl='azext_k8s_config.vendored_sdks.operations#FluxConfigurationsOperations.{}',
+        client_factory=k8s_config_fluxconfig_client
+    )
 
-    with self.command_group('k8s-config flux', k8s_config_fc_sdk, is_preview=True) as g:
-        g.custom_command('source create', "flux_create_source", supports_local_cache=True)
-        g.custom_command('kustomization create', "flux_create_kustomization", supports_local_cache=True)
-        g.custom_command('delete', 'flux_delete', confirmation=True)
+    with self.command_group('k8s-config flux', k8s_config_fluxconfig_sdk, client_factory=k8s_config_fluxconfig_client, is_preview=True) as g:
+        g.custom_command('create', 'flux_config_create')
         g.command('list', "list")
-        g.show_command('show', 'get')
-
+        g.custom_command('show', 'flux_config_show')
+        g.custom_command('delete', 'flux_config_delete', confirmation=True)
