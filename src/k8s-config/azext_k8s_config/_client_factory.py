@@ -11,15 +11,15 @@ def k8s_config_client(cli_ctx, *_):
     return get_mgmt_service_client(cli_ctx, SourceControlConfigurationClient)
 
 
-def k8s_config_fluxconfig_client(cli_ctx, _):
+def k8s_config_fluxconfig_client(cli_ctx, *_):
     return k8s_config_client(cli_ctx).flux_configurations
 
 
-def k8s_config_sourcecontrol_client(cli_ctx, _):
+def k8s_config_sourcecontrol_client(cli_ctx, *_):
     return k8s_config_client(cli_ctx).source_control_configurations
 
 
-def k8s_config_extension_client(cli_ctx, _):
+def k8s_config_extension_client(cli_ctx, *_):
     return k8s_config_client(cli_ctx).extensions
 
 

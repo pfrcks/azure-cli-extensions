@@ -3,8 +3,12 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-from azure.cli.core.azclierror import ResourceNotFoundError
+from azure.cli.core.azclierror import DeploymentError, ResourceNotFoundError
 from azure.core.exceptions import HttpResponseError
+from ._client_factory import (
+    k8s_config_sourcecontrol_client,
+    k8s_config_extension_client
+)
 from .utils import get_cluster_type, get_data_from_key_or_file, get_protected_settings
 from .validators import (
     validate_cc_registration,
@@ -33,7 +37,6 @@ def flux_config_show(client, resource_group_name, cluster_name, cluster_type, na
 
     try:
         config = client.get(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
-        print(config)
         return config
     except HttpResponseError as ex:
         # Customize the error message for resources not found
@@ -64,6 +67,9 @@ def flux_config_create(cmd, client, resource_group_name, cluster_name, name, clu
                        ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
                        known_hosts_file=None, kustomization=None):
 
+    # Determine ClusterRP
+    cluster_rp = get_cluster_type(cluster_type)
+
     # Pre-Validation
     validate_repository_ref(branch, tag, semver, commit)
     validate_duration("--timeout", timeout)
@@ -71,6 +77,26 @@ def flux_config_create(cmd, client, resource_group_name, cluster_name, name, clu
 
     if kustomization:
         validate_kustomization_list(kustomization)
+
+    # Validate if we are able to install the flux configuration
+    scc_client = k8s_config_sourcecontrol_client(cmd.cli_ctx)
+    configs = scc_client.list(resource_group_name, cluster_rp, cluster_type, cluster_name)
+    # configs is an iterable, no len() so we have to iterate to check for configs
+    for _ in configs:
+        raise DeploymentError(
+            consts.SCC_EXISTS_ON_CLUSTER_ERROR,
+            consts.SCC_EXISTS_ON_CLUSTER_HELP)
+
+    # Validate if the extension is installed, if not, install it
+    extension_client = k8s_config_extension_client(cmd.cli_ctx)
+    extensions = extension_client.list(resource_group_name, cluster_rp, cluster_type, cluster_name)
+    found_flux_extension = False
+    for extension in extensions:
+        if extension.extension_type.lower() == consts.FLUX_EXTENSION_TYPE:
+            found_flux_extension = True
+            break
+    if not found_flux_extension:
+        print("We should install the flux extension automatically here")
 
     # Get the protected settings and validate the private key value
     protected_settings = get_protected_settings(
@@ -109,9 +135,6 @@ def flux_config_create(cmd, client, resource_group_name, cluster_name, name, clu
             https_user=https_user,
             auth_ref_override=auth_ref_override
         )
-
-    # Determine ClusterRP
-    cluster_rp = get_cluster_type(cluster_type)
 
     flux_configuration = FluxConfiguration(
         scope=scope,

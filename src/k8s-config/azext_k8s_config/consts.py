@@ -64,6 +64,9 @@ KEY_FILE_READ_HELP = "Verify that the filepath specified exists and contains val
 KEY_AND_FILE_TOGETHER_ERROR = "Error! Both textual key and key filepath cannot be provided"
 KEY_AND_FILE_TOGETHER_HELP = "Try providing the file parameter without providing the plaintext parameter"
 
+SCC_EXISTS_ON_CLUSTER_ERROR = "Error! SourceControlConfigurations with flux already exist on the cluster"
+SCC_EXISTS_ON_CLUSTER_HELP = "Try removing all sourceControlConfigurations from the cluster before attempting to add fluxConfigurations"
+
 HTTP_URL_NO_AUTH_WARNING = "Warning! https url is being used without https auth params, ensure the repository url provided is not a private repo"
 
 # PROVIDER REGISTRATION -----------------------------------------
@@ -73,6 +76,8 @@ CC_REGISTRATION_LINK = "https://aka.ms/RegisterKubernetesConfigurationProvider"
 CC_REGISTRATION_ERROR = "Unable to fetch registration state of '{0}' provider. Failed to enable 'flux configuration' feature..."
 CC_PROVIDER_NAMESPACE = 'Microsoft.KubernetesConfiguration'
 REGISTERED = "Registered"
+
+FLUX_EXTENSION_TYPE = "microsoft.flux"
 
 SSH_PRIVATE_KEY_KEY = "sshPrivateKey"
 HTTPS_USER_KEY = "httpsUser"
