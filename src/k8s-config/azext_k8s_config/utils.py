@@ -4,6 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import base64
+import json
 from azure.cli.core.azclierror import (
     MutuallyExclusiveArgumentError,
     InvalidArgumentValueError,
@@ -12,7 +13,7 @@ from azure.cli.core.azclierror import (
 from . import consts
 
 
-def get_cluster_type(cluster_type):
+def get_cluster_rp(cluster_type):
     if cluster_type.lower() == consts.CONNECTED_CLUSTERS:
         return consts.CONNECTED_RP_NAMESPACE
     # Since cluster_type is an enum of only two values, if not connectedClusters, it will be managedClusters.
@@ -55,6 +56,20 @@ def get_protected_settings(ssh_private_key, ssh_private_key_file, https_user, ht
             consts.HTTPS_KEY_WITHOUT_USER_HELP)
 
     return protected_settings
+
+
+def read_config_settings_file(file_path):
+    try:
+        config_file = open(file_path,)
+        settings = json.load(config_file)
+    except ValueError:
+        raise Exception("File {} is not a valid JSON file".format(file_path))
+
+    files = len(settings)
+    if files == 0:
+        raise Exception("File {} is empty".format(file_path))
+
+    return settings
 
 
 def read_key_file(path):
