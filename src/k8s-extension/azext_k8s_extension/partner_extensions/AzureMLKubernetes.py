@@ -189,7 +189,7 @@ class AzureMLKubernetes(PartnerExtensionModel):
 
     def __validate_scoring_fe_settings(self, configuration_settings, configuration_protected_settings):
         experimentalCluster = _get_value_from_config_protected_config(
-            'experimental', configuration_settings, configuration_protected_settings)
+            'inferenceLoadBalancerHA', configuration_settings, configuration_protected_settings)
         experimentalCluster = str(experimentalCluster).lower() == 'true'
         if experimentalCluster:
             configuration_settings['clusterPurpose'] = 'DevTest'
