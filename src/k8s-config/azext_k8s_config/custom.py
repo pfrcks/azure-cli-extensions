@@ -22,7 +22,7 @@ def flux_config_create(cmd, client, resource_group_name, cluster_name, name, clu
                        ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
                        known_hosts_file=None, kustomization=None):
 
-    provider = FluxConfigurationProvider(cmd, client, resource_group_name, cluster_name, name, cluster_type)
+    provider = FluxConfigurationProvider(cmd, client, resource_group_name, cluster_name, cluster_type, name)
     return provider.create(url, scope, namespace, kind, timeout, sync_interval,
                            branch, tag, semver, commit, auth_ref_override, ssh_private_key,
                            ssh_private_key_file, https_user, https_key, known_hosts,

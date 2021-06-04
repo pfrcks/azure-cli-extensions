@@ -62,7 +62,7 @@ class Enum1(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     MANAGED_CLUSTERS = "managedClusters"
     CONNECTED_CLUSTERS = "connectedClusters"
 
-class Enum9(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+class Enum5(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
 
     MANAGED_CLUSTERS = "managedClusters"
     CONNECTED_CLUSTERS = "connectedClusters"
@@ -106,7 +106,7 @@ class OperatorType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     FLUX = "Flux"
 
 class ProvisioningState(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
-    """The provisioning state of the resource.
+    """The provisioning state of the extension resource.
     """
 
     SUCCEEDED = "Succeeded"

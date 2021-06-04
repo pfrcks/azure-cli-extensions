@@ -19,8 +19,6 @@ if TYPE_CHECKING:
     from azure.core.pipeline.transport import HttpRequest, HttpResponse
 
 from ._configuration import SourceControlConfigurationClientConfiguration
-from .operations import FluxConfigurationsOperations
-from .operations import FluxConfigOperationStatusOperations
 from .operations import ExtensionsOperations
 from .operations import OperationStatusOperations
 from .operations import ClusterExtensionTypeOperations
@@ -28,6 +26,8 @@ from .operations import ClusterExtensionTypesOperations
 from .operations import ExtensionTypeVersionsOperations
 from .operations import LocationExtensionTypesOperations
 from .operations import SourceControlConfigurationsOperations
+from .operations import FluxConfigurationsOperations
+from .operations import FluxConfigOperationStatusOperations
 from .operations import Operations
 from . import models
 
@@ -35,10 +35,6 @@ from . import models
 class SourceControlConfigurationClient(object):
     """KubernetesConfiguration Client.
 
-    :ivar flux_configurations: FluxConfigurationsOperations operations
-    :vartype flux_configurations: azure.mgmt.kubernetesconfiguration.operations.FluxConfigurationsOperations
-    :ivar flux_config_operation_status: FluxConfigOperationStatusOperations operations
-    :vartype flux_config_operation_status: azure.mgmt.kubernetesconfiguration.operations.FluxConfigOperationStatusOperations
     :ivar extensions: ExtensionsOperations operations
     :vartype extensions: azure.mgmt.kubernetesconfiguration.operations.ExtensionsOperations
     :ivar operation_status: OperationStatusOperations operations
@@ -53,6 +49,10 @@ class SourceControlConfigurationClient(object):
     :vartype location_extension_types: azure.mgmt.kubernetesconfiguration.operations.LocationExtensionTypesOperations
     :ivar source_control_configurations: SourceControlConfigurationsOperations operations
     :vartype source_control_configurations: azure.mgmt.kubernetesconfiguration.operations.SourceControlConfigurationsOperations
+    :ivar flux_configurations: FluxConfigurationsOperations operations
+    :vartype flux_configurations: azure.mgmt.kubernetesconfiguration.operations.FluxConfigurationsOperations
+    :ivar flux_config_operation_status: FluxConfigOperationStatusOperations operations
+    :vartype flux_config_operation_status: azure.mgmt.kubernetesconfiguration.operations.FluxConfigOperationStatusOperations
     :ivar operations: Operations operations
     :vartype operations: azure.mgmt.kubernetesconfiguration.operations.Operations
     :param credential: Credential needed for the client to connect to Azure.
@@ -81,10 +81,6 @@ class SourceControlConfigurationClient(object):
         self._serialize.client_side_validation = False
         self._deserialize = Deserializer(client_models)
 
-        self.flux_configurations = FluxConfigurationsOperations(
-            self._client, self._config, self._serialize, self._deserialize)
-        self.flux_config_operation_status = FluxConfigOperationStatusOperations(
-            self._client, self._config, self._serialize, self._deserialize)
         self.extensions = ExtensionsOperations(
             self._client, self._config, self._serialize, self._deserialize)
         self.operation_status = OperationStatusOperations(
@@ -98,6 +94,10 @@ class SourceControlConfigurationClient(object):
         self.location_extension_types = LocationExtensionTypesOperations(
             self._client, self._config, self._serialize, self._deserialize)
         self.source_control_configurations = SourceControlConfigurationsOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.flux_configurations = FluxConfigurationsOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.flux_config_operation_status = FluxConfigOperationStatusOperations(
             self._client, self._config, self._serialize, self._deserialize)
         self.operations = Operations(
             self._client, self._config, self._serialize, self._deserialize)

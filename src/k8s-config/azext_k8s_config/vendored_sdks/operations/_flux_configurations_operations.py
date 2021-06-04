@@ -57,7 +57,7 @@ class FluxConfigurationsOperations(object):
         **kwargs  # type: Any
     ):
         # type: (...) -> "_models.FluxConfiguration"
-        """Gets details of the Source Control Configuration.
+        """Gets details of the Flux Configuration.
 
         :param resource_group_name: The name of the resource group. The name is case insensitive.
         :type resource_group_name: str
@@ -193,7 +193,7 @@ class FluxConfigurationsOperations(object):
         **kwargs  # type: Any
     ):
         # type: (...) -> LROPoller["_models.FluxConfiguration"]
-        """Create a new Kubernetes Source Control Configuration.
+        """Create a new Kubernetes Flux Configuration.
 
         :param resource_group_name: The name of the resource group. The name is case insensitive.
         :type resource_group_name: str
@@ -337,8 +337,8 @@ class FluxConfigurationsOperations(object):
         **kwargs  # type: Any
     ):
         # type: (...) -> LROPoller[None]
-        """This will delete the YAML file used to set up the Source control configuration, thus stopping
-        future sync from the source repo.
+        """This will delete the YAML file used to set up the Flux Configuration, thus stopping future sync
+        from the source repo.
 
         :param resource_group_name: The name of the resource group. The name is case insensitive.
         :type resource_group_name: str

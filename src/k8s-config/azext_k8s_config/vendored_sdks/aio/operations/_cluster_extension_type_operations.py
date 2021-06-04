@@ -44,7 +44,7 @@ class ClusterExtensionTypeOperations:
         self,
         resource_group_name: str,
         cluster_rp: Union[str, "_models.Enum0"],
-        cluster_type: Union[str, "_models.Enum9"],
+        cluster_type: Union[str, "_models.Enum5"],
         cluster_name: str,
         extension_type_name: str,
         **kwargs: Any
@@ -58,7 +58,7 @@ class ClusterExtensionTypeOperations:
         :type cluster_rp: str or ~azure.mgmt.kubernetesconfiguration.models.Enum0
         :param cluster_type: The Kubernetes cluster resource name - either managedClusters (for AKS
          clusters) or connectedClusters (for OnPrem K8S clusters).
-        :type cluster_type: str or ~azure.mgmt.kubernetesconfiguration.models.Enum9
+        :type cluster_type: str or ~azure.mgmt.kubernetesconfiguration.models.Enum5
         :param cluster_name: The name of the kubernetes cluster.
         :type cluster_name: str
         :param extension_type_name: Extension type name.
@@ -73,7 +73,7 @@ class ClusterExtensionTypeOperations:
             401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
         }
         error_map.update(kwargs.pop('error_map', {}))
-        api_version = "2021-06-01-preview"
+        api_version = "2021-05-01-preview"
         accept = "application/json"
 
         # Construct URL
