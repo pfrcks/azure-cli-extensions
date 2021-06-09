@@ -19,3 +19,4 @@ def load_command_table(self, _):
         g.command('list', "list")
         g.custom_command('show', 'flux_config_show')
         g.custom_command('delete', 'flux_config_delete', confirmation=True)
+        g.custom_command('source create', 'flux_create_source', supports_local_cache=True)
