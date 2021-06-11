@@ -5,13 +5,14 @@
 
 from .providers.ExtensionProvider import ExtensionProvider
 from .providers.FluxConfigurationProvider import FluxConfigurationProvider
-from .vendored_sdks.models import (
+from .utils import get_cluster_rp
+from . import consts
+
+from .vendored_sdks.v2021_06_01_preview.models import (
     RepositoryRefDefinition,
     GitRepositoryDefinition,
     FluxConfiguration
 )
-from .utils import get_cluster_rp
-from . import consts
 
 def flux_config_show(cmd, client, resource_group_name, cluster_name, cluster_type, name):
     """Get an existing Kubernetes Source Control Configuration.
@@ -40,6 +41,16 @@ def flux_config_delete(cmd, client, resource_group_name, cluster_name, cluster_t
     return provider.delete()
 
 
+def extension_create(cmd, client, resource_group_name, cluster_name, name, cluster_type,
+                     extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
+                     version=None, target_namespace=None, release_namespace=None, configuration_settings=None,
+                     configuration_protected_settings=None, configuration_settings_file=None,
+                     configuration_protected_settings_file=None, tags=None):
+    provider = ExtensionProvider(cmd, client, resource_group_name, cluster_name, cluster_type, name)
+    return provider.create(extension_type, scope, auto_upgrade_minor_version, release_train, version, target_namespace, release_namespace,
+                    configuration_settings, configuration_protected_settings, configuration_settings_file, configuration_protected_settings_file)
+
+
 def flux_create_source(cmd, client, resource_group_name, cluster_name, name, cluster_type, url,
     scope='cluster', namespace='default', kind='git', timeout=None, sync_interval=None, branch=None, tag=None, semver=None, commit=None, 
     auth_ref_override=None, ssh_private_key=None, ssh_private_key_file=None, https_user=None, https_key=None,
@@ -47,7 +58,7 @@ def flux_create_source(cmd, client, resource_group_name, cluster_name, name, clu
     from azure.cli.core.commands import cached_get, cached_put
 
     # Determine ClusterRP
-    cluster_rp = get_cluster_rp(cluster_type)
+    cluster_rp = get_cluster_rp(cluster_type) 
 
     repository_ref = RepositoryRefDefinition(
         branch=branch,

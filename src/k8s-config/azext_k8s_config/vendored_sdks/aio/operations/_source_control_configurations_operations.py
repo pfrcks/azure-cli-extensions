@@ -50,11 +50,11 @@ class SourceControlConfigurationsOperations:
         cluster_resource_name: Union[str, "_models.Enum1"],
         cluster_name: str,
         source_control_configuration_name: str,
-        **kwargs: Any
+        **kwargs
     ) -> "_models.SourceControlConfiguration":
         """Gets details of the Source Control Configuration.
 
-        :param resource_group_name: The name of the resource group. The name is case insensitive.
+        :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
         :param cluster_rp: The Kubernetes cluster RP - either Microsoft.ContainerService (for AKS
          clusters) or Microsoft.Kubernetes (for OnPrem K8S clusters).
@@ -76,14 +76,14 @@ class SourceControlConfigurationsOperations:
             401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
         }
         error_map.update(kwargs.pop('error_map', {}))
-        api_version = "2021-05-01-preview"
+        api_version = "2020-10-01-preview"
         accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
         path_format_arguments = {
-            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str', min_length=1),
-            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str', max_length=90, min_length=1, pattern=r'^[-\w\._\(\)]+$'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
             'clusterRp': self._serialize.url("cluster_rp", cluster_rp, 'str'),
             'clusterResourceName': self._serialize.url("cluster_resource_name", cluster_resource_name, 'str'),
             'clusterName': self._serialize.url("cluster_name", cluster_name, 'str'),
@@ -105,7 +105,7 @@ class SourceControlConfigurationsOperations:
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
+            error = self._deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         deserialized = self._deserialize('SourceControlConfiguration', pipeline_response)
@@ -124,11 +124,11 @@ class SourceControlConfigurationsOperations:
         cluster_name: str,
         source_control_configuration_name: str,
         source_control_configuration: "_models.SourceControlConfiguration",
-        **kwargs: Any
+        **kwargs
     ) -> "_models.SourceControlConfiguration":
         """Create a new Kubernetes Source Control Configuration.
 
-        :param resource_group_name: The name of the resource group. The name is case insensitive.
+        :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
         :param cluster_rp: The Kubernetes cluster RP - either Microsoft.ContainerService (for AKS
          clusters) or Microsoft.Kubernetes (for OnPrem K8S clusters).
@@ -152,15 +152,15 @@ class SourceControlConfigurationsOperations:
             401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
         }
         error_map.update(kwargs.pop('error_map', {}))
-        api_version = "2021-05-01-preview"
+        api_version = "2020-10-01-preview"
         content_type = kwargs.pop("content_type", "application/json")
         accept = "application/json"
 
         # Construct URL
         url = self.create_or_update.metadata['url']  # type: ignore
         path_format_arguments = {
-            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str', min_length=1),
-            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str', max_length=90, min_length=1, pattern=r'^[-\w\._\(\)]+$'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
             'clusterRp': self._serialize.url("cluster_rp", cluster_rp, 'str'),
             'clusterResourceName': self._serialize.url("cluster_resource_name", cluster_resource_name, 'str'),
             'clusterName': self._serialize.url("cluster_name", cluster_name, 'str'),
@@ -186,7 +186,7 @@ class SourceControlConfigurationsOperations:
 
         if response.status_code not in [200, 201]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
+            error = self._deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         if response.status_code == 200:
@@ -208,21 +208,21 @@ class SourceControlConfigurationsOperations:
         cluster_resource_name: Union[str, "_models.Enum1"],
         cluster_name: str,
         source_control_configuration_name: str,
-        **kwargs: Any
+        **kwargs
     ) -> None:
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
         error_map = {
             401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
         }
         error_map.update(kwargs.pop('error_map', {}))
-        api_version = "2021-05-01-preview"
+        api_version = "2020-10-01-preview"
         accept = "application/json"
 
         # Construct URL
         url = self._delete_initial.metadata['url']  # type: ignore
         path_format_arguments = {
-            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str', min_length=1),
-            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str', max_length=90, min_length=1, pattern=r'^[-\w\._\(\)]+$'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
             'clusterRp': self._serialize.url("cluster_rp", cluster_rp, 'str'),
             'clusterResourceName': self._serialize.url("cluster_resource_name", cluster_resource_name, 'str'),
             'clusterName': self._serialize.url("cluster_name", cluster_name, 'str'),
@@ -244,7 +244,7 @@ class SourceControlConfigurationsOperations:
 
         if response.status_code not in [200, 204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
+            error = self._deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         if cls:
@@ -259,12 +259,12 @@ class SourceControlConfigurationsOperations:
         cluster_resource_name: Union[str, "_models.Enum1"],
         cluster_name: str,
         source_control_configuration_name: str,
-        **kwargs: Any
+        **kwargs
     ) -> AsyncLROPoller[None]:
         """This will delete the YAML file used to set up the Source control configuration, thus stopping
         future sync from the source repo.
 
-        :param resource_group_name: The name of the resource group. The name is case insensitive.
+        :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
         :param cluster_rp: The Kubernetes cluster RP - either Microsoft.ContainerService (for AKS
          clusters) or Microsoft.Kubernetes (for OnPrem K8S clusters).
@@ -278,8 +278,8 @@ class SourceControlConfigurationsOperations:
         :type source_control_configuration_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: By default, your polling method will be AsyncARMPolling.
-         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
+        :keyword polling: True for ARMPolling, False for no polling, or a
+         polling object for personal polling strategy
         :paramtype polling: bool or ~azure.core.polling.AsyncPollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of AsyncLROPoller that returns either None or the result of cls(response)
@@ -312,8 +312,8 @@ class SourceControlConfigurationsOperations:
                 return cls(pipeline_response, None, {})
 
         path_format_arguments = {
-            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str', min_length=1),
-            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str', max_length=90, min_length=1, pattern=r'^[-\w\._\(\)]+$'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
             'clusterRp': self._serialize.url("cluster_rp", cluster_rp, 'str'),
             'clusterResourceName': self._serialize.url("cluster_resource_name", cluster_resource_name, 'str'),
             'clusterName': self._serialize.url("cluster_name", cluster_name, 'str'),
@@ -340,11 +340,11 @@ class SourceControlConfigurationsOperations:
         cluster_rp: Union[str, "_models.Enum0"],
         cluster_resource_name: Union[str, "_models.Enum1"],
         cluster_name: str,
-        **kwargs: Any
+        **kwargs
     ) -> AsyncIterable["_models.SourceControlConfigurationList"]:
         """List all Source Control Configurations.
 
-        :param resource_group_name: The name of the resource group. The name is case insensitive.
+        :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
         :param cluster_rp: The Kubernetes cluster RP - either Microsoft.ContainerService (for AKS
          clusters) or Microsoft.Kubernetes (for OnPrem K8S clusters).
@@ -364,7 +364,7 @@ class SourceControlConfigurationsOperations:
             401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
         }
         error_map.update(kwargs.pop('error_map', {}))
-        api_version = "2021-05-01-preview"
+        api_version = "2020-10-01-preview"
         accept = "application/json"
 
         def prepare_request(next_link=None):
@@ -376,8 +376,8 @@ class SourceControlConfigurationsOperations:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
                 path_format_arguments = {
-                    'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str', min_length=1),
-                    'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str', max_length=90, min_length=1, pattern=r'^[-\w\._\(\)]+$'),
+                    'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+                    'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
                     'clusterRp': self._serialize.url("cluster_rp", cluster_rp, 'str'),
                     'clusterResourceName': self._serialize.url("cluster_resource_name", cluster_resource_name, 'str'),
                     'clusterName': self._serialize.url("cluster_name", cluster_name, 'str'),
@@ -408,7 +408,7 @@ class SourceControlConfigurationsOperations:
             response = pipeline_response.http_response
 
             if response.status_code not in [200]:
-                error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
+                error = self._deserialize(_models.ErrorResponse, response)
                 map_error(status_code=response.status_code, response=response, error_map=error_map)
                 raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 

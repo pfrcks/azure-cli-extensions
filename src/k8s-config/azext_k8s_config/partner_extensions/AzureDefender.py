@@ -7,9 +7,11 @@
 
 from knack.log import get_logger
 
-from ..vendored_sdks.models import Extension
-from ..vendored_sdks.models import ScopeCluster
-from ..vendored_sdks.models import Scope
+from ..vendored_sdks.v2021_05_01_preview.models import (
+    Extension,
+    ScopeCluster,
+    Scope
+)
 
 from .PartnerExtensionModel import PartnerExtensionModel
 from .ContainerInsights import _get_container_insights_settings

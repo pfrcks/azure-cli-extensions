@@ -12,8 +12,8 @@ from msrestazure.azure_exceptions import CloudError
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
     InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
 from azure.cli.core.commands.client_factory import get_subscription_id
-from ..vendored_sdks.models import Identity
-from ..vendored_sdks.models import Scope
+
+from ..vendored_sdks.v2021_05_01_preview.models import Identity
 
 from ..partner_extensions.ContainerInsights import ContainerInsights
 from ..partner_extensions.AzureDefender import AzureDefender
@@ -119,7 +119,7 @@ class ExtensionProvider:
         # Try to create the resource
         return self.client.create(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name, name, extension_instance)
 
-    def __validate_scope_and_namespace(scope, release_namespace, target_namespace):
+    def __validate_scope_and_namespace(self, scope, release_namespace, target_namespace):
         if scope == 'cluster':
             if target_namespace is not None:
                 message = "When --scope is 'cluster', --target-namespace must not be given."

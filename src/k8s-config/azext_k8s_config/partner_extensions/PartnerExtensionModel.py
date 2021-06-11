@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 from abc import ABC, abstractmethod
-from ..vendored_sdks.models import Extension
+from ..vendored_sdks.v2021_05_01_preview.models import Extension
 
 
 class PartnerExtensionModel(ABC):

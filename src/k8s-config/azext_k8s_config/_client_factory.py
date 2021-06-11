@@ -5,23 +5,24 @@
 
 from azure.cli.core.commands.client_factory import get_mgmt_service_client
 from azure.cli.core.profiles import ResourceType
+from . import consts
 
 
-def k8s_config_client(cli_ctx, *_):
+def k8s_config_client(cli_ctx, **kwargs):
     from azext_k8s_config.vendored_sdks import SourceControlConfigurationClient
-    return get_mgmt_service_client(cli_ctx, SourceControlConfigurationClient)
+    return get_mgmt_service_client(cli_ctx, SourceControlConfigurationClient, **kwargs)
 
 
 def k8s_config_fluxconfig_client(cli_ctx, *_):
-    return k8s_config_client(cli_ctx).flux_configurations
+    return k8s_config_client(cli_ctx, api_version=consts.FLUXCONFIG_API_VERSION).flux_configurations
 
 
 def k8s_config_sourcecontrol_client(cli_ctx, *_):
-    return k8s_config_client(cli_ctx).source_control_configurations
+    return k8s_config_client(cli_ctx, api_version=consts.SOURCE_CONTROL_API_VERSION).source_control_configurations
 
 
 def k8s_config_extension_client(cli_ctx, *_):
-    return k8s_config_client(cli_ctx).extensions
+    return k8s_config_client(cli_ctx, api_version=consts.EXTENSION_API_VERSION).extensions
 
 
 def resource_providers_client(cli_ctx):

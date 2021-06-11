@@ -21,7 +21,7 @@ from ..validators import (
     validate_url_with_params
 )
 from .. import consts
-from ..vendored_sdks.models import (
+from ..vendored_sdks.v2021_06_01_preview.models import (
     FluxConfiguration,
     GitRepositoryDefinition,
     RepositoryRefDefinition,

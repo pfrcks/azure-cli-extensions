@@ -5,10 +5,12 @@
 
 # pylint: disable=unused-argument
 
-from ..vendored_sdks.models import Extension
-from ..vendored_sdks.models import ScopeCluster
-from ..vendored_sdks.models import ScopeNamespace
-from ..vendored_sdks.models import Scope
+from ..vendored_sdks.v2021_05_01_preview.models import(
+    Extension,
+    ScopeCluster,
+    ScopeNamespace,
+    Scope
+)
 
 from .PartnerExtensionModel import PartnerExtensionModel
 

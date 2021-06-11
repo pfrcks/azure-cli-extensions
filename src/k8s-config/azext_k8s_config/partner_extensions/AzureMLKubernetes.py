@@ -17,8 +17,11 @@ import azure.mgmt.storage
 import azure.mgmt.storage.models
 import azure.mgmt.loganalytics
 import azure.mgmt.loganalytics.models
-from ..vendored_sdks.models import (
-    Extension, Scope, ScopeCluster)
+from ..vendored_sdks.v2021_05_01_preview.models import(
+    Extension,
+    ScopeCluster,
+    Scope
+)
 from azure.cli.core.azclierror import InvalidArgumentValueError
 from azure.cli.core.commands.client_factory import get_mgmt_service_client, get_subscription_id
 from azure.mgmt.resource.locks.models import ManagementLockObject

@@ -8,10 +8,15 @@
 from azure.cli.core.commands.validators import get_default_location_from_resource_group
 from azure.cli.core.commands.parameters import (
     get_enum_type,
+    get_three_state_flag,
     tags_type
 )
 from .validators import validate_configuration_name, validate_namespace
-from .action import KustomizationAddAction
+from .action import (
+    KustomizationAddAction,
+    AddConfigurationProtectedSettings,
+    AddConfigurationSettings
+)
 from . import consts
 
 
@@ -90,6 +95,48 @@ def load_arguments(self, _):
                    action=KustomizationAddAction,
                    help="Define kustomizations to sync sources with parameters ['name', 'path', 'depends_on', 'timeout', 'sync_interval', 'retry_interval', 'prune', 'validation', 'force']",
                    nargs='+')
+    
+    with self.argument_context('k8s-config extension create') as c:
+        c.argument('scope',
+                   arg_type=get_enum_type(['cluster', 'namespace']),
+                   help='Specify the extension scope.')
+        c.argument('auto_upgrade_minor_version',
+                   arg_group="Version",
+                   options_list=['--auto-upgrade-minor-version', '--auto-upgrade'],
+                   arg_type=get_three_state_flag(),
+                   help='Automatically upgrade minor version of the extension instance.')
+        c.argument('version',
+                   arg_group="Version",
+                   help='Specify the version to install for the extension instance if'
+                   ' --auto-upgrade-minor-version is not enabled.')
+        c.argument('release_train',
+                   arg_group="Version",
+                   help='Specify the release train for the extension type.')
+        c.argument('configuration_settings',
+                   arg_group="Configuration",
+                   options_list=['--configuration-settings', '--config'],
+                   action=AddConfigurationSettings,
+                   nargs='+',
+                   help='Configuration Settings as key=value pair.  Repeat parameter for each setting')
+        c.argument('configuration_protected_settings',
+                   arg_group="Configuration",
+                   options_list=['--configuration-protected-settings', '--config-protected'],
+                   action=AddConfigurationProtectedSettings,
+                   nargs='+',
+                   help='Configuration Protected Settings as key=value pair.  Repeat parameter for each setting')
+        c.argument('configuration_settings_file',
+                   arg_group="Configuration",
+                   options_list=['--configuration-settings-file', '--config-file'],
+                   help='JSON file path for configuration-settings')
+        c.argument('configuration_protected_settings_file',
+                   arg_group="Configuration",
+                   options_list=['--configuration-protected-settings-file', '--config-protected-file'],
+                   help='JSON file path for configuration-protected-settings')
+        c.argument('release_namespace',
+                   help='Specify the namespace to install the extension release.')
+        c.argument('target_namespace',
+                   help='Specify the target namespace to install to for the extension instance. This'
+                   ' parameter is required if extension scope is set to \'namespace\'')
 
     # with self.argument_context('k8s-config flux source') as c:
     #     c.argument('scope',

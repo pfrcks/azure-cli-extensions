@@ -17,9 +17,11 @@ from azure.cli.core.util import sdk_no_wait
 from msrestazure.azure_exceptions import CloudError
 from msrestazure.tools import parse_resource_id, is_valid_resource_id
 
-from ..vendored_sdks.models import Extension
-from ..vendored_sdks.models import ScopeCluster
-from ..vendored_sdks.models import Scope
+from ..vendored_sdks.v2021_05_01_preview.models import(
+    Extension,
+    ScopeCluster,
+    Scope
+)
 
 from .PartnerExtensionModel import PartnerExtensionModel
 
@@ -93,11 +95,11 @@ def _invoke_deployment(cmd, resource_group_name, deployment_name, template, para
         if validate:
             validation_poller = smc.validate(resource_group_name, deployment_name, deployment)
             return LongRunningOperation(cmd.cli_ctx)(validation_poller)
-        return sdk_no_wait(no_wait, smc.create_or_update, resource_group_name, deployment_name, deployment)
+        return sdk_no_wait(no_wait, smc.begin_create_or_update, resource_group_name, deployment_name, deployment)
 
     if validate:
         return smc.validate(resource_group_name, deployment_name, properties)
-    return sdk_no_wait(no_wait, smc.create_or_update, resource_group_name, deployment_name, properties)
+    return sdk_no_wait(no_wait, smc.begin_create_or_update, resource_group_name, deployment_name, properties)
 
 
 def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id,
