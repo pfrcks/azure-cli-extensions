@@ -31,3 +31,6 @@ def load_command_table(self, _):
 
     with self.command_group('k8s-config extension', k8s_config_extension_client, client_factory=k8s_config_extension_client, is_preview=True) as g:
         g.custom_command('create', 'extension_create')
+        g.custom_command('list', "extension_list")
+        g.custom_command('show', 'extension_show')
+        g.custom_command('delete', 'extension_delete', confirmation=True)

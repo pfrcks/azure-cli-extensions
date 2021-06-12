@@ -50,6 +50,37 @@ class ExtensionProvider:
         self.name = name
         self.cluster_rp = get_cluster_rp(cluster_type)
 
+    
+    def show(self):
+        # Determine ClusterRP
+        try:
+            extension = self.client.get(self.resource_group_name,
+                                self.cluster_rp, self.cluster_type, self.cluster_name, self.name)
+            return extension
+        except CloudError as ex:
+            # Customize the error message for resources not found
+            if ex.response.status_code == 404:
+                # If Cluster not found
+                if ex.message.__contains__("(ResourceNotFound)"):
+                    message = "{0} Verify that the cluster-type is correct and the resource exists.".format(
+                        ex.message)
+                # If Configuration not found
+                elif ex.message.__contains__("Operation returned an invalid status code 'Not Found'"):
+                    message = "(ExtensionNotFound) The Resource {0}/{1}/{2}/Microsoft.KubernetesConfiguration/" \
+                            "extensions/{3} could not be found!".format(
+                                self.cluster_rp, self.cluster_type, self.cluster_name, self.name)
+                else:
+                    message = ex.message
+                raise ResourceNotFoundError(message)
+
+
+    def list(self):
+        return self.client.list(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name)
+
+    
+    def delete(self):
+        return self.client.delete(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name, self.name)
+
 
     def create(self, extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
                version=None, target_namespace=None, release_namespace=None, configuration_settings=None,

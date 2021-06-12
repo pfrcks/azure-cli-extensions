@@ -14,10 +14,9 @@ from .vendored_sdks.v2021_06_01_preview.models import (
     FluxConfiguration
 )
 
-def flux_config_show(cmd, client, resource_group_name, cluster_name, cluster_type, name):
-    """Get an existing Kubernetes Source Control Configuration.
+# Flux Configuration Methods
 
-    """
+def flux_config_show(cmd, client, resource_group_name, cluster_name, cluster_type, name):
     provider = FluxConfigurationProvider(cmd, client, resource_group_name, cluster_name, cluster_type, name)
     return provider.show()
 
@@ -41,6 +40,18 @@ def flux_config_delete(cmd, client, resource_group_name, cluster_name, cluster_t
     return provider.delete()
 
 
+# Extension Methods
+
+def extension_show(cmd, client, resource_group_name, cluster_name, cluster_type, name):
+    provider = ExtensionProvider(cmd, client, resource_group_name, cluster_name, cluster_type, name)
+    return provider.show()
+
+
+def extension_list(cmd, client, resource_group_name, cluster_name, cluster_type):
+    provider = ExtensionProvider(cmd, client, resource_group_name, cluster_name, cluster_type)
+    return provider.list()
+
+
 def extension_create(cmd, client, resource_group_name, cluster_name, name, cluster_type,
                      extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
                      version=None, target_namespace=None, release_namespace=None, configuration_settings=None,
@@ -49,6 +60,11 @@ def extension_create(cmd, client, resource_group_name, cluster_name, name, clust
     provider = ExtensionProvider(cmd, client, resource_group_name, cluster_name, cluster_type, name)
     return provider.create(extension_type, scope, auto_upgrade_minor_version, release_train, version, target_namespace, release_namespace,
                     configuration_settings, configuration_protected_settings, configuration_settings_file, configuration_protected_settings_file)
+
+
+def extension_delete(cmd, client, resource_group_name, cluster_name, cluster_type, name):
+    provider = ExtensionProvider(cmd, client, resource_group_name, cluster_name, cluster_type, name)
+    return provider.delete()
 
 
 def flux_create_source(cmd, client, resource_group_name, cluster_name, name, cluster_type, url,
