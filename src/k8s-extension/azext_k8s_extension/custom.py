@@ -199,7 +199,7 @@ def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluste
     try:
         extension = client.get(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
     except ErrorResponseException:
-        logger.warning("extension %s not found so nothing to delete", name)
+        logger.warning("No extension with name '%s' found on cluster '%s', so nothing to delete", cluster_name, name)
         return None
     extension_class = ExtensionFactory(extension.extension_type.lower())
 
