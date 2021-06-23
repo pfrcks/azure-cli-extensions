@@ -21,14 +21,14 @@ def get_cluster_rp(cluster_type):
 
 
 def get_data_from_key_or_file(key, filepath):
-    if key != '' and filepath != '':
+    if key and filepath:
         raise MutuallyExclusiveArgumentError(
             consts.KEY_AND_FILE_TOGETHER_ERROR,
             consts.KEY_AND_FILE_TOGETHER_HELP)
     data = ''
-    if filepath != '':
+    if filepath:
         data = read_key_file(filepath)
-    elif key != '':
+    elif key:
         data = key
     return data
 
@@ -39,18 +39,18 @@ def get_protected_settings(ssh_private_key, ssh_private_key_file, https_user, ht
 
     # Add gitops private key data to protected settings if exists
     # Dry-run all key types to determine if the private key is in a valid format
-    if ssh_private_key_data != '':
+    if ssh_private_key_data:
         protected_settings[consts.SSH_PRIVATE_KEY_KEY] = ssh_private_key_data
 
     # Check if both httpsUser and httpsKey exist, then add to protected settings
-    if https_user != '' and https_key != '':
+    if https_user and https_key:
         protected_settings[consts.HTTPS_USER_KEY] = to_base64(https_user)
         protected_settings[consts.HTTPS_KEY_KEY] = to_base64(https_key)
-    elif https_user != '':
+    elif https_user:
         raise RequiredArgumentMissingError(
             consts.HTTPS_USER_WITHOUT_KEY_ERROR,
             consts.HTTPS_USER_WITHOUT_KEY_HELP)
-    elif https_key != '':
+    elif https_key:
         raise RequiredArgumentMissingError(
             consts.HTTPS_KEY_WITHOUT_USER_ERROR,
             consts.HTTPS_KEY_WITHOUT_USER_HELP)
