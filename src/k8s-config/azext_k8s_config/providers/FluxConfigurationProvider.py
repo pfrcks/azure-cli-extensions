@@ -5,10 +5,9 @@
 
 from azure.cli.core.azclierror import DeploymentError, ResourceNotFoundError
 from azure.core.exceptions import HttpResponseError
-from .._client_factory import (
-    k8s_config_sourcecontrol_client,
-    k8s_config_extension_client
-)
+from knack.log import get_logger
+
+from .._client_factory import k8s_config_fluxconfig_client
 from ..utils import get_cluster_rp, get_data_from_key_or_file, get_protected_settings
 from ..validators import (
     validate_cc_registration,
@@ -27,27 +26,26 @@ from ..vendored_sdks.v2021_06_01_preview.models import (
     RepositoryRefDefinition,
 )
 from .ExtensionProvider import ExtensionProvider
+from .SourceControlConfigurationProvider import SourceControlConfigurationProvider
 
+logger = get_logger(__name__)
 
 class FluxConfigurationProvider:
-    def __init__(self, cmd, client, resource_group_name, cluster_name, cluster_type, name=None):
-        self.extension_provider = ExtensionProvider(cmd, client, resource_group_name, cluster_name, cluster_type)
+    def __init__(self, cmd):
+        self.extension_provider = ExtensionProvider(cmd)
+        self.source_control_configuration_provider = SourceControlConfigurationProvider(cmd)
         self.cmd = cmd
-        self.client = client
-        self.resource_group_name = resource_group_name
-        self.cluster_name = cluster_name
-        self.cluster_type = cluster_type
-        self.name = name
-        self.cluster_rp = get_cluster_rp(cluster_type)
+        self.client = k8s_config_fluxconfig_client(cmd.cli_ctx)
         
 
-    def show(self):
+    def show(self, resource_group_name, cluster_type, cluster_name, name):
         """Get an existing Kubernetes Source Control Configuration.
 
         """
         # Determine ClusterRP
+        cluster_rp = get_cluster_rp(cluster_type)
         try:
-            config = self.client.get(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name, self.name)
+            config = self.client.get(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
             return config
         except HttpResponseError as ex:
             # Customize the error message for resources not found
@@ -56,15 +54,15 @@ class FluxConfigurationProvider:
                 if ex.message.__contains__("(ResourceNotFound)"):
                     message = ex.message
                     recommendation = 'Verify that the --cluster-type is correct and the Resource ' \
-                                    '{0}/{1}/{2} exists'.format(self.cluster_rp, self.cluster_type, self.cluster_name)
+                                    '{0}/{1}/{2} exists'.format(cluster_rp, cluster_type, cluster_name)
                 # If Configuration not found
                 elif ex.message.__contains__("Operation returned an invalid status code 'Not Found'"):
-                    message = '(ConfigurationNotFound) The Resource {0}/{1}/{2}/Microsoft.KubernetesConfiguration/' \
-                            'fluxConfigurations/{3} could not be found!'.format(self.cluster_rp, self.cluster_type,
-                                                                                self.cluster_name, self.name)
+                    message = '(FluxConfigurationNotFound) The Resource {0}/{1}/{2}/Microsoft.KubernetesConfiguration/' \
+                            'fluxConfigurations/{3} could not be found!'.format(cluster_rp, cluster_type,
+                                                                                cluster_name, name)
                     recommendation = 'Verify that the Resource {0}/{1}/{2}/Microsoft.KubernetesConfiguration' \
-                                    '/fluxConfigurations/{3} exists'.format(self.cluster_rp, self.cluster_type,
-                                                                            self.cluster_name, self.name)
+                                    '/fluxConfigurations/{3} exists'.format(cluster_rp, cluster_type,
+                                                                            cluster_name, name)
                 else:
                     message = ex.message
                     recommendation = ''
@@ -72,10 +70,12 @@ class FluxConfigurationProvider:
 
 
     # pylint: disable=too-many-locals
-    def create(self, url=None, scope='cluster', namespace='default', kind=consts.GIT, timeout=None, sync_interval=None,
-               branch=None, tag=None, semver=None, commit=None, auth_ref_override=None, ssh_private_key=None,
-               ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
+    def create(self, resource_group_name, cluster_type, cluster_name, name, url=None, scope='cluster', namespace='default',
+               kind=consts.GIT, timeout=None, sync_interval=None, branch=None, tag=None, semver=None, commit=None, auth_ref_override=None,
+               ssh_private_key=None, ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
                known_hosts_file=None, kustomization=None):
+        # Determine the cluster RP
+        cluster_rp = get_cluster_rp(cluster_type)
 
         # Pre-Validation
         validate_repository_ref(branch, tag, semver, commit)
@@ -86,25 +86,23 @@ class FluxConfigurationProvider:
             validate_kustomization_list(kustomization)
 
         # Validate if we are able to install the flux configuration
-        scc_client = k8s_config_sourcecontrol_client(self.cmd.cli_ctx)
-        configs = scc_client.list(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name)
+        configs = self.source_control_configuration_provider.list(resource_group_name, cluster_type, cluster_name)
         # configs is an iterable, no len() so we have to iterate to check for configs
         for _ in configs:
             raise DeploymentError(
                 consts.SCC_EXISTS_ON_CLUSTER_ERROR,
                 consts.SCC_EXISTS_ON_CLUSTER_HELP)
 
-        # Validate if the extension is installed, if not, install it
-        extension_client = k8s_config_extension_client(self.cmd.cli_ctx)
-        extensions = extension_client.list(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name)
+        # Validate if the extension is installed, if not, install it        
+        extensions = self.extension_provider.list(resource_group_name, cluster_type, cluster_name)
         found_flux_extension = False
         for extension in extensions:
             if extension.extension_type.lower() == consts.FLUX_EXTENSION_TYPE:
                 found_flux_extension = True
                 break
         if not found_flux_extension:
-            self.extension_provider.create(self.cmd, self.client, self.resource_group_name, self.cluster_name, self.name, self.cluster_type,
-                                           consts.FLUX_EXTENSION_TYPE, "cluster")
+            logger.warning("'Micrsoft.Flux' extension not found on the cluster, installing it now. This may take a minute...")
+            self.extension_provider.create(resource_group_name, cluster_type, cluster_name, "flux", consts.FLUX_EXTENSION_TYPE, release_train="preview")
 
         # Get the protected settings and validate the private key value
         protected_settings = get_protected_settings(
@@ -154,10 +152,10 @@ class FluxConfigurationProvider:
             kustomizations=kustomization
         )
 
-        return self.client.begin_create_or_update(self.resource_group_name, self.cluster_rp,
-                                                  self.cluster_type, self.cluster_name, self.name, flux_configuration)
+        return self.client.begin_create_or_update(resource_group_name, cluster_rp,
+                                                  cluster_type, cluster_name, name, flux_configuration)
 
 
-    def delete(self, client, resource_group_name, cluster_name, cluster_type, name):
+    def delete(self, client, resource_group_name, cluster_type, cluster_name, name):
         cluster_rp = get_cluster_rp(cluster_type)
         return client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)

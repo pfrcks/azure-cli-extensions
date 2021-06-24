@@ -7,7 +7,7 @@
 
 from knack.log import get_logger
 
-from msrestazure.azure_exceptions import CloudError
+from azure.core.exceptions import HttpResponseError
 
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
     InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
@@ -23,6 +23,7 @@ from ..partner_extensions.DefaultExtension import DefaultExtension
 from ..utils import get_cluster_rp, read_config_settings_file
 
 from .._client_factory import cf_resources
+from .._client_factory import k8s_config_extension_client
 
 logger = get_logger(__name__)
 
@@ -41,23 +42,19 @@ def ExtensionFactory(extension_name):
 
 
 class ExtensionProvider:
-    def __init__(self, cmd, client, resource_group_name, cluster_name, cluster_type, name=None):
+    def __init__(self, cmd):
         self.cmd = cmd
-        self.client = client
-        self.resource_group_name = resource_group_name
-        self.cluster_name = cluster_name
-        self.cluster_type = cluster_type
-        self.name = name
-        self.cluster_rp = get_cluster_rp(cluster_type)
+        self.client = k8s_config_extension_client(cmd.cli_ctx)
 
     
-    def show(self):
+    def show(self, resource_group_name, cluster_type, cluster_name, name):
         # Determine ClusterRP
+        cluster_rp = get_cluster_rp(cluster_type)
         try:
-            extension = self.client.get(self.resource_group_name,
-                                self.cluster_rp, self.cluster_type, self.cluster_name, self.name)
+            extension = self.client.get(resource_group_name,
+                                cluster_rp, cluster_type, cluster_name, name)
             return extension
-        except CloudError as ex:
+        except HttpResponseError as ex:
             # Customize the error message for resources not found
             if ex.response.status_code == 404:
                 # If Cluster not found
@@ -68,27 +65,31 @@ class ExtensionProvider:
                 elif ex.message.__contains__("Operation returned an invalid status code 'Not Found'"):
                     message = "(ExtensionNotFound) The Resource {0}/{1}/{2}/Microsoft.KubernetesConfiguration/" \
                             "extensions/{3} could not be found!".format(
-                                self.cluster_rp, self.cluster_type, self.cluster_name, self.name)
+                                cluster_rp, cluster_type, cluster_name, name)
                 else:
                     message = ex.message
                 raise ResourceNotFoundError(message)
 
 
-    def list(self):
-        return self.client.list(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name)
+    def list(self, resource_group_name, cluster_type, cluster_name):
+        cluster_rp = get_cluster_rp(cluster_type)
+        return self.client.list(resource_group_name, cluster_rp, cluster_type, cluster_name)
 
     
-    def delete(self):
-        return self.client.delete(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name, self.name)
+    def delete(self, resource_group_name, cluster_type, cluster_name, name):
+        cluster_rp = get_cluster_rp(cluster_type)
+        return self.client.delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
 
-    def create(self, extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
+    def create(self, resource_group_name, cluster_type, cluster_name, name,
+               extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
                version=None, target_namespace=None, release_namespace=None, configuration_settings=None,
                configuration_protected_settings=None, configuration_settings_file=None,
                configuration_protected_settings_file=None, tags=None):
         """Create a new Extension Instance.
 
         """
+        cluster_rp = get_cluster_rp(cluster_type)
         extension_type_lower = extension_type.lower()
 
         # Configuration Settings & Configuration Protected Settings
@@ -135,7 +136,7 @@ class ExtensionProvider:
         # Get the extension class based on the extension name
         extension_class = ExtensionFactory(extension_type_lower)
         extension_instance, name, create_identity = extension_class.Create(
-            self.cmd, self.client, self.resource_group_name, self.cluster_name, self.name, self.cluster_type, extension_type_lower, scope,
+            self.cmd, self.client, resource_group_name, cluster_name, name, cluster_type, extension_type_lower, scope,
             auto_upgrade_minor_version, release_train, version, target_namespace, release_namespace, config_settings,
             config_protected_settings, configuration_settings_file, configuration_protected_settings_file)
 
@@ -148,7 +149,7 @@ class ExtensionProvider:
             extension_instance.identity, extension_instance.location = self.__create_identity()
 
         # Try to create the resource
-        return self.client.create(self.resource_group_name, self.cluster_rp, self.cluster_type, self.cluster_name, name, extension_instance)
+        return self.client.create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
 
     def __validate_scope_and_namespace(self, scope, release_namespace, target_namespace):
         if scope == 'cluster':
@@ -176,25 +177,25 @@ class ExtensionProvider:
             auto_upgrade_minor_version = False
     
 
-    def __create_identity(self):
+    def __create_identity(self, resource_group_name, cluster_rp, cluster_type, cluster_name):
         subscription_id = get_subscription_id(self.cmd.cli_ctx)
         resources = cf_resources(self.cmd.cli_ctx, subscription_id)
 
         cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format(subscription_id,
-                                                                                                   self.resource_group_name,
-                                                                                                   self.cluster_rp,
-                                                                                                   self.cluster_type,
-                                                                                                   self.cluster_name)
+                                                                                                   resource_group_name,
+                                                                                                   cluster_rp,
+                                                                                                   cluster_type,
+                                                                                                   cluster_name)
 
-        if self.cluster_rp == 'Microsoft.Kubernetes':
+        if cluster_rp == 'Microsoft.Kubernetes':
             parent_api_version = '2020-01-01-preview'
-        elif self.cluster_rp == 'Microsoft.ResourceConnector':
+        elif cluster_rp == 'Microsoft.ResourceConnector':
             parent_api_version = '2020-09-15-privatepreview'
-        elif self.cluster_rp == 'Microsoft.ContainerService':
+        elif cluster_rp == 'Microsoft.ContainerService':
             parent_api_version = '2017-07-01'
         else:
             raise InvalidArgumentValueError(
-                "Error! Cluster type '{}' is not supported for extension identity".format(self.cluster_type)
+                "Error! Cluster type '{}' is not supported for extension identity".format(cluster_type)
             )
 
         try:
