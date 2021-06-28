@@ -101,7 +101,8 @@ def flux_create_source(cmd, client, resource_group_name, cluster_type, cluster_n
         kustomizations=[]
     )
     # cache the payload if --defer used or send to Azure
-    return cached_put(cmd, client.begin_create_or_update, flux_configuration, resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+    return cached_put(cmd, client.begin_create_or_update, flux_configuration, resource_group_name, name)
+    # return cached_put(cmd, client.begin_create_or_update, flux_configuration, resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
 # def flux_create_kustomization(cmd, client, resource_group_name, cluster_name, config_name, name, cluster_type,
 #     dependencies, timeout, sync_interval, retry_interval, path='', prune=False, validation='none', force=False):
