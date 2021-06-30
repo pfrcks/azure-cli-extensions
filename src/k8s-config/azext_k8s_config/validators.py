@@ -70,15 +70,25 @@ def validate_kustomization_list(kustomizations):
 
 
 def validate_repository_ref(branch: str, tag: str, semver: str, commit: str):
-    if not branch and not tag and not semver and not commit:
+    num_set_args = 0
+    for elem in [branch, tag, semver, commit]:
+        if elem:
+            num_set_args += 1
+    if num_set_args == 0:
         raise RequiredArgumentMissingError(
             consts.REPOSITORY_REF_REQUIRED_VALUES_MISSING_ERROR,
             consts.REPOSITORY_REF_REQUIRED_VALUES_MISSING_HELP
         )
+    if num_set_args == 1 or (num_set_args == 2 and (branch and commit)):
+        return
+    raise MutuallyExclusiveArgumentError(
+        consts.REPOSITORY_REF_TOO_MAY_VALUES_ERROR,
+        consts.REPOSITORY_REF_TOO_MAY_VALUES_HELP
+    )
 
 
 def validate_duration(arg_name: str, duration: str):
-    if duration and not re.match(consts.VALID_ISO8601_DURATION_REGEX, duration):
+    if duration and not re.match(consts.VALID_DURATION_REGEX, duration):
         raise InvalidArgumentValueError(
             consts.INVALID_DURATION_ERROR.format(arg_name),
             consts.INVALID_DURATION_HELP
@@ -125,7 +135,6 @@ def validate_url_with_params(url: str, ssh_private_key, ssh_private_key_file,
                              known_hosts, known_hosts_file, https_user, https_key):
 
     scheme = urlparse(url).scheme
-
     if scheme.lower() in ('http', 'https'):
         if ssh_private_key or ssh_private_key_file:
             raise MutuallyExclusiveArgumentError(

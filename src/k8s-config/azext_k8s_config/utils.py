@@ -5,6 +5,8 @@
 
 import base64
 import json
+import re
+from datetime import timedelta
 from azure.cli.core.azclierror import (
     MutuallyExclusiveArgumentError,
     InvalidArgumentValueError,
@@ -92,6 +94,19 @@ def parse_dependencies(depends_on):
     if depends_on[0] == '[':
         depends_on = depends_on[1:-1]
     return depends_on.split(',')
+
+
+def get_duration(duration):
+    if not duration:
+        return duration
+    regex = re.compile(r'((?P<hours>\d+?)h)?((?P<minutes>\d+?)m)?((?P<seconds>\d+?)s)?')
+    parts = regex.match(duration)
+    parts = parts.groupdict()
+    time_params = {}
+    for name, param in parts.items():
+        if param:
+            time_params[name] = int(param)
+    return int(timedelta(**time_params).total_seconds())
 
 
 def from_base64(base64_str):

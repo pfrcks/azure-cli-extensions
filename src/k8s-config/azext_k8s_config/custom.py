@@ -24,16 +24,35 @@ def flux_config_show(cmd, client, resource_group_name, cluster_type, cluster_nam
 # pylint: disable=too-many-locals
 def flux_config_create(cmd, client, resource_group_name, cluster_type, cluster_name, name, url=None,
                        scope='cluster', namespace='default', kind=consts.GIT, timeout=None, sync_interval=None,
-                       branch=None, tag=None, semver=None, commit=None, auth_ref_override=None, ssh_private_key=None,
+                       branch=None, tag=None, semver=None, commit=None, local_auth_ref=None, ssh_private_key=None,
                        ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
                        known_hosts_file=None, kustomization=None):
 
     provider = FluxConfigurationProvider(cmd)
     return provider.create(resource_group_name, cluster_type, cluster_name, name, url, scope, namespace, kind, timeout, sync_interval,
-                           branch, tag, semver, commit, auth_ref_override, ssh_private_key,
+                           branch, tag, semver, commit, local_auth_ref, ssh_private_key,
                            ssh_private_key_file, https_user, https_key, known_hosts,
                            known_hosts_file, kustomization)
 
+
+def flux_config_create_source(cmd, client, resource_group_name, cluster_type, cluster_name, name, url=None,
+                              scope='cluster', namespace='default', kind=consts.GIT, timeout=None, sync_interval=None,
+                              branch=None, tag=None, semver=None, commit=None, local_auth_ref=None, ssh_private_key=None,
+                              ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
+                              known_hosts_file=None):
+    
+    provider = FluxConfigurationProvider(cmd)
+    return provider.create_source(resource_group_name, cluster_type, cluster_name, name, url, scope, namespace, kind, timeout, sync_interval,
+                                  branch, tag, semver, commit, local_auth_ref, ssh_private_key,
+                                  ssh_private_key_file, https_user, https_key, known_hosts,
+                                  known_hosts_file)
+
+def flux_config_create_kustomization(cmd, client, resource_group_name, cluster_name, config_name, name, cluster_type,
+                                     dependencies=None, timeout=None, sync_interval=None, retry_interval=None, path='', prune=False, validation='none', force=False):
+    
+    provider = FluxConfigurationProvider(cmd)
+    return provider.create_kustomization(resource_group_name, cluster_name, config_name, name, cluster_type,
+                                     dependencies, timeout, sync_interval, retry_interval, path, prune, validation, force)
 
 def flux_config_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name):
     provider = FluxConfigurationProvider(cmd)
@@ -65,44 +84,6 @@ def extension_create(cmd, client, resource_group_name, cluster_type, cluster_nam
 def extension_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name):
     provider = ExtensionProvider(cmd)
     return provider.delete(resource_group_name, cluster_type, cluster_name, name)
-
-
-def flux_create_source(cmd, client, resource_group_name, cluster_type, cluster_name, name, url,
-    scope='cluster', namespace='default', kind='git', timeout=None, sync_interval=None, branch=None, tag=None, semver=None, commit=None, 
-    auth_ref_override=None, ssh_private_key=None, ssh_private_key_file=None, https_user=None, https_key=None,
-    ssh_known_hosts=None, ssh_known_hosts_file=None):
-    from azure.cli.core.commands import cached_get, cached_put
-
-    # Determine ClusterRP
-    cluster_rp = get_cluster_rp(cluster_type) 
-
-    repository_ref = RepositoryRefDefinition(
-        branch=branch,
-        tag=tag,
-        semver=semver,
-        commit=commit
-    )
-
-    git_repository = GitRepositoryDefinition(
-        url=url,
-        timeout=timeout,
-        sync_interval=sync_interval,
-        repository_ref=repository_ref,
-        ssh_known_hosts=ssh_known_hosts,
-        https_user=https_user,
-        auth_ref_override=auth_ref_override
-    ) 
-    
-    flux_configuration = FluxConfiguration(
-        scope=scope,
-        namespace=namespace,
-        source_kind=kind,
-        git_repository=git_repository,
-        kustomizations=[]
-    )
-    # cache the payload if --defer used or send to Azure
-    return cached_put(cmd, client.begin_create_or_update, flux_configuration, resource_group_name, name)
-    # return cached_put(cmd, client.begin_create_or_update, flux_configuration, resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
 # def flux_create_kustomization(cmd, client, resource_group_name, cluster_name, config_name, name, cluster_type,
 #     dependencies, timeout, sync_interval, retry_interval, path='', prune=False, validation='none', force=False):

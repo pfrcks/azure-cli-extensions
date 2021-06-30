@@ -68,6 +68,9 @@ def load_arguments(self, _):
         c.argument('commit',
                    arg_group="Repo Ref",
                    help='Specific commit to reconcile with the git source')
+        c.argument('branch_commit',
+                   arg_group="Repo Ref",
+                   help="Specific commit and branch to reconcile with the git source")
         c.argument('ssh_private_key',
                    arg_group="Auth",
                    help='Base64-encoded private ssh key for private repository sync')
@@ -86,8 +89,8 @@ def load_arguments(self, _):
         c.argument('known_hosts_file',
                    arg_group="Auth",
                    help='Filepath to known_hosts contents containing public SSH keys required to access private Git instances')
-        c.argument('auth_ref_override',
-                   options_list=['--auth-ref-override'],
+        c.argument('local_auth_ref',
+                   options_list=['--local-auth-ref'],
                    arg_group="Auth",
                    help='Local reference to a kubernetes secret in the configuration namespace to use for communication to the source')
         c.argument('kustomization',
@@ -138,78 +141,80 @@ def load_arguments(self, _):
                    help='Specify the target namespace to install to for the extension instance. This'
                    ' parameter is required if extension scope is set to \'namespace\'')
 
-    # with self.argument_context('k8s-config flux source') as c:
-    #     c.argument('scope',
-    #                arg_type=get_enum_type(['namespace', 'cluster']),
-    #                help="Specify scope of the operator to be 'namespace' or 'cluster'")
-    #     c.argument('namespace',
-    #                help='Specify namespace to deploy the configuration',
-    #                validator=validate_namespace)
-    #     c.argument('kind',
-    #                arg_type=get_enum_type(['git']),
-    #                options_list=['--kind', '-k'],
-    #                help='Specify the source kind to reconcile')
-    #     c.argument('url',
-    #                help='Specify namespace to deploy the configuration')
-    #     c.argument('timeout',
-    #                help='Specify the source kind to reconcile')
-    #     c.argument('sync_interval',
-    #                options_list=['--interval', '--sync-interval'],
-    #                help='Specify the source kind to reconcile')
-    #     c.argument('branch',
-    #                arg_group="Repo Ref",
-    #                help='Specify the branch to reconcile the git repository source kind')
-    #     c.argument('tag',
-    #                arg_group="Repo Ref",
-    #                help='Specify the branch to reconcile the git repository source kind')
-    #     c.argument('semver',
-    #                arg_group="Repo Ref",
-    #                help='Specify the branch to reconcile the git repository source kind')
-    #     c.argument('commit',
-    #                arg_group="Repo Ref",
-    #                help='Specify the branch to reconcile the git repository source kind')
-    #     c.argument('auth_ref_override',
-    #                options_list=['--auth-ref-override', '--auth-ref'],
-    #                help='Specify the branch to reconcile the git repository source kind')
-    #     c.argument('ssh_private_key',
-    #                arg_group="Auth",
-    #                help='Specify Base64-encoded private ssh key for private repository sync')
-    #     c.argument('ssh_private_key_file',
-    #                arg_group="Auth",
-    #                help='Specify filepath to private ssh key for private repository sync')
-    #     c.argument('https_user',
-    #                arg_group="Auth",
-    #                help='Specify HTTPS username for private repository sync')
-    #     c.argument('https_key',
-    #                arg_group="Auth",
-    #                help='Specify HTTPS token/password for private repository sync')
-    #     c.argument('ssh_known_hosts',
-    #                arg_group="Auth",
-    #                help='Specify Base64-encoded known_hosts contents containing public SSH keys required to access private Git instances')
-    #     c.argument('ssh_known_hosts_file',
-    #                arg_group="Auth",
-    #                help='Specify filepath to known_hosts contents containing public SSH keys required to access private Git instances')
+    with self.argument_context('k8s-config flux source') as c:
+        c.argument('scope',
+                   options_list=['--scope', '-s'],
+                   arg_type=get_enum_type(['namespace', 'cluster']),
+                   help="Specify scope of the operator to be 'namespace' or 'cluster'")
+        c.argument('namespace',
+                   help='Namespace to deploy the configuration',
+                   options_list=['--namespace', '--ns'],
+                   validator=validate_namespace)
+        c.argument('kind',
+                   arg_type=get_enum_type([consts.GIT]),
+                   help='Source kind to reconcile')
+        c.argument('url',
+                   options_list=['--url', '-u'],
+                   help='URL of the source to reconcile')
+        c.argument('timeout',
+                   help='Maximum time to reconcile the source before timing out')
+        c.argument('sync_interval',
+                   options_list=['--interval', '--sync-interval'],
+                   help='Time between reconciliations of the source on the cluster')
+        c.argument('branch',
+                   arg_group="Repo Ref",
+                   help='Branch to reconcile with the git source')
+        c.argument('tag',
+                   arg_group="Repo Ref",
+                   help='Tag to reconcile with the git source')
+        c.argument('semver',
+                   arg_group="Repo Ref",
+                   help='Semver range to reconcile with the git source')
+        c.argument('commit',
+                   arg_group="Repo Ref",
+                   help='Specific commit to reconcile with the git source')
+        c.argument('ssh_private_key',
+                   arg_group="Auth",
+                   help='Base64-encoded private ssh key for private repository sync')
+        c.argument('ssh_private_key_file',
+                   arg_group="Auth",
+                   help='Filepath to private ssh key for private repository sync')
+        c.argument('https_user',
+                   arg_group="Auth",
+                   help='HTTPS username for private repository sync')
+        c.argument('https_key',
+                   arg_group="Auth",
+                   help='HTTPS token/password for private repository sync')
+        c.argument('known_hosts',
+                   arg_group="Auth",
+                   help='Base64-encoded known_hosts data containing public SSH keys required to access private Git instances')
+        c.argument('known_hosts_file',
+                   arg_group="Auth",
+                   help='Filepath to known_hosts contents containing public SSH keys required to access private Git instances')
+        c.argument('local_auth_ref',
+                   options_list=['--local-auth-ref'],
+                   arg_group="Auth",
+                   help='Local reference to a kubernetes secret in the configuration namespace to use for communication to the source')
 
-    # with self.argument_context('k8s-config flux kustomization') as c:
-    #     c.argument('config_name',
-    #                help='Specify the name of the configuration to create the kustomization',
-    #                validator=validate_namespace)
-    #     c.argument('path',
-    #                help='Specify the name of the configuration to create the kustomization')
-    #     c.argument('dependencies',
-    #                options_list=['--depends', '--dependencies'],
-    #                help='Specify the name of the configuration to create the kustomization')
-    #     c.argument('timeout',
-    #                help='Specify the source kind to reconcile')
-    #     c.argument('sync_interval',
-    #                options_list=['--interval', '--sync-interval'],
-    #                help='Specify the source kind to reconcile')
-    #     c.argument('retry_interval',
-    #                help='Specify the source kind to reconcile')
-    #     c.argument('prune',
-    #                help='Specify the source kind to reconcile')
-    #     c.argument('force',
-    #                help='Specify the source kind to reconcile')
-    #     c.argument('validation',
-    #                arg_type=get_enum_type(['none', 'client', 'server']),
-    #                help='Specify the source kind to reconcile')
+    with self.argument_context('k8s-config flux kustomization') as c:
+        c.argument('config_name',
+                   help='Specify the name of the configuration to create the kustomization')
+        c.argument('path',
+                   help='Specify the name of the configuration to create the kustomization')
+        c.argument('dependencies',
+                   options_list=['--depends', '--dependencies'],
+                   help='Specify the name of the configuration to create the kustomization')
+        c.argument('timeout',
+                   help='Specify the source kind to reconcile')
+        c.argument('sync_interval',
+                   options_list=['--interval', '--sync-interval'],
+                   help='Specify the source kind to reconcile')
+        c.argument('retry_interval',
+                   help='Specify the source kind to reconcile')
+        c.argument('prune',
+                   help='Specify the source kind to reconcile')
+        c.argument('force',
+                   help='Specify the source kind to reconcile')
+        c.argument('validation',
+                   arg_type=get_enum_type(['none', 'client', 'server']),
+                   help='Specify the source kind to reconcile')

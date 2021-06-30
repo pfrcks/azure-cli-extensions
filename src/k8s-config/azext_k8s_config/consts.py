@@ -19,6 +19,9 @@ KUSTOMIZATION_REQUIRED_VALUES_MISSING_HELP = "Add the required values to the Kus
 REPOSITORY_REF_REQUIRED_VALUES_MISSING_ERROR = "Error! Repository reference is invalid"
 REPOSITORY_REF_REQUIRED_VALUES_MISSING_HELP = "Specifying one of [--branch, --tag, --semver, --commit] is required"
 
+REPOSITORY_REF_TOO_MAY_VALUES_ERROR = "Error! Repository reference is invalid"
+REPOSITORY_REF_TOO_MAY_VALUES_HELP = "Specifying more than one repository ref argument that isn't --branch and --commit is invalid"
+
 GIT_REPOSITORY_REQUIRED_VALUES_MISSING_ERROR = "Error! Git repository kind is missing required value {}"
 GIT_REPOSITORY_REQUIRED_VALUES_MISSING_HELP = "Add missing git repository kind and try again"
 
@@ -94,7 +97,7 @@ SYNC_INTERVAL_KEYS = ["interval", "sync_interval"]
 TIMEOUT_KEY = "timeout"
 REQUIRED_KUSTOMIZATION_KEYS = {"name", "path"}
 
-VALID_ISO8601_DURATION_REGEX = r"^P(?!$)(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)?$"
+VALID_DURATION_REGEX = r"((?P<hours>\d+?)h)?((?P<minutes>\d+?)m)?((?P<seconds>\d+?)s)?"
 VALID_URL_REGEX = r"^(((http|https|ssh)://)|(git@))"
 VALID_KUBERNETES_NAME_REGEX = r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
 

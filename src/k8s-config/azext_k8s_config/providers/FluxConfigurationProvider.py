@@ -4,11 +4,12 @@
 # --------------------------------------------------------------------------------------------
 
 from azure.cli.core.azclierror import DeploymentError, ResourceNotFoundError
+from azure.cli.core.commands import cached_get, cached_put, upsert_to_collection, get_property
 from azure.core.exceptions import HttpResponseError
 from knack.log import get_logger
 
 from .._client_factory import k8s_config_fluxconfig_client
-from ..utils import get_cluster_rp, get_data_from_key_or_file, get_protected_settings
+from ..utils import get_cluster_rp, get_data_from_key_or_file, get_protected_settings, get_duration
 from ..validators import (
     validate_cc_registration,
     validate_known_hosts,
@@ -23,6 +24,7 @@ from .. import consts
 from ..vendored_sdks.v2021_06_01_preview.models import (
     FluxConfiguration,
     GitRepositoryDefinition,
+    KustomizationDefinition,
     RepositoryRefDefinition,
 )
 from .ExtensionProvider import ExtensionProvider
@@ -71,28 +73,123 @@ class FluxConfigurationProvider:
 
     # pylint: disable=too-many-locals
     def create(self, resource_group_name, cluster_type, cluster_name, name, url=None, scope='cluster', namespace='default',
-               kind=consts.GIT, timeout=None, sync_interval=None, branch=None, tag=None, semver=None, commit=None, auth_ref_override=None,
+               kind=consts.GIT, timeout=None, sync_interval=None, branch=None, tag=None, semver=None, commit=None, local_auth_ref=None,
                ssh_private_key=None, ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
                known_hosts_file=None, kustomization=None):
+
         # Determine the cluster RP
         cluster_rp = get_cluster_rp(cluster_type)
+        dp_source_kind = ""
+        git_repository = None
 
-        # Pre-Validation
-        validate_repository_ref(branch, tag, semver, commit)
-        validate_duration("--timeout", timeout)
-        validate_duration("--sync-interval", sync_interval)
+        self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
+        self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
+
+        if kind == consts.GIT:
+            dp_source_kind = consts.GIT_REPOSITORY
+            git_repository = self._validate_and_get_gitrepository(url, branch, tag, semver, commit, timeout, sync_interval, ssh_private_key,
+                                                                  ssh_private_key_file, https_user, https_key, known_hosts,
+                                                                  known_hosts_file, local_auth_ref)
 
         if kustomization:
             validate_kustomization_list(kustomization)
 
-        # Validate if we are able to install the flux configuration
+        flux_configuration = FluxConfiguration(
+            scope=scope,
+            namespace=namespace,
+            source_kind=dp_source_kind,
+            timeout=timeout,
+            sync_interval=sync_interval,
+            git_repository=git_repository,
+            kustomizations=kustomization
+        )
+
+        return self.client.begin_create_or_update(resource_group_name, cluster_rp,
+                                                  cluster_type, cluster_name, name, flux_configuration)
+    
+    def create_source(self, resource_group_name, cluster_type, cluster_name, name, url=None, scope='cluster', namespace='default',
+                      kind=consts.GIT, timeout=None, sync_interval=None, branch=None, tag=None, semver=None, commit=None, local_auth_ref=None,
+                      ssh_private_key=None, ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
+                      known_hosts_file=None):
+        # Determine the cluster RP
+        cluster_rp = get_cluster_rp(cluster_type)
+        dp_source_kind = ""
+        git_repository = None
+
+        # Validate the extension install if this is not a deferred command
+        if not self._is_deferred():
+            self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
+            self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
+
+        if kind == consts.GIT:
+            dp_source_kind = consts.GIT_REPOSITORY
+            git_repository = self._validate_and_get_gitrepository(url, branch, tag, semver, commit, timeout, sync_interval, ssh_private_key,
+                                                                  ssh_private_key_file, https_user, https_key, known_hosts,
+                                                                  known_hosts_file, local_auth_ref)
+        
+        flux_configuration = FluxConfiguration(
+            scope=scope,
+            namespace=namespace,
+            source_kind=dp_source_kind,
+            git_repository=git_repository,
+            kustomizations=[]
+        )
+
+        # cache the payload if --defer used or send to Azure
+        return cached_put(self.cmd, self.client.begin_create_or_update, flux_configuration, resource_group_name=resource_group_name,
+                          flux_configuration_name=name, cluster_rp=cluster_rp, cluster_resource_name=cluster_type,
+                          cluster_name=cluster_name, setter_arg_name='flux_configuration')
+
+    def create_kustomization(self, resource_group_name, cluster_name, config_name, name, cluster_type,
+                             dependencies, timeout, sync_interval, retry_interval, path='', prune=False, validation='none', force=False):
+        # Determine ClusterRP
+        cluster_rp = get_cluster_rp(cluster_type)
+        
+        # Validate the extension install if this is not a deferred command
+        if not self._is_deferred():
+            self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
+            self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
+
+        flux_configuration = cached_get(self.cmd, self.client.get, resource_group_name, cluster_rp, cluster_type, cluster_name, config_name)
+
+        kustomization = KustomizationDefinition(
+            name=name,
+            path=path,
+            dependencies=dependencies,
+            timeout_in_seconds=timeout,
+            sync_interval_in_seconds=sync_interval,
+            retry_interval_in_seconds=retry_interval,
+            prune=prune,
+            validation=validation,
+            force=force
+        )
+
+        proposed_change = flux_configuration.kustomizations[:] + kustomization
+        validate_kustomization_list(proposed_change)
+
+        upsert_to_collection(flux_configuration, 'kustomizations', kustomization, 'name')
+        flux_configuration = cached_put(self.cmd, self.client.begin_create_or_update, flux_configuration, resource_group_name=resource_group_name, flux_configuration_name=name, cluster_rp=cluster_rp, cluster_resource_name=cluster_type, cluster_name=cluster_name, setter_arg_name='flux_configuration')
+        return get_property(flux_configuration.kustomizations, name)
+
+    def delete(self, client, resource_group_name, cluster_type, cluster_name, name):
+        cluster_rp = get_cluster_rp(cluster_type)
+        return client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+
+    def _is_deferred(self):
+        if '--defer' in self.cmd.cli_ctx.data.get('safe_params'):
+            return True
+        return False
+
+    def _validate_source_control_config_not_installed(self, resource_group_name, cluster_type, cluster_name):
+         # Validate if we are able to install the flux configuration
         configs = self.source_control_configuration_provider.list(resource_group_name, cluster_type, cluster_name)
         # configs is an iterable, no len() so we have to iterate to check for configs
         for _ in configs:
             raise DeploymentError(
                 consts.SCC_EXISTS_ON_CLUSTER_ERROR,
                 consts.SCC_EXISTS_ON_CLUSTER_HELP)
-
+    
+    def _validate_extension_install(self, resource_group_name, cluster_type, cluster_name):
         # Validate if the extension is installed, if not, install it        
         extensions = self.extension_provider.list(resource_group_name, cluster_type, cluster_name)
         found_flux_extension = False
@@ -103,6 +200,12 @@ class FluxConfigurationProvider:
         if not found_flux_extension:
             logger.warning("'Micrsoft.Flux' extension not found on the cluster, installing it now. This may take a minute...")
             self.extension_provider.create(resource_group_name, cluster_type, cluster_name, "flux", consts.FLUX_EXTENSION_TYPE, release_train="preview")
+
+    def _validate_and_get_gitrepository(self, url, branch, tag, semver, commit, timeout, sync_interval, ssh_private_key,
+                                        ssh_private_key_file, https_user, https_key, known_hosts, known_hosts_file, local_auth_ref):
+        # Pre-Validation
+        validate_duration("--timeout", timeout)
+        validate_duration("--sync-interval", sync_interval)
 
         # Get the protected settings and validate the private key value
         protected_settings = get_protected_settings(
@@ -119,43 +222,29 @@ class FluxConfigurationProvider:
         # Validate registration with the RP endpoint
         validate_cc_registration(self.cmd)
 
-        git_repository = GitRepositoryDefinition()
-        dp_source_kind = consts.GIT_REPOSITORY
+        validate_git_repository(url)
+        validate_url_with_params(url, ssh_private_key, ssh_private_key_file,
+                                known_hosts, known_hosts_file, https_user, https_key)
 
-        if kind == consts.GIT:
-            validate_git_repository(url)
-            validate_url_with_params(url, ssh_private_key, ssh_private_key_file,
-                                    known_hosts, known_hosts_file, https_user, https_key)
-            repository_ref = RepositoryRefDefinition(
-                branch=branch,
-                tag=tag,
-                semver=semver,
-                commit=commit
-            )
-            git_repository = GitRepositoryDefinition(
-                url=url,
-                timeout=timeout,
-                sync_interval=sync_interval,
-                repository_ref=repository_ref,
-                ssh_known_hosts=knownhost_data,
-                https_user=https_user,
-                auth_ref_override=auth_ref_override
-            )
+        repository_ref = self._validate_and_get_repository_ref(branch, tag, semver, commit)
+            
 
-        flux_configuration = FluxConfiguration(
-            scope=scope,
-            namespace=namespace,
-            source_kind=dp_source_kind,
-            timeout=timeout,
-            sync_interval=sync_interval,
-            git_repository=git_repository,
-            kustomizations=kustomization
+        return GitRepositoryDefinition(
+            url=url,
+            timeout_in_seconds=get_duration(timeout),
+            sync_interval_in_seconds=get_duration(sync_interval),
+            repository_ref=repository_ref,
+            ssh_known_hosts=knownhost_data,
+            https_user=https_user,
+            local_auth_ref=local_auth_ref
         )
+    
+    def _validate_and_get_repository_ref(self, branch, tag, semver, commit):
+        validate_repository_ref(branch, tag, semver, commit)
 
-        return self.client.begin_create_or_update(resource_group_name, cluster_rp,
-                                                  cluster_type, cluster_name, name, flux_configuration)
-
-
-    def delete(self, client, resource_group_name, cluster_type, cluster_name, name):
-        cluster_rp = get_cluster_rp(cluster_type)
-        return client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+        return RepositoryRefDefinition(
+            branch=branch,
+            tag=tag,
+            semver=semver,
+            commit=commit
+        )

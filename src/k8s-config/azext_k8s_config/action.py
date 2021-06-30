@@ -9,14 +9,14 @@ from azure.cli.core.azclierror import InvalidArgumentValueError, ArgumentUsageEr
 from .vendored_sdks.v2021_06_01_preview.models import KustomizationDefinition
 from .validators import validate_kustomization
 from . import consts
-from .utils import parse_dependencies
+from .utils import parse_dependencies, get_duration
 
 
 class KustomizationAddAction(argparse._AppendAction):
     def __call__(self, parser, namespace, values, option_string=None):
         validate_kustomization(values)
         dependencies = []
-        sync_interval = ""
+        sync_interval = None
         kwargs = {}
         for item in values:
             try:
@@ -32,7 +32,7 @@ class KustomizationAddAction(argparse._AppendAction):
         super(KustomizationAddAction, self).__call__(
             parser,
             namespace,
-            KustomizationDefinition(depends_on=dependencies, sync_interval=sync_interval, **kwargs),
+            KustomizationDefinition(depends_on=dependencies, sync_interval=get_duration(sync_interval), **kwargs),
             option_string
         )
 
