@@ -148,7 +148,7 @@ class ExtensionProvider:
 
         # Create identity, if required
         if create_identity:
-            extension_instance.identity, extension_instance.location = self.__create_identity()
+            extension_instance.identity, extension_instance.location = self.__create_identity(resource_group_name, cluster_rp, cluster_type, cluster_name)
 
         # Try to create the resource
         return self.client.create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
