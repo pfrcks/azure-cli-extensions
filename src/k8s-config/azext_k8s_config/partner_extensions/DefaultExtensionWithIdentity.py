@@ -15,7 +15,7 @@ from ..vendored_sdks.v2021_05_01_preview.models import(
 from .PartnerExtensionModel import PartnerExtensionModel
 
 
-class Cassandra(PartnerExtensionModel):
+class DefaultExtensionWithIdentity(PartnerExtensionModel):
     def Create(self, cmd, client, resource_group_name, cluster_name, name, cluster_type, extension_type,
                scope, auto_upgrade_minor_version, release_train, version, target_namespace,
                release_namespace, configuration_settings, configuration_protected_settings,
