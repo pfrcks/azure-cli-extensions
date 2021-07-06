@@ -116,3 +116,13 @@ def from_base64(base64_str):
 def to_base64(raw_data):
     bytes_data = raw_data.encode('utf-8')
     return base64.b64encode(bytes_data).decode('utf-8')
+
+
+def fix_compliance_state(config):
+    # If we get Compliant/NonCompliant as compliance_sate, change them before returning
+    if config.compliance_status.compliance_state.lower() == 'noncompliant':
+        config.compliance_status.compliance_state = 'Failed'
+    elif config.compliance_status.compliance_state.lower() == 'compliant':
+        config.compliance_status.compliance_state = 'Installed'
+
+    return config

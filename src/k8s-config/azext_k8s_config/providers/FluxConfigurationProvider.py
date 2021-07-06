@@ -24,7 +24,6 @@ from .. import consts
 from ..vendored_sdks.v2021_06_01_preview.models import (
     FluxConfiguration,
     GitRepositoryDefinition,
-    KustomizationDefinition,
     RepositoryRefDefinition,
 )
 from .ExtensionProvider import ExtensionProvider

@@ -24,6 +24,13 @@ from . import consts
 
 logger = get_logger(__name__)
 
+# Parameter-Level Validation
+def validate_configuration_type(configuration_type):
+    if configuration_type.lower() != 'sourcecontrolconfiguration':
+        raise InvalidArgumentValueError(
+            'Invalid configuration-type',
+            'Try specifying the valid value "sourceControlConfiguration"')
+
 
 def validate_namespace(namespace):
     if namespace.namespace:
@@ -37,6 +44,11 @@ def validate_operator_instance_name(namespace):
 
 def validate_configuration_name(namespace):
     __validate_k8s_name(namespace.name, "--name", 63)
+
+
+def validate_operator_namespace(namespace):
+    if namespace.operator_namespace:
+        __validate_k8s_name(namespace.operator_namespace, "--operator-namespace", 23)
 
 
 def validate_kustomization(values):

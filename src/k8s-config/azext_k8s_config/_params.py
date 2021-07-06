@@ -11,7 +11,7 @@ from azure.cli.core.commands.parameters import (
     get_three_state_flag,
     tags_type
 )
-from .validators import validate_configuration_name, validate_namespace
+from .validators import validate_configuration_name, validate_configuration_type, validate_namespace, validate_operator_instance_name, validate_operator_namespace
 from .action import (
     KustomizationAddAction,
     AddConfigurationProtectedSettings,
@@ -141,80 +141,139 @@ def load_arguments(self, _):
                    help='Specify the target namespace to install to for the extension instance. This'
                    ' parameter is required if extension scope is set to \'namespace\'')
 
-    with self.argument_context('k8s-config flux source') as c:
+    
+    with self.argument_context('k8s-config flux-v1 create') as c:
+        c.argument('repository_url',
+                   options_list=['--repository-url', '-u'],
+                   help='Url of the source control repository')
         c.argument('scope',
-                   options_list=['--scope', '-s'],
                    arg_type=get_enum_type(['namespace', 'cluster']),
-                   help="Specify scope of the operator to be 'namespace' or 'cluster'")
-        c.argument('namespace',
-                   help='Namespace to deploy the configuration',
-                   options_list=['--namespace', '--ns'],
-                   validator=validate_namespace)
-        c.argument('kind',
-                   arg_type=get_enum_type([consts.GIT]),
-                   help='Source kind to reconcile')
-        c.argument('url',
-                   options_list=['--url', '-u'],
-                   help='URL of the source to reconcile')
-        c.argument('timeout',
-                   help='Maximum time to reconcile the source before timing out')
-        c.argument('sync_interval',
-                   options_list=['--interval', '--sync-interval'],
-                   help='Time between reconciliations of the source on the cluster')
-        c.argument('branch',
-                   arg_group="Repo Ref",
-                   help='Branch to reconcile with the git source')
-        c.argument('tag',
-                   arg_group="Repo Ref",
-                   help='Tag to reconcile with the git source')
-        c.argument('semver',
-                   arg_group="Repo Ref",
-                   help='Semver range to reconcile with the git source')
-        c.argument('commit',
-                   arg_group="Repo Ref",
-                   help='Specific commit to reconcile with the git source')
+                   help='''Specify scope of the operator to be 'namespace' or 'cluster' ''')
+        c.argument('configuration_type',
+                   validator=validate_configuration_type,
+                   arg_type=get_enum_type(['sourceControlConfiguration']),
+                   help='Type of the configuration')
+        c.argument('enable_helm_operator',
+                   arg_group="Helm Operator",
+                   arg_type=get_three_state_flag(),
+                   options_list=['--enable-helm-operator', '--enable-hop'],
+                   help='Enable support for Helm chart deployments')
+        c.argument('helm_operator_params',
+                   arg_group="Helm Operator",
+                   options_list=['--helm-operator-params', '--hop-params'],
+                   help='Chart values for the Helm Operator (if enabled)')
+        c.argument('helm_operator_chart_version',
+                   arg_group="Helm Operator",
+                   options_list=['--helm-operator-chart-version', '--hop-chart-version'],
+                   help='Chart version of the Helm Operator (if enabled)')
+        c.argument('operator_params',
+                   arg_group="Operator",
+                   help='Parameters for the Operator')
+        c.argument('operator_instance_name',
+                   arg_group="Operator",
+                   help='Instance name of the Operator',
+                   validator=validate_operator_instance_name)
+        c.argument('operator_namespace',
+                   arg_group="Operator",
+                   help='Namespace in which to install the Operator',
+                   validator=validate_operator_namespace)
+        c.argument('operator_type',
+                   arg_group="Operator",
+                   help='''Type of the operator. Valid value is 'flux' ''')
         c.argument('ssh_private_key',
                    arg_group="Auth",
-                   help='Base64-encoded private ssh key for private repository sync')
+                   help='Specify Base64-encoded private ssh key for private repository sync')
         c.argument('ssh_private_key_file',
                    arg_group="Auth",
-                   help='Filepath to private ssh key for private repository sync')
+                   help='Specify filepath to private ssh key for private repository sync')
         c.argument('https_user',
                    arg_group="Auth",
-                   help='HTTPS username for private repository sync')
+                   help='Specify HTTPS username for private repository sync')
         c.argument('https_key',
                    arg_group="Auth",
-                   help='HTTPS token/password for private repository sync')
-        c.argument('known_hosts',
+                   help='Specify HTTPS token/password for private repository sync')
+        c.argument('ssh_known_hosts',
                    arg_group="Auth",
-                   help='Base64-encoded known_hosts data containing public SSH keys required to access private Git instances')
-        c.argument('known_hosts_file',
+                   help='Specify Base64-encoded known_hosts contents containing public SSH keys required to access private Git instances')
+        c.argument('ssh_known_hosts_file',
                    arg_group="Auth",
-                   help='Filepath to known_hosts contents containing public SSH keys required to access private Git instances')
-        c.argument('local_auth_ref',
-                   options_list=['--local-auth-ref'],
-                   arg_group="Auth",
-                   help='Local reference to a kubernetes secret in the configuration namespace to use for communication to the source')
+                   help='Specify filepath to known_hosts contents containing public SSH keys required to access private Git instances')
 
-    with self.argument_context('k8s-config flux kustomization') as c:
-        c.argument('kustomization_name',
-                   help='Specify the name of the kustomization to add to the configuration')
-        c.argument('path',
-                   help='Specify the path in the source that the kustomization should apply')
-        c.argument('dependencies',
-                   options_list=['--depends', '--dependencies'],
-                   help='Specify the names of kustomization dependencies')
-        c.argument('timeout',
-                   help='Maximum time to reconcile the kustomization before timing out')
-        c.argument('sync_interval',
-                   options_list=['--interval', '--sync-interval'],
-                   help='Time between reconciliations of the kustomization on the cluster')
-        c.argument('retry_interval',
-                   help='Time between reconciliations of the kustomization on the cluster on failures, defaults to --sync-interval')
-        c.argument('prune',
-                   help='Whether to garbage collect resources deployed by the kustomization on the cluster')
-        c.argument('force',
-                   help='Whether to re-create resources that cannot be updated on the cluster (i.e. jobs)')
-        c.argument('validation',
-                   arg_type=get_enum_type(['none', 'client', 'server']),
-                   help='Specify whether to dry-run manifests at the client or at the apiserver level before applying them to the cluster.')
+
+    # with self.argument_context('k8s-config flux source') as c:
+    #     c.argument('scope',
+    #                options_list=['--scope', '-s'],
+    #                arg_type=get_enum_type(['namespace', 'cluster']),
+    #                help="Specify scope of the operator to be 'namespace' or 'cluster'")
+    #     c.argument('namespace',
+    #                help='Namespace to deploy the configuration',
+    #                options_list=['--namespace', '--ns'],
+    #                validator=validate_namespace)
+    #     c.argument('kind',
+    #                arg_type=get_enum_type([consts.GIT]),
+    #                help='Source kind to reconcile')
+    #     c.argument('url',
+    #                options_list=['--url', '-u'],
+    #                help='URL of the source to reconcile')
+    #     c.argument('timeout',
+    #                help='Maximum time to reconcile the source before timing out')
+    #     c.argument('sync_interval',
+    #                options_list=['--interval', '--sync-interval'],
+    #                help='Time between reconciliations of the source on the cluster')
+    #     c.argument('branch',
+    #                arg_group="Repo Ref",
+    #                help='Branch to reconcile with the git source')
+    #     c.argument('tag',
+    #                arg_group="Repo Ref",
+    #                help='Tag to reconcile with the git source')
+    #     c.argument('semver',
+    #                arg_group="Repo Ref",
+    #                help='Semver range to reconcile with the git source')
+    #     c.argument('commit',
+    #                arg_group="Repo Ref",
+    #                help='Specific commit to reconcile with the git source')
+    #     c.argument('ssh_private_key',
+    #                arg_group="Auth",
+    #                help='Base64-encoded private ssh key for private repository sync')
+    #     c.argument('ssh_private_key_file',
+    #                arg_group="Auth",
+    #                help='Filepath to private ssh key for private repository sync')
+    #     c.argument('https_user',
+    #                arg_group="Auth",
+    #                help='HTTPS username for private repository sync')
+    #     c.argument('https_key',
+    #                arg_group="Auth",
+    #                help='HTTPS token/password for private repository sync')
+    #     c.argument('known_hosts',
+    #                arg_group="Auth",
+    #                help='Base64-encoded known_hosts data containing public SSH keys required to access private Git instances')
+    #     c.argument('known_hosts_file',
+    #                arg_group="Auth",
+    #                help='Filepath to known_hosts contents containing public SSH keys required to access private Git instances')
+    #     c.argument('local_auth_ref',
+    #                options_list=['--local-auth-ref'],
+    #                arg_group="Auth",
+    #                help='Local reference to a kubernetes secret in the configuration namespace to use for communication to the source')
+
+    # with self.argument_context('k8s-config flux kustomization') as c:
+    #     c.argument('kustomization_name',
+    #                help='Specify the name of the kustomization to add to the configuration')
+    #     c.argument('path',
+    #                help='Specify the path in the source that the kustomization should apply')
+    #     c.argument('dependencies',
+    #                options_list=['--depends', '--dependencies'],
+    #                help='Specify the names of kustomization dependencies')
+    #     c.argument('timeout',
+    #                help='Maximum time to reconcile the kustomization before timing out')
+    #     c.argument('sync_interval',
+    #                options_list=['--interval', '--sync-interval'],
+    #                help='Time between reconciliations of the kustomization on the cluster')
+    #     c.argument('retry_interval',
+    #                help='Time between reconciliations of the kustomization on the cluster on failures, defaults to --sync-interval')
+    #     c.argument('prune',
+    #                help='Whether to garbage collect resources deployed by the kustomization on the cluster')
+    #     c.argument('force',
+    #                help='Whether to re-create resources that cannot be updated on the cluster (i.e. jobs)')
+    #     c.argument('validation',
+    #                arg_type=get_enum_type(['none', 'client', 'server']),
+    #                help='Specify whether to dry-run manifests at the client or at the apiserver level before applying them to the cluster.')
