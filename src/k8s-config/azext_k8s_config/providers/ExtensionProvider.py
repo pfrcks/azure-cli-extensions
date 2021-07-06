@@ -35,7 +35,7 @@ def ExtensionFactory(extension_name):
         'microsoft.azuremonitor.containers': ContainerInsights,
         'microsoft.azuredefender.kubernetes': AzureDefender,
         'microsoft.azureml.kubernetes': AzureMLKubernetes,
-        'microsoft.flux': DefaultExtensionWithIdentity,
+        'microsoft.flux': DefaultExtension,
         'cassandradatacentersoperator': DefaultExtensionWithIdentity,
     }
 
@@ -80,7 +80,7 @@ class ExtensionProvider:
     
     def delete(self, resource_group_name, cluster_type, cluster_name, name):
         cluster_rp = get_cluster_rp(cluster_type)
-        return self.client.delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+        return self.client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
 
     def create(self, resource_group_name, cluster_type, cluster_name, name,
@@ -151,7 +151,7 @@ class ExtensionProvider:
             extension_instance.identity, extension_instance.location = self.__create_identity(resource_group_name, cluster_rp, cluster_type, cluster_name)
 
         # Try to create the resource
-        return self.client.create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
+        return self.client.begin_create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
 
     def __validate_scope_and_namespace(self, scope, release_namespace, target_namespace):
         if scope == 'cluster':

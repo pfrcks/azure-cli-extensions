@@ -8,11 +8,6 @@ from .providers.FluxConfigurationProvider import FluxConfigurationProvider
 from .utils import get_cluster_rp
 from . import consts
 
-from .vendored_sdks.v2021_06_01_preview.models import (
-    RepositoryRefDefinition,
-    GitRepositoryDefinition,
-    FluxConfiguration
-)
 
 # Flux Configuration Methods
 
@@ -47,11 +42,11 @@ def flux_config_create_source(cmd, client, resource_group_name, cluster_type, cl
                                   ssh_private_key_file, https_user, https_key, known_hosts,
                                   known_hosts_file)
 
-def flux_config_create_kustomization(cmd, client, resource_group_name, cluster_name, config_name, name, cluster_type,
+def flux_config_create_kustomization(cmd, client, resource_group_name, cluster_type, cluster_name, name, kustomization_name,
                                      dependencies=None, timeout=None, sync_interval=None, retry_interval=None, path='', prune=False, validation='none', force=False):
     
     provider = FluxConfigurationProvider(cmd)
-    return provider.create_kustomization(resource_group_name, cluster_name, config_name, name, cluster_type,
+    return provider.create_kustomization(resource_group_name, cluster_type, cluster_name, name, kustomization_name,
                                      dependencies, timeout, sync_interval, retry_interval, path, prune, validation, force)
 
 def flux_config_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name):
@@ -84,27 +79,3 @@ def extension_create(cmd, client, resource_group_name, cluster_type, cluster_nam
 def extension_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name):
     provider = ExtensionProvider(cmd)
     return provider.delete(resource_group_name, cluster_type, cluster_name, name)
-
-# def flux_create_kustomization(cmd, client, resource_group_name, cluster_name, config_name, name, cluster_type,
-#     dependencies, timeout, sync_interval, retry_interval, path='', prune=False, validation='none', force=False):
-    
-#     # Determine ClusterRP
-#     cluster_rp = get_cluster_type(cluster_type)
-
-#     flux_configuration = cached_get(cmd, client.get, resource_group_name, cluster_rp, cluster_type, cluster_name, config_name)
-
-#     kustomization = KustomizationDefinition(
-#         name=name,
-#         path=path,
-#         dependencies=dependencies,
-#         timeout=timeout,
-#         sync_interval=sync_interval,
-#         retry_interval=retry_interval,
-#         prune=prune,
-#         validation=validation,
-#         force=force
-#     )
-
-#     upsert_to_collection(flux_configuration, 'kustomizations', kustomization, 'name')
-#     flux_configuration = cached_put(cmd, client.begin_create_or_update, flux_configuration, resource_group_name, name).result()
-#     return get_property(flux_configuration.kustomizations, name)

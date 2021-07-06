@@ -197,24 +197,24 @@ def load_arguments(self, _):
                    help='Local reference to a kubernetes secret in the configuration namespace to use for communication to the source')
 
     with self.argument_context('k8s-config flux kustomization') as c:
-        c.argument('config_name',
-                   help='Specify the name of the configuration to create the kustomization')
+        c.argument('kustomization_name',
+                   help='Specify the name of the kustomization to add to the configuration')
         c.argument('path',
-                   help='Specify the name of the configuration to create the kustomization')
+                   help='Specify the path in the source that the kustomization should apply')
         c.argument('dependencies',
                    options_list=['--depends', '--dependencies'],
-                   help='Specify the name of the configuration to create the kustomization')
+                   help='Specify the names of kustomization dependencies')
         c.argument('timeout',
-                   help='Specify the source kind to reconcile')
+                   help='Maximum time to reconcile the kustomization before timing out')
         c.argument('sync_interval',
                    options_list=['--interval', '--sync-interval'],
-                   help='Specify the source kind to reconcile')
+                   help='Time between reconciliations of the kustomization on the cluster')
         c.argument('retry_interval',
-                   help='Specify the source kind to reconcile')
+                   help='Time between reconciliations of the kustomization on the cluster on failures, defaults to --sync-interval')
         c.argument('prune',
-                   help='Specify the source kind to reconcile')
+                   help='Whether to garbage collect resources deployed by the kustomization on the cluster')
         c.argument('force',
-                   help='Specify the source kind to reconcile')
+                   help='Whether to re-create resources that cannot be updated on the cluster (i.e. jobs)')
         c.argument('validation',
                    arg_type=get_enum_type(['none', 'client', 'server']),
-                   help='Specify the source kind to reconcile')
+                   help='Specify whether to dry-run manifests at the client or at the apiserver level before applying them to the cluster.')

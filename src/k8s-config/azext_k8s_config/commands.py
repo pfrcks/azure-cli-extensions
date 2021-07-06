@@ -42,8 +42,8 @@ def load_command_table(self, _):
         g.custom_command('show', 'extension_show')
         g.custom_command('delete', 'extension_delete', confirmation=True)
 
-    with self.command_group('k8s-config source', k8s_config_sourcecontrol_sdk, client_factory=k8s_config_sourcecontrol_client) as g:
-        g.custom_command('create', 'source_create')
-        g.custom_command('list', 'list_k8sconfiguration')
-        g.custom_show_command('show', 'show_k8sconfiguration')
-        g.custom_command('delete', 'delete_k8sconfiguration', confirmation=True)
+    # with self.command_group('k8s-config source', k8s_config_sourcecontrol_sdk, client_factory=k8s_config_sourcecontrol_client) as g:
+    #     g.custom_command('create', 'source_create')
+    #     g.custom_command('list', 'list_k8sconfiguration')
+    #     g.custom_show_command('show', 'show_k8sconfiguration')
+    #     g.custom_command('delete', 'delete_k8sconfiguration', confirmation=True)

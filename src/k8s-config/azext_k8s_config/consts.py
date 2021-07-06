@@ -7,7 +7,7 @@
 
 # API VERSIONS -----------------------------------------
 
-EXTENSION_API_VERSION = '2020-07-01-preview'
+EXTENSION_API_VERSION = '2021-05-01-preview'
 SOURCE_CONTROL_API_VERSION = '2021-03-01'
 FLUXCONFIG_API_VERSION = '2021-06-01-preview'
 
