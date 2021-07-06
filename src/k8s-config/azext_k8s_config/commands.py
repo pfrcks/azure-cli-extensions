@@ -50,7 +50,7 @@ def load_command_table(self, _):
         g.custom_command('show', 'extension_show', table_transformer=extension_show_table_format)
         g.custom_command('delete', 'extension_delete', confirmation=True)
 
-    with self.command_group('k8s-config flux-v1', k8s_config_sourcecontrol_sdk, client_factory=k8s_config_sourcecontrol_client) as g:
+    with self.command_group('k8s-config flux-v1', k8s_config_sourcecontrol_sdk, client_factory=k8s_config_sourcecontrol_client, deprecate_info=self.deprecate(redirect='k8s-config flux')) as g:
         g.custom_command('create', 'sourcecontrol_create')
         g.custom_command('list', 'sourcecontrol_list', table_transformer=sourcecontrol_list_table_format)
         g.custom_show_command('show', 'sourcecontrol_show', table_transformer=sourcecontrol_show_table_format)
