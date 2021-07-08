@@ -35,7 +35,7 @@ def ExtensionFactory(extension_name):
         'microsoft.azuremonitor.containers': ContainerInsights,
         'microsoft.azuredefender.kubernetes': AzureDefender,
         'microsoft.azureml.kubernetes': AzureMLKubernetes,
-        'microsoft.flux': DefaultExtension,
+        'microsoft.flux': DefaultExtensionWithIdentity,
         'cassandradatacentersoperator': DefaultExtensionWithIdentity,
     }
 
@@ -78,9 +78,12 @@ class ExtensionProvider:
         return self.client.list(resource_group_name, cluster_rp, cluster_type, cluster_name)
 
     
-    def delete(self, resource_group_name, cluster_type, cluster_name, name):
+    def delete(self, resource_group_name, cluster_type, cluster_name, name, force):
         cluster_rp = get_cluster_rp(cluster_type)
-        return self.client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+
+        if not force:
+            logger.info("Delting the flux configuration from the cluster. This may take a minute...")
+        return self.client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name, force_delete=force)
 
 
     def create(self, resource_group_name, cluster_type, cluster_name, name,
@@ -148,9 +151,9 @@ class ExtensionProvider:
 
         # Create identity, if required
         if create_identity:
-            extension_instance.identity, extension_instance.location = self.__create_identity(resource_group_name, cluster_rp, cluster_type, cluster_name)
+            extension_instance = self.__add_identity(extension_instance, resource_group_name, cluster_rp, cluster_type, cluster_name)
 
-        # Try to create the resource
+        logger.info("Starting extension creation on the cluster. This might take a minute...")
         return self.client.begin_create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
 
     def __validate_scope_and_namespace(self, scope, release_namespace, target_namespace):
@@ -179,7 +182,7 @@ class ExtensionProvider:
             auto_upgrade_minor_version = False
     
 
-    def __create_identity(self, resource_group_name, cluster_rp, cluster_type, cluster_name):
+    def __add_identity(self, extension_instance, resource_group_name, cluster_rp, cluster_type, cluster_name):
         subscription_id = get_subscription_id(self.cmd.cli_ctx)
         resources = cf_resources(self.cmd.cli_ctx, subscription_id)
 
@@ -189,22 +192,24 @@ class ExtensionProvider:
                                                                                                    cluster_type,
                                                                                                    cluster_name)
 
-        if cluster_rp == 'Microsoft.Kubernetes':
-            parent_api_version = '2020-01-01-preview'
-        elif cluster_rp == 'Microsoft.ResourceConnector':
-            parent_api_version = '2020-09-15-privatepreview'
-        elif cluster_rp == 'Microsoft.ContainerService':
-            parent_api_version = '2017-07-01'
-        else:
-            raise InvalidArgumentValueError(
-                "Error! Cluster type '{}' is not supported for extension identity".format(cluster_type)
-            )
-
+        parent_api_version = self.__get_parent_api_version(cluster_rp)
         try:
             resource = resources.get_by_id(cluster_resource_id, parent_api_version)
             location = str(resource.location.lower())
-        except CloudError as ex:
+        except HttpResponseError as ex:
             raise ex
         identity_type = "SystemAssigned"
+        
+        extension_instance.identity = Identity(type=identity_type)
+        extension_instance.location = location
+        return extension_instance
 
-        return Identity(type=identity_type), location
+    def __get_parent_api_version(self, cluster_rp):
+        if cluster_rp == 'Microsoft.Kubernetes':
+            return '2020-01-01-preview'
+        elif cluster_rp == 'Microsoft.ResourceConnector':
+            return '2020-09-15-privatepreview'
+        elif cluster_rp == 'Microsoft.ContainerService':
+            return '2017-07-01'
+        else:
+            raise InvalidArgumentValueError("Error! Cluster RP '{}' is not supported for extension identity".format(cluster_rp))

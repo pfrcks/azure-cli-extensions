@@ -99,6 +99,10 @@ def load_arguments(self, _):
                    help="Define kustomizations to sync sources with parameters ['name', 'path', 'depends_on', 'timeout', 'sync_interval', 'retry_interval', 'prune', 'validation', 'force']",
                    nargs='+')
     
+    with self.argument_context('k8s-config flux delete') as c:
+        c.argument('force',
+                   help='Specify whether to force delete the flux configuration from the cluster.')
+    
     with self.argument_context('k8s-config extension create') as c:
         c.argument('scope',
                    arg_type=get_enum_type(['cluster', 'namespace']),
@@ -140,7 +144,10 @@ def load_arguments(self, _):
         c.argument('target_namespace',
                    help='Specify the target namespace to install to for the extension instance. This'
                    ' parameter is required if extension scope is set to \'namespace\'')
-
+                   
+    with self.argument_context('k8s-config extension delete') as c:
+        c.argument('force',
+                   help='Specify whether to force delete the extension from the cluster.')
     
     with self.argument_context('k8s-config flux-v1 create') as c:
         c.argument('repository_url',
