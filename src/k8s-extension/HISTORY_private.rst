@@ -3,6 +3,19 @@
 Release History
 ===============
 
+0.5.2-beta.1
+++++++++++++++++++
+
+* Fix Policy bug
+* Add SSL support for AzureML
+* Hotfix servicebus namespace creation for Track 2 changes
+* Change resource tag from 'amlk8s' to 'Azure Arc-enabled ML' in microsoft.azureml.kubernetes
+* Add compatible logic for the track 2 migration of resource dependence
+* Remove pyhelm dependency from setup.py
+* Remove pyhelm dependency from osm customization
+* Add microsoft.openservicemesh customization to check distros
+* Delete customization for partners 
+
 0.4.0-beta.2
 ++++++++++++++++++
 
