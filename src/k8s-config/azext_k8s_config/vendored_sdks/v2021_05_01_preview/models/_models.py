@@ -273,6 +273,8 @@ class Extension(ProxyResource):
     :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
      "Microsoft.Storage/storageAccounts".
     :vartype type: str
+    :param location: Location of resource type
+    :type location: str
     :param identity: Identity of the Extension resource.
     :type identity: ~azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.models.Identity
     :ivar system_data: Top level metadata
@@ -329,6 +331,7 @@ class Extension(ProxyResource):
         'id': {'key': 'id', 'type': 'str'},
         'name': {'key': 'name', 'type': 'str'},
         'type': {'key': 'type', 'type': 'str'},
+        'location': {'key': 'location', 'type': 'str'},
         'identity': {'key': 'identity', 'type': 'Identity'},
         'system_data': {'key': 'systemData', 'type': 'SystemData'},
         'extension_type': {'key': 'properties.extensionType', 'type': 'str'},
@@ -350,6 +353,7 @@ class Extension(ProxyResource):
         **kwargs
     ):
         super(Extension, self).__init__(**kwargs)
+        self.location = kwargs.get('location', None)
         self.identity = kwargs.get('identity', None)
         self.system_data = None
         self.extension_type = kwargs.get('extension_type', None)
