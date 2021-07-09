@@ -3,6 +3,10 @@
 Release History
 ===============
 
+0.6.0
+++++++++++++++++++
+* Switching to api-version 2021-05-01-preview
+
 0.5.1
 ++++++++++++++++++
 * Remove pyhelm dependency
