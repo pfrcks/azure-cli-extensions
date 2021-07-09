@@ -8,8 +8,6 @@
 import json
 from knack.log import get_logger
 
-from msrestazure.azure_exceptions import CloudError
-
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
     InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
 from azure.cli.core.commands.client_factory import get_subscription_id
@@ -199,6 +197,17 @@ def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluste
     """
     # Determine ClusterRP
     cluster_rp = __get_cluster_rp(cluster_type)
+    extension = None
+    try:
+        extension = client.get(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+    except ErrorResponseException:
+        logger.warning("No extension with name '%s' found on cluster '%s', so nothing to delete", cluster_name, name)
+        return None
+    extension_class = ExtensionFactory(extension.extension_type.lower())
+
+    # If there is any custom delete logic, this will call the logic
+    extension_class.Delete(client, resource_group_name, cluster_name, name, cluster_type)
+
     return client.delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
 
@@ -223,10 +232,11 @@ def __create_identity(cmd, resource_group_name, cluster_name, cluster_type, clus
             "Error! Cluster type '{}' is not supported for extension identity".format(cluster_type)
         )
 
+    from azure.core.exceptions import HttpResponseError
     try:
         resource = resources.get_by_id(cluster_resource_id, parent_api_version)
         location = str(resource.location.lower())
-    except CloudError as ex:
+    except HttpResponseError as ex:
         raise ex
     identity_type = "SystemAssigned"
 
