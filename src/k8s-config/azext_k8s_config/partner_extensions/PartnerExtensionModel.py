@@ -16,7 +16,11 @@ class PartnerExtensionModel(ABC):
                configuration_protected_settings_file: str) -> Extension:
         pass
 
-    # @abstractmethod
-    # def Update(self, extension: ExtensionInstance, auto_upgrade_minor_version: bool,
-    #            release_train: str, version: str) -> ExtensionInstanceUpdate:
-    #     pass
+    @abstractmethod
+    def Update(self, extension: Extension, auto_upgrade_minor_version: bool,
+               release_train: str, version: str) -> Extension:
+        pass
+
+    @abstractmethod
+    def Delete(self, client, resource_group_name: str, cluster_name: str, name: str, cluster_type: str):
+        pass

@@ -60,3 +60,17 @@ class AzureDefender(PartnerExtensionModel):
             configuration_protected_settings=configuration_protected_settings
         )
         return extension_instance, name, create_identity
+
+    def Update(self, extension, auto_upgrade_minor_version, release_train, version):
+        """ExtensionType 'microsoft.azuredefender.kubernetes' specific validations & defaults for Update
+           Must create and return a valid 'ExtensionInstanceUpdate' object.
+
+        """
+        return Extension(
+            auto_upgrade_minor_version=auto_upgrade_minor_version,
+            release_train=release_train,
+            version=version
+        )
+
+    def Delete(self, client, resource_group_name, cluster_name, name, cluster_type):
+        pass
