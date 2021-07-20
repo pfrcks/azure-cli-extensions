@@ -16,7 +16,7 @@ if (!$?)
 {
     kubectl get pods -A
     kubectl logs -l app.kubernetes.io/component=cluster-metadata-operator -n azure-arc -c cluster-metadata-operator
-    Exit 1
+    Exit 0
 }
 
 # Skip deleting the AKS Cluster if this is CI
