@@ -3,7 +3,12 @@
 Release History
 ===============
 
-0.5.2-beta.1
+0.6.0-beta.1
+++++++++++++++++++
+
+* Update extension resource models to Track2
+
+0.5.1-beta.1
 ++++++++++++++++++
 
 * Fix Policy bug
