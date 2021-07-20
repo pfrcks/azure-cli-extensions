@@ -3,9 +3,9 @@
 Release History
 ===============
 
-0.5.2
+0.6.0
 ++++++++++++++++++
-* Remove pyhelm dependency from setup.py
+* Update extension resource models to Track2
 
 0.5.1
 ++++++++++++++++++

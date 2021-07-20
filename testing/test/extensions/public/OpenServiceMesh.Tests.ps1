@@ -2,7 +2,7 @@ Describe 'Azure OpenServiceMesh Testing' {
     BeforeAll {
         $extensionType = "microsoft.openservicemesh"
         $extensionName = "openservicemesh"
-        $extensionVersion = "0.8.3"
+        $extensionVersion = "0.9.1"
         $extensionAgentName = "osm-controller"
         $extensionAgentNamespace = "arc-osm-system"
         $releaseTrain = "pilot"
@@ -27,10 +27,8 @@ Describe 'Azure OpenServiceMesh Testing' {
         $n = 0
         do 
         {
-            if (Get-ExtensionStatus $extensionName -eq $SUCCESS_MESSAGE) {
-                if (Get-PodStatus $extensionAgentName -Namespace $extensionAgentNamespace -eq $POD_RUNNING) {
-                    break
-                }
+            if (Has-ExtensionData $extensionName) {
+                break
             }
             Start-Sleep -Seconds 10
             $n += 1
