@@ -223,11 +223,11 @@ class FluxConfigurationProvider:
                 found_flux_extension = True
                 break
         if not found_flux_extension:
-            logger.info("'Micrsoft.Flux' extension not found on the cluster, installing it now."
+            logger.warning("'Micrsoft.Flux' extension not found on the cluster, installing it now."
                         " This may take a minute...")
             self.extension_provider.create(resource_group_name, cluster_type, cluster_name,
                                            "flux", consts.FLUX_EXTENSION_TYPE).result()
-            logger.info("'Microsoft.Flux' extension was successfully installed on the cluster")
+            logger.warning("'Microsoft.Flux' extension was successfully installed on the cluster")
 
     def _validate_and_get_gitrepository(self, url, branch, tag, semver, commit, timeout, sync_interval,
                                         ssh_private_key, ssh_private_key_file, https_user, https_key,

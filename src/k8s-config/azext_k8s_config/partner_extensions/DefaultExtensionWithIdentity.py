@@ -45,3 +45,9 @@ class DefaultExtensionWithIdentity(PartnerExtensionModel):
             configuration_protected_settings=configuration_protected_settings,
         )
         return extension_instance, name, create_identity
+
+    def Update(self, extension, auto_upgrade_minor_version, release_train, version):
+        pass
+    
+    def Delete(self, client, resource_group_name, cluster_name, name, cluster_type):
+        pass

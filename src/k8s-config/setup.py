@@ -14,8 +14,6 @@ except ImportError:
     from distutils import log as logger
     logger.warn("Wheel is not available, disabling bdist_wheel hook")
 
-# TODO: Confirm this is the right version number you want and it matches your
-# HISTORY.rst entry.
 VERSION = '0.1.0'
 
 # The full list of classifiers is available at
@@ -32,9 +30,9 @@ CLASSIFIERS = [
     'License :: OSI Approved :: MIT License',
 ]
 
-# TODO: Add any additional SDK dependencies here
 DEPENDENCIES = [
-    'azure-cli-core'
+    "azure-cli-core"
+    "pycryptodome~=3.9.8"
 ]
 
 with open('README.rst', 'r', encoding='utf-8') as f:
