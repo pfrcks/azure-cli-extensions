@@ -51,7 +51,7 @@ class SourceControlConfigurationProvider:
     
     def delete(self, resource_group_name, cluster_type, cluster_name, name):
         cluster_rp = get_cluster_rp(cluster_type)
-        return self.client.delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+        return self.client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
     # pylint: disable=too-many-locals
     def create(self, resource_group_name, cluster_name, name, repository_url, scope, cluster_type,
