@@ -24,13 +24,13 @@ class SourceControlConfigurationProvider:
         self.cmd = cmd
         self.client = k8s_config_sourcecontrol_client(cmd.cli_ctx)
 
-    
     def show(self, resource_group_name, cluster_type, cluster_name, name):
         # Determine ClusterRP
         cluster_rp = get_cluster_rp(cluster_type)
         try:
             extension = self.client.get(resource_group_name,
-                                cluster_rp, cluster_type, cluster_name, name)
+                                        cluster_rp, cluster_type,
+                                        cluster_name, name)
             return extension
         except HttpResponseError as ex:
             # Customize the error message for resources not found
@@ -41,19 +41,19 @@ class SourceControlConfigurationProvider:
                         ex.message)
                 # If Configuration not found
                 elif ex.message.__contains__("Operation returned an invalid status code 'Not Found'"):
-                    message = "(SourceControlConfigurationNotFound) The Resource {0}/{1}/{2}/Microsoft.KubernetesConfiguration/" \
-                            "sourceControlConfigurations/{3} could not be found!".format(
-                                self.cluster_rp, self.cluster_type, self.cluster_name, self.name)
+                    message = "(SourceControlConfigurationNotFound) The Resource {0}/{1}/{2}/" \
+                              "Microsoft.KubernetesConfiguration/sourceControlConfigurations/{3}" \
+                              "could not be found!".format(cluster_rp, cluster_type,
+                                                           cluster_name, name)
                 else:
                     message = ex.message
-                raise ResourceNotFoundError(message)
-
+                raise ResourceNotFoundError(message) from ex
+            raise ex
 
     def list(self, resource_group_name, cluster_type, cluster_name):
         cluster_rp = get_cluster_rp(cluster_type)
         return self.client.list(resource_group_name, cluster_rp, cluster_type, cluster_name)
 
-    
     def delete(self, resource_group_name, cluster_type, cluster_name, name):
         cluster_rp = get_cluster_rp(cluster_type)
         return self.client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
@@ -63,7 +63,7 @@ class SourceControlConfigurationProvider:
                operator_instance_name, operator_namespace, helm_operator_chart_version, operator_type,
                operator_params, ssh_private_key, ssh_private_key_file, https_user, https_key,
                ssh_known_hosts, ssh_known_hosts_file, enable_helm_operator, helm_operator_params):
-        
+
         """Create a new Kubernetes Source Control Configuration.
 
         """
@@ -89,14 +89,13 @@ class SourceControlConfigurationProvider:
         if knownhost_data:
             validate_known_hosts(knownhost_data)
 
-        # Flag which parameters have been set and validate these settings against the set repository url
-        ssh_private_key_set = ssh_private_key != '' or ssh_private_key_file != ''
-        known_hosts_contents_set = knownhost_data != ''
-        https_auth_set = https_user != '' and https_key != ''
         validate_url_with_params(repository_url,
-                                 ssh_private_key_set=ssh_private_key_set,
-                                 known_hosts_contents_set=known_hosts_contents_set,
-                                 https_auth_set=https_auth_set)
+                                 ssh_private_key,
+                                 ssh_private_key_file,
+                                 ssh_known_hosts,
+                                 ssh_known_hosts_file,
+                                 https_user,
+                                 https_key)
 
         # Validate that the subscription is registered to Microsoft.KubernetesConfiguration
         validate_cc_registration(self.cmd)

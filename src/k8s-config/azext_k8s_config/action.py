@@ -27,9 +27,10 @@ class KustomizationAddAction(argparse._AppendAction):
                     sync_interval = value
                 else:
                     kwargs[key] = value
-            except ValueError:
-                raise InvalidArgumentValueError('usage error: {} KEY=VALUE [KEY=VALUE ...]'.format(option_string))
-        super(KustomizationAddAction, self).__call__(
+            except ValueError as ex:
+                raise InvalidArgumentValueError('usage error: {} KEY=VALUE [KEY=VALUE ...]'
+                                                .format(option_string)) from ex
+        super().__call__(
             parser,
             namespace,
             KustomizationDefinition(depends_on=dependencies, sync_interval=get_duration(sync_interval), **kwargs),
@@ -46,10 +47,10 @@ class AddConfigurationSettings(argparse._AppendAction):
             try:
                 key, value = item.split('=', 1)
                 settings[key] = value
-            except ValueError:
+            except ValueError as ex:
                 raise ArgumentUsageError('Usage error: {} configuration_setting_key=configuration_setting_value'.
-                                         format(option_string))
-        super(AddConfigurationSettings, self).__call__(parser, namespace, settings, option_string)
+                                         format(option_string)) from ex
+        super().__call__(parser, namespace, settings, option_string)
 
 
 # pylint: disable=protected-access, too-few-public-methods
@@ -61,7 +62,7 @@ class AddConfigurationProtectedSettings(argparse._AppendAction):
             try:
                 key, value = item.split('=', 1)
                 prot_settings[key] = value
-            except ValueError:
+            except ValueError as ex:
                 raise ArgumentUsageError('Usage error: {} configuration_protected_setting_key='
-                                         'configuration_protected_setting_value'.format(option_string))
-        super(AddConfigurationProtectedSettings, self).__call__(parser, namespace, prot_settings, option_string)
+                                         'configuration_protected_setting_value'.format(option_string)) from ex
+        super().__call__(parser, namespace, prot_settings, option_string)

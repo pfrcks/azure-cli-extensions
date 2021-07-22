@@ -82,7 +82,7 @@ helps['k8s-config flux create'] = """
           --cluster-type connectedClusters --name myconfig --scope cluster --namespace my-namespace \\
           --kind git --url https://github.com/Azure/arc-k8s-demo --https-user my-username \\
           --https-key my-password --branch main --kustomization name=my-crds path="./crds" \\
-          --kustomization name=my-apps path="./apps" depends_on=my-crds timeout=PT5M 
+          --kustomization name=my-apps path="./apps" depends_on=my-crds timeout=PT5M
 """
 
 helps['k8s-config flux list'] = """
@@ -128,7 +128,7 @@ helps['k8s-config extension create'] = """
         text: |-
           az k8s-config extension create --resource-group my-resource-group --cluster-name mycluster \\
           --cluster-type connectedClusters --name myextension --extension-type microsoft.openservicemesh \\
-          --scope cluster --release-train stable 
+          --scope cluster --release-train stable
 """
 
 helps['k8s-config extension list'] = """

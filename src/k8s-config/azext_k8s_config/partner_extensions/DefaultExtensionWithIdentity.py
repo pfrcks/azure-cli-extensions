@@ -5,7 +5,7 @@
 
 # pylint: disable=unused-argument
 
-from ..vendored_sdks.v2021_05_01_preview.models import(
+from ..vendored_sdks.v2021_05_01_preview.models import (
     Extension,
     ScopeCluster,
     ScopeNamespace,

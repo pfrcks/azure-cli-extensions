@@ -80,7 +80,7 @@ HTTP_URL_NO_AUTH_WARNING = "Warning! https url is being used without https auth 
 
 # PROVIDER REGISTRATION -----------------------------------------
 
-CC_REGISTRATION_WARNING = "'Flux Configuration' cannot be used because '{0}' provider has not been registered. More details for registering this provider can be found here - {1}"
+CC_REGISTRATION_WARNING = "'Flux Configuration' cannot be used because '%s' provider has not been registered. More details for registering this provider can be found here - %s"
 CC_REGISTRATION_LINK = "https://aka.ms/RegisterKubernetesConfigurationProvider"
 CC_REGISTRATION_ERROR = "Unable to fetch registration state of '{0}' provider. Failed to enable 'flux configuration' feature..."
 CC_PROVIDER_NAMESPACE = 'Microsoft.KubernetesConfiguration'

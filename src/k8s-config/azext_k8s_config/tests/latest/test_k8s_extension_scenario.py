@@ -26,7 +26,7 @@ class K8sExtensionScenarioTest(ScenarioTest):
             'version': '0.8.3'
         })
 
-        self.cmd('k8s-extension create -g {rg} -n {name} -c {cluster_name} --cluster-type {cluster_type} '
+        self.cmd('k8s-config extension create -g {rg} -n {name} -c {cluster_name} --cluster-type {cluster_type} '
                  '--extension-type {extension_type} --release-train {release_train} --version {version}',
                  checks=[
                      self.check('name', '{name}'),
@@ -38,11 +38,11 @@ class K8sExtensionScenarioTest(ScenarioTest):
                 )
 
         # Update is disabled for now
-        # self.cmd('k8s-extension update -g {rg} -n {name} --tags foo=boo', checks=[
+        # self.cmd('k8s-config extension update -g {rg} -n {name} --tags foo=boo', checks=[
         #     self.check('tags.foo', 'boo')
         # ])
 
-        installed_exts = self.cmd('k8s-extension list -c {cluster_name} -g {rg} --cluster-type {cluster_type}').get_output_in_json()
+        installed_exts = self.cmd('k8s-config extension list -c {cluster_name} -g {rg} --cluster-type {cluster_type}').get_output_in_json()
         found_extension = False
         for item in installed_exts:
             if item['extensionType'] == resource_type:
@@ -50,7 +50,7 @@ class K8sExtensionScenarioTest(ScenarioTest):
                 break
         self.assertTrue(found_extension)
 
-        self.cmd('k8s-extension show -c {cluster_name} -g {rg} -n {name} --cluster-type {cluster_type}', checks=[
+        self.cmd('k8s-config extension show -c {cluster_name} -g {rg} -n {name} --cluster-type {cluster_type}', checks=[
             self.check('name', '{name}'),
             self.check('releaseTrain', '{release_train}'),
             self.check('version', '{version}'),
@@ -58,9 +58,9 @@ class K8sExtensionScenarioTest(ScenarioTest):
             self.check('extensionType', '{extension_type}')
         ])
 
-        self.cmd('k8s-extension delete -g {rg} -c {cluster_name} -n {name} --cluster-type {cluster_type} -y')
+        self.cmd('k8s-config extension delete -g {rg} -c {cluster_name} -n {name} --cluster-type {cluster_type} -y')
 
-        installed_exts = self.cmd('k8s-extension list -c {cluster_name} -g {rg} --cluster-type {cluster_type}').get_output_in_json()
+        installed_exts = self.cmd('k8s-config extension list -c {cluster_name} -g {rg} --cluster-type {cluster_type}').get_output_in_json()
         found_extension = False
         for item in installed_exts:
             if item['extensionType'] == resource_type:

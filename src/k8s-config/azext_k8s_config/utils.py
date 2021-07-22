@@ -62,16 +62,13 @@ def get_protected_settings(ssh_private_key, ssh_private_key_file, https_user, ht
 
 def read_config_settings_file(file_path):
     try:
-        config_file = open(file_path,)
-        settings = json.load(config_file)
-    except ValueError:
-        raise Exception("File {} is not a valid JSON file".format(file_path))
-
-    files = len(settings)
-    if files == 0:
-        raise Exception("File {} is empty".format(file_path))
-
-    return settings
+        with open(file_path, 'r') as f:
+            settings = json.load(f)
+            if len(settings) == 0:
+                raise Exception("File {} is empty".format(file_path))
+            return settings
+    except ValueError as ex:
+        raise Exception("File {} is not a valid JSON file".format(file_path)) from ex
 
 
 def read_key_file(path):
@@ -126,3 +123,14 @@ def fix_compliance_state(config):
         config.compliance_status.compliance_state = 'Installed'
 
     return config
+
+
+def get_parent_api_version(cluster_rp):
+    if cluster_rp == 'Microsoft.Kubernetes':
+        return '2020-01-01-preview'
+    if cluster_rp == 'Microsoft.ResourceConnector':
+        return '2020-09-15-privatepreview'
+    if cluster_rp == 'Microsoft.ContainerService':
+        return '2017-07-01'
+    raise InvalidArgumentValueError("Error! Cluster RP '{}' is not supported"
+                                    " for extension identity".format(cluster_rp))

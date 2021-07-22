@@ -3,13 +3,15 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
+# pylint: disable=unused-argument
+
 from azext_k8s_config.providers.SourceControlConfigurationProvider import SourceControlConfigurationProvider
 from .providers.ExtensionProvider import ExtensionProvider
 from .providers.FluxConfigurationProvider import FluxConfigurationProvider
-from .utils import get_cluster_rp
 from . import consts
 
 # Source Control Configuration Methods
+
 
 def sourcecontrol_create(cmd, client, resource_group_name, cluster_name, name, repository_url, scope, cluster_type,
                          operator_instance_name=None, operator_namespace='default',
@@ -22,6 +24,7 @@ def sourcecontrol_create(cmd, client, resource_group_name, cluster_name, name, r
                            operator_instance_name, operator_namespace, helm_operator_chart_version, operator_type,
                            operator_params, ssh_private_key, ssh_private_key_file, https_user, https_key,
                            ssh_known_hosts, ssh_known_hosts_file, enable_helm_operator, helm_operator_params)
+
 
 def sourcecontrol_show(cmd, client, resource_group_name, cluster_type, cluster_name, name):
     provider = SourceControlConfigurationProvider(cmd)
@@ -58,30 +61,33 @@ def flux_config_create(cmd, client, resource_group_name, cluster_type, cluster_n
                        known_hosts_file=None, kustomization=None):
 
     provider = FluxConfigurationProvider(cmd)
-    return provider.create(resource_group_name, cluster_type, cluster_name, name, url, scope, namespace, kind, timeout, sync_interval,
-                           branch, tag, semver, commit, local_auth_ref, ssh_private_key,
-                           ssh_private_key_file, https_user, https_key, known_hosts,
-                           known_hosts_file, kustomization)
+    return provider.create(resource_group_name, cluster_type, cluster_name, name, url, scope, namespace, kind,
+                           timeout, sync_interval, branch, tag, semver, commit, local_auth_ref, ssh_private_key,
+                           ssh_private_key_file, https_user, https_key, known_hosts, known_hosts_file, kustomization)
 
 
 def flux_config_create_source(cmd, client, resource_group_name, cluster_type, cluster_name, name, url=None,
                               scope='cluster', namespace='default', kind=consts.GIT, timeout=None, sync_interval=None,
-                              branch=None, tag=None, semver=None, commit=None, local_auth_ref=None, ssh_private_key=None,
-                              ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
-                              known_hosts_file=None):
-    
+                              branch=None, tag=None, semver=None, commit=None, local_auth_ref=None,
+                              ssh_private_key=None, ssh_private_key_file=None, https_user=None, https_key=None,
+                              known_hosts=None, known_hosts_file=None):
+
     provider = FluxConfigurationProvider(cmd)
-    return provider.create_source(resource_group_name, cluster_type, cluster_name, name, url, scope, namespace, kind, timeout, sync_interval,
-                                  branch, tag, semver, commit, local_auth_ref, ssh_private_key,
-                                  ssh_private_key_file, https_user, https_key, known_hosts,
+    return provider.create_source(resource_group_name, cluster_type, cluster_name, name, url, scope, namespace,
+                                  kind, timeout, sync_interval, branch, tag, semver, commit, local_auth_ref,
+                                  ssh_private_key, ssh_private_key_file, https_user, https_key, known_hosts,
                                   known_hosts_file)
 
-def flux_config_create_kustomization(cmd, client, resource_group_name, cluster_type, cluster_name, name, kustomization_name,
-                                     dependencies=None, timeout=None, sync_interval=None, retry_interval=None, path='', prune=False, validation='none', force=False):
-    
+
+def flux_config_create_kustomization(cmd, client, resource_group_name, cluster_type, cluster_name, name,
+                                     kustomization_name, dependencies=None, timeout=None, sync_interval=None,
+                                     retry_interval=None, path='', prune=False, validation='none', force=False):
+
     provider = FluxConfigurationProvider(cmd)
     return provider.create_kustomization(resource_group_name, cluster_type, cluster_name, name, kustomization_name,
-                                     dependencies, timeout, sync_interval, retry_interval, path, prune, validation, force)
+                                         dependencies, timeout, sync_interval, retry_interval, path, prune,
+                                         validation, force)
+
 
 def flux_config_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name, force=False):
     provider = FluxConfigurationProvider(cmd)
@@ -106,8 +112,10 @@ def extension_create(cmd, client, resource_group_name, cluster_type, cluster_nam
                      configuration_protected_settings=None, configuration_settings_file=None,
                      configuration_protected_settings_file=None, tags=None):
     provider = ExtensionProvider(cmd)
-    return provider.create(resource_group_name, cluster_type, cluster_name, name, extension_type, scope, auto_upgrade_minor_version, release_train, version, target_namespace, release_namespace,
-                    configuration_settings, configuration_protected_settings, configuration_settings_file, configuration_protected_settings_file)
+    return provider.create(resource_group_name, cluster_type, cluster_name, name, extension_type, scope,
+                           auto_upgrade_minor_version, release_train, version, target_namespace,
+                           release_namespace, configuration_settings, configuration_protected_settings,
+                           configuration_settings_file, configuration_protected_settings_file)
 
 
 def extension_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name, force=False):

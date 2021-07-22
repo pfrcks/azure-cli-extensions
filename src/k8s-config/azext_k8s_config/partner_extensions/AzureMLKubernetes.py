@@ -28,7 +28,7 @@ from msrestazure.azure_exceptions import CloudError
 
 from .._client_factory import cf_resources
 from .PartnerExtensionModel import PartnerExtensionModel
-from ..vendored_sdks.v2021_05_01_preview.models import(
+from ..vendored_sdks.v2021_05_01_preview.models import (
     Extension,
     ScopeCluster,
     Scope

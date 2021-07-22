@@ -16,7 +16,7 @@ from azure.cli.core.commands.client_factory import get_mgmt_service_client, get_
 from azure.cli.core.util import sdk_no_wait
 from msrestazure.tools import parse_resource_id, is_valid_resource_id
 
-from ..vendored_sdks.v2021_05_01_preview.models import(
+from ..vendored_sdks.v2021_05_01_preview.models import (
     Extension,
     ScopeCluster,
     Scope

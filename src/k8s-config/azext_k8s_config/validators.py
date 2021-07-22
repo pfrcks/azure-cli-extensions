@@ -24,6 +24,7 @@ from . import consts
 
 logger = get_logger(__name__)
 
+
 # Parameter-Level Validation
 def validate_configuration_type(configuration_type):
     if configuration_type.lower() != 'sourcecontrolconfiguration':
@@ -173,8 +174,8 @@ def validate_known_hosts(knownhost_data):
         knownhost_str = from_base64(knownhost_data).decode('utf-8')
     except Exception as ex:
         raise InvalidArgumentValueError(
-            consts.SSH_BASE64_ENCODING_ERROR,
-            consts.SSH_BASE64_ENCODING_HELP) from ex
+            consts.KNOWN_HOSTS_BASE64_ENCODING_ERROR,
+            consts.KNOWN_HOSTS_BASE64_ENCODING_HELP) from ex
     lines = knownhost_str.split('\n')
     for line in lines:
         line = line.strip(' ')
@@ -209,11 +210,11 @@ def validate_private_key(ssh_private_key_data):
                     key_obj = io.StringIO(from_base64(ssh_private_key_data).decode('utf-8'))
                     Ed25519Key(file_obj=key_obj)
                     return
-                except SSHException:
+                except SSHException as ex:
                     raise InvalidArgumentValueError(
                         consts.SSH_PRIVATE_KEY_ERROR,
                         consts.SSH_PRIVATE_KEY_HELP
-                    )
+                    ) from ex
 
 
 # pylint: disable=broad-except
@@ -223,6 +224,35 @@ def validate_cc_registration(cmd):
         registration_state = rp_client.get(consts.CC_PROVIDER_NAMESPACE).registration_state
 
         if registration_state.lower() != consts.REGISTERED.lower():
-            logger.warning(consts.CC_REGISTRATION_WARNING.format(consts.CC_PROVIDER_NAMESPACE, consts.CC_REGISTRATION_LINK))
+            logger.warning(consts.CC_REGISTRATION_WARNING,
+                           consts.CC_PROVIDER_NAMESPACE,
+                           consts.CC_REGISTRATION_LINK)
     except Exception:
-        logger.warning(consts.CC_REGISTRATION_ERROR.format(consts.CC_PROVIDER_NAMESPACE))
+        logger.warning(consts.CC_REGISTRATION_ERROR,
+                       consts.CC_PROVIDER_NAMESPACE)
+
+
+def validate_scope_and_namespace(scope, release_namespace, target_namespace):
+    if scope == 'cluster':
+        if target_namespace is not None:
+            message = "When --scope is 'cluster', --target-namespace must not be given."
+            raise MutuallyExclusiveArgumentError(message)
+    else:
+        if release_namespace is not None:
+            message = "When --scope is 'namespace', --release-namespace must not be given."
+            raise MutuallyExclusiveArgumentError(message)
+
+
+def validate_scope_after_customization(scope_obj):
+    if scope_obj is not None and scope_obj.namespace is not None and scope_obj.namespace.target_namespace is None:
+        message = "When --scope is 'namespace', --target-namespace must be given."
+        raise RequiredArgumentMissingError(message)
+
+
+def validate_version_and_auto_upgrade(version, auto_upgrade_minor_version):
+    if version is not None:
+        if auto_upgrade_minor_version:
+            message = "To pin to specific version, auto-upgrade-minor-version must be set to 'false'."
+            raise MutuallyExclusiveArgumentError(message)
+
+        auto_upgrade_minor_version = False

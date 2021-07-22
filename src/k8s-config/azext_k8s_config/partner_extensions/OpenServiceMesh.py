@@ -15,8 +15,6 @@ from azure.cli.core.commands.client_factory import get_subscription_id
 from packaging import version
 import yaml
 
-from ..partner_extensions import PartnerExtensionModel
-
 from .PartnerExtensionModel import PartnerExtensionModel
 
 from ..vendored_sdks.v2021_05_01_preview .models import (

@@ -9,8 +9,7 @@ from knack.log import get_logger
 
 from azure.core.exceptions import HttpResponseError
 
-from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
-    InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
+from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError
 from azure.cli.core.commands.client_factory import get_subscription_id
 
 from ..vendored_sdks.v2021_05_01_preview.models import Identity
@@ -21,7 +20,12 @@ from ..partner_extensions.AzureMLKubernetes import AzureMLKubernetes
 from ..partner_extensions.DefaultExtension import DefaultExtension
 from ..partner_extensions.DefaultExtensionWithIdentity import DefaultExtensionWithIdentity
 
-from ..utils import get_cluster_rp, read_config_settings_file
+from ..utils import get_cluster_rp, get_parent_api_version, read_config_settings_file
+from ..validators import (
+    validate_scope_and_namespace,
+    validate_version_and_auto_upgrade,
+    validate_scope_after_customization
+)
 
 from .._client_factory import cf_resources
 from .._client_factory import k8s_config_extension_client
@@ -48,13 +52,12 @@ class ExtensionProvider:
         self.cmd = cmd
         self.client = k8s_config_extension_client(cmd.cli_ctx)
 
-    
     def show(self, resource_group_name, cluster_type, cluster_name, name):
         # Determine ClusterRP
         cluster_rp = get_cluster_rp(cluster_type)
         try:
-            extension = self.client.get(resource_group_name,
-                                cluster_rp, cluster_type, cluster_name, name)
+            extension = self.client.get(resource_group_name, cluster_rp,
+                                        cluster_type, cluster_name, name)
             return extension
         except HttpResponseError as ex:
             # Customize the error message for resources not found
@@ -66,25 +69,28 @@ class ExtensionProvider:
                 # If Configuration not found
                 elif ex.message.__contains__("Operation returned an invalid status code 'Not Found'"):
                     message = "(ExtensionNotFound) The Resource {0}/{1}/{2}/Microsoft.KubernetesConfiguration/" \
-                            "extensions/{3} could not be found!".format(
-                                cluster_rp, cluster_type, cluster_name, name)
+                              "extensions/{3} could not be found!".format(cluster_rp, cluster_type,
+                                                                          cluster_name, name)
                 else:
                     message = ex.message
-                raise ResourceNotFoundError(message)
-
+                raise ResourceNotFoundError(message) from ex
+            raise ex
 
     def list(self, resource_group_name, cluster_type, cluster_name):
         cluster_rp = get_cluster_rp(cluster_type)
         return self.client.list(resource_group_name, cluster_rp, cluster_type, cluster_name)
 
-    
     def delete(self, resource_group_name, cluster_type, cluster_name, name, force):
         cluster_rp = get_cluster_rp(cluster_type)
 
         if not force:
             logger.info("Delting the flux configuration from the cluster. This may take a minute...")
-        return self.client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name, force_delete=force)
-
+        return self.client.begin_delete(resource_group_name,
+                                        cluster_rp,
+                                        cluster_type,
+                                        cluster_name,
+                                        name,
+                                        force_delete=force)
 
     def create(self, resource_group_name, cluster_type, cluster_name, name,
                extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
@@ -134,7 +140,7 @@ class ExtensionProvider:
         extension_instance = None
 
         # Scope & Namespace validation - common to all extension-types
-        self.__validate_scope_and_namespace(scope, release_namespace, target_namespace)
+        validate_scope_and_namespace(scope, release_namespace, target_namespace)
 
         # Give Partners a chance to their extensionType specific validations and to set value over-rides.
 
@@ -146,41 +152,25 @@ class ExtensionProvider:
             config_protected_settings, configuration_settings_file, configuration_protected_settings_file)
 
         # Common validations
-        self.__validate_version_and_auto_upgrade(extension_instance.version, extension_instance.auto_upgrade_minor_version)
-        self.__validate_scope_after_customization(extension_instance.scope)
+        validate_version_and_auto_upgrade(extension_instance.version,
+                                          extension_instance.auto_upgrade_minor_version)
+        validate_scope_after_customization(extension_instance.scope)
 
         # Create identity, if required
         if create_identity:
-            extension_instance = self.__add_identity(extension_instance, resource_group_name, cluster_rp, cluster_type, cluster_name)
+            extension_instance = self.__add_identity(extension_instance,
+                                                     resource_group_name,
+                                                     cluster_rp,
+                                                     cluster_type,
+                                                     cluster_name)
 
         logger.info("Starting extension creation on the cluster. This might take a minute...")
-        return self.client.begin_create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
-
-    def __validate_scope_and_namespace(self, scope, release_namespace, target_namespace):
-        if scope == 'cluster':
-            if target_namespace is not None:
-                message = "When --scope is 'cluster', --target-namespace must not be given."
-                raise MutuallyExclusiveArgumentError(message)
-        else:
-            if release_namespace is not None:
-                message = "When --scope is 'namespace', --release-namespace must not be given."
-                raise MutuallyExclusiveArgumentError(message)
-
-
-    def __validate_scope_after_customization(self, scope_obj):
-        if scope_obj is not None and scope_obj.namespace is not None and scope_obj.namespace.target_namespace is None:
-            message = "When --scope is 'namespace', --target-namespace must be given."
-            raise RequiredArgumentMissingError(message)
-
-
-    def __validate_version_and_auto_upgrade(self, version, auto_upgrade_minor_version):
-        if version is not None:
-            if auto_upgrade_minor_version:
-                message = "To pin to specific version, auto-upgrade-minor-version must be set to 'false'."
-                raise MutuallyExclusiveArgumentError(message)
-
-            auto_upgrade_minor_version = False
-    
+        return self.client.begin_create(resource_group_name,
+                                        cluster_rp,
+                                        cluster_type,
+                                        cluster_name,
+                                        name,
+                                        extension_instance)
 
     def __add_identity(self, extension_instance, resource_group_name, cluster_rp, cluster_type, cluster_name):
         subscription_id = get_subscription_id(self.cmd.cli_ctx)
@@ -192,24 +182,14 @@ class ExtensionProvider:
                                                                                                    cluster_type,
                                                                                                    cluster_name)
 
-        parent_api_version = self.__get_parent_api_version(cluster_rp)
+        parent_api_version = get_parent_api_version(cluster_rp)
         try:
             resource = resources.get_by_id(cluster_resource_id, parent_api_version)
             location = str(resource.location.lower())
         except HttpResponseError as ex:
             raise ex
         identity_type = "SystemAssigned"
-        
+
         extension_instance.identity = Identity(type=identity_type)
         extension_instance.location = location
         return extension_instance
-
-    def __get_parent_api_version(self, cluster_rp):
-        if cluster_rp == 'Microsoft.Kubernetes':
-            return '2020-01-01-preview'
-        elif cluster_rp == 'Microsoft.ResourceConnector':
-            return '2020-09-15-privatepreview'
-        elif cluster_rp == 'Microsoft.ContainerService':
-            return '2017-07-01'
-        else:
-            raise InvalidArgumentValueError("Error! Cluster RP '{}' is not supported for extension identity".format(cluster_rp))
