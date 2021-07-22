@@ -5,7 +5,7 @@ param (
     [switch] $OnlyPublicTests,
 
     [Parameter(Mandatory=$True)]
-    [ValidateSet('k8s-extension','k8s-configuration', 'k8s-extension-private')]
+    [ValidateSet('k8s-extension', 'k8s-configuration', 'k8s-extension-private', 'k8s-config')]
     [string]$Type
 )
 
@@ -65,6 +65,16 @@ if ($Type -eq 'k8s-extension') {
         az extension add --source ./bin/k8s_configuration-$k8sConfigurationVersion-py3-none-any.whl
     }
     $testFilePath = "$PSScriptRoot/test/configurations"
+} elseif ($Type -eq 'k8s-config') {
+    $k8sConfigVersion = $ENVCONFIG.extensionVersion.'k8s-config'
+    if (!$SkipInstall) {
+        Write-Host "Removing the old k8s-config extension..."
+        az extension remove -n k8s-config
+        Write-Host "Installing k8s-config version $k8sConfigVersion..."
+        az extension add --source ./bin/k8s_config-$k8sConfigVersion-py3-none-any.whl
+    }
+    $Env:K8sExtensionName = "k8s-config"
+    $testFilePath = "$PSScriptRoot/test"
 }
 
 if ($CI) {
