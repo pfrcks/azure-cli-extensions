@@ -140,7 +140,7 @@ stages:
     displayName: "Build and Publish the Extension Artifact"
     variables: 
       CLI_REPO_PATH: $(Agent.BuildDirectory)/s
-      EXTENSION_NAME: "k8s-configuration"
+      EXTENSION_NAME: "k8s-config"
     steps:
     - task: UsePythonVersion@0
       displayName: 'Use Python 3.6'

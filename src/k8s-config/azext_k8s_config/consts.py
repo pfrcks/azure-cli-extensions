@@ -22,8 +22,8 @@ REPOSITORY_REF_REQUIRED_VALUES_MISSING_HELP = "Specifying one of [--branch, --ta
 REPOSITORY_REF_TOO_MAY_VALUES_ERROR = "Error! Repository reference is invalid"
 REPOSITORY_REF_TOO_MAY_VALUES_HELP = "Specifying more than one repository ref argument that isn't --branch and --commit is invalid"
 
-GIT_REPOSITORY_REQUIRED_VALUES_MISSING_ERROR = "Error! Git repository kind is missing required value {}"
-GIT_REPOSITORY_REQUIRED_VALUES_MISSING_HELP = "Add missing git repository kind and try again"
+GIT_REPOSITORY_REQUIRED_VALUES_MISSING_ERROR = "Error! Required property '{}' was not specified for kind 'GitRepository'"
+GIT_REPOSITORY_REQUIRED_VALUES_MISSING_HELP = "Add missing required property and try again"
 
 INVALID_DURATION_ERROR = "Error! Invalid {0}."
 INVALID_DURATION_HELP = "Specify a valid ISO8601 duration and try again"
@@ -77,6 +77,8 @@ SCC_EXISTS_ON_CLUSTER_ERROR = "Error! SourceControlConfigurations with flux alre
 SCC_EXISTS_ON_CLUSTER_HELP = "Try removing all sourceControlConfigurations from the cluster before attempting to add fluxConfigurations"
 
 HTTP_URL_NO_AUTH_WARNING = "Warning! https url is being used without https auth params, ensure the repository url provided is not a private repo"
+
+NO_KUSTOMIZATIONS_WARNING = "Warning! No kustomizations were specified for this configuration. The specified source will not be applied to the cluster"
 
 # PROVIDER REGISTRATION -----------------------------------------
 

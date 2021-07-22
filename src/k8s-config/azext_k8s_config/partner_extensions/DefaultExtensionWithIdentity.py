@@ -48,6 +48,6 @@ class DefaultExtensionWithIdentity(PartnerExtensionModel):
 
     def Update(self, extension, auto_upgrade_minor_version, release_train, version):
         pass
-    
+
     def Delete(self, client, resource_group_name, cluster_name, name, cluster_type):
         pass

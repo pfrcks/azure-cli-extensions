@@ -225,7 +225,7 @@ class FluxConfigurationProvider:
                 break
         if not found_flux_extension:
             logger.warning("'Micrsoft.Flux' extension not found on the cluster, installing it now."
-                        " This may take a minute...")
+                           " This may take a minute...")
             self.extension_provider.create(resource_group_name, cluster_type, cluster_name,
                                            "flux", consts.FLUX_EXTENSION_TYPE).result()
             logger.warning("'Microsoft.Flux' extension was successfully installed on the cluster")
