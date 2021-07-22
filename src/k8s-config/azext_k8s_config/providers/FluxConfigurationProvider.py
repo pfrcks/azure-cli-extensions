@@ -90,9 +90,7 @@ class FluxConfigurationProvider:
         dp_source_kind = ""
         git_repository = None
 
-        self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
-        self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
-
+        # Validate and Create the Data before checking the cluster compataibility
         if kind == consts.GIT:
             dp_source_kind = consts.GIT_REPOSITORY
             git_repository = self._validate_and_get_gitrepository(url, branch, tag, semver, commit, timeout,
@@ -113,6 +111,9 @@ class FluxConfigurationProvider:
             git_repository=git_repository,
             kustomizations=kustomization
         )
+
+        self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
+        self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
 
         return self.client.begin_create_or_update(resource_group_name, cluster_rp,
                                                   cluster_type, cluster_name, name, flux_configuration)
