@@ -149,7 +149,7 @@ def load_arguments(self, _):
         c.argument('force',
                    help='Specify whether to force delete the extension from the cluster.')
 
-    with self.argument_context('k8s-config flux-v1 create') as c:
+    with self.argument_context('k8s-config fluxv1 create') as c:
         c.argument('repository_url',
                    options_list=['--repository-url', '-u'],
                    help='Url of the source control repository')

@@ -31,7 +31,7 @@ CLASSIFIERS = [
 ]
 
 DEPENDENCIES = [
-    "azure-cli-core"
+    "azure-cli-core",
     "pycryptodome~=3.9.8"
 ]
 
