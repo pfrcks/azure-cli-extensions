@@ -101,7 +101,7 @@ REQUIRED_KUSTOMIZATION_KEYS = {"name", "path"}
 
 VALID_DURATION_REGEX = r"((?P<hours>\d+?)h)?((?P<minutes>\d+?)m)?((?P<seconds>\d+?)s)?"
 VALID_URL_REGEX = r"^(((http|https|ssh)://)|(git@))"
-VALID_KUBERNETES_NAME_REGEX = r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+VALID_KUBERNETES_NAME_REGEX = r"^[a-z0-9]([.\-a-z0-9]*[a-z0-9])?$"
 
 GIT = "git"
 GIT_REPOSITORY = "GitRepository"
