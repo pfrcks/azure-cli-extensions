@@ -52,7 +52,7 @@ def validate_extension_name(namespace):
 
 
 def validate_fluxconfig_name(namespace):
-    __validate_k8s_cr_name(namespace.name, "--name", 253)
+    __validate_k8s_cr_name(namespace.name, "--name", 63)
 
 
 def validate_operator_namespace(namespace):
@@ -79,7 +79,7 @@ def validate_kustomization(values):
         )
 
 
-def validate_kustomization_list(kustomizations):
+def validate_kustomization_list(name, kustomizations):
     kustomization_names = set()
     if len(kustomizations) == 0:
         logger.warning(consts.NO_KUSTOMIZATIONS_WARNING)
@@ -88,6 +88,11 @@ def validate_kustomization_list(kustomizations):
             raise InvalidArgumentValueError(
                 consts.DUPLICATE_KUSTOMIZATION_NAME_ERROR.format(kustomization.name),
                 consts.DUPLICATE_KUSTOMIZATION_NAME_HELP
+            )
+        if len(f"{name}-{kustomization.name}") > consts.KUBERNETES_MAX_NAME_SIZE:
+            raise InvalidArgumentValueError(
+                consts.KUSTOMIZATION_NAME_TOO_LONG_ERROR.format(name, kustomization.name),
+                consts.KUSTOMIZATION_NAME_TOO_LONG_HELP
             )
         kustomization_names.add(kustomization.name)
 

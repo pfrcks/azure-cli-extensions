@@ -52,7 +52,6 @@ def fluxconfig_show_table_format(result):
 
 
 def __get_fluxconfig_table_row(result):
-    print(result)
     return OrderedDict([
         ('name', result['name']),
         ('provisioningState', result['provisioningState']),

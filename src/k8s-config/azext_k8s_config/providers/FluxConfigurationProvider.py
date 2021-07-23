@@ -100,7 +100,7 @@ class FluxConfigurationProvider:
                                                                   local_auth_ref)
 
         if kustomization:
-            validate_kustomization_list(kustomization)
+            validate_kustomization_list(name, kustomization)
 
         flux_configuration = FluxConfiguration(
             scope=scope,
@@ -184,7 +184,7 @@ class FluxConfigurationProvider:
         )
 
         proposed_change = flux_configuration.kustomizations[:] + kustomization
-        validate_kustomization_list(proposed_change)
+        validate_kustomization_list(name, proposed_change)
 
         upsert_to_collection(flux_configuration, 'kustomizations', kustomization, 'name')
         flux_configuration = cached_put(self.cmd, self.client.begin_create_or_update, flux_configuration,

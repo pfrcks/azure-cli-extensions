@@ -10,10 +10,6 @@
 from knack.log import get_logger
 
 from azure.cli.core.azclierror import InvalidArgumentValueError, RequiredArgumentMissingError
-from azure.cli.core.commands.client_factory import get_subscription_id
-
-from packaging import version
-import yaml
 
 from .PartnerExtensionModel import PartnerExtensionModel
 
@@ -22,8 +18,6 @@ from ..vendored_sdks.v2021_05_01_preview .models import (
     ScopeCluster,
     Scope
 )
-
-from .._client_factory import cf_resources
 
 logger = get_logger(__name__)
 

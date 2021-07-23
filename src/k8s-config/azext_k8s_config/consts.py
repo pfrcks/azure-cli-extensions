@@ -46,8 +46,11 @@ INVALID_KUBERNETES_DNS_NAME_HELP = "Parameter {0} can only contain lowercase alp
 INVALID_KUBERNETES_DNS_SUBDOMAIN_NAME_ERROR = "Error! Invalid {0}."
 INVALID_KUBERNETES_DNS_SUBDOMAIN_NAME_HELP = "Parameter {0} can only contain lowercase alphanumeric characters, hyphens, and periods"
 
-DUPLICATE_KUSTOMIZATION_NAME_ERROR = "Error! Invalid Kustomization list. Kustomization name {0} duplicated in multiple Kustomization objects"
+DUPLICATE_KUSTOMIZATION_NAME_ERROR = "Error! Invalid kustomization list. Kustomization name '{0}' duplicated in multiple Kustomization objects"
 DUPLICATE_KUSTOMIZATION_NAME_HELP = "Ensure that all Kustomization names are unique and try again"
+
+KUSTOMIZATION_NAME_TOO_LONG_ERROR = "Error! Invalid Kustomization list. Flux configuration name '{0}' combined with kustomization name '{1}' cannot be greater than 62 characters"
+KUSTOMIZATION_NAME_TOO_LONG_HELP = "Shorten the flux configuration or the kustomization name and try again"
 
 SSH_PRIVATE_KEY_WITH_HTTP_URL_ERROR = "Error! An --ssh-private-key cannot be used with an http(s) url"
 SSH_PRIVATE_KEY_WITH_HTTP_URL_HELP = "Verify the url provided is a valid ssh url and not an http(s) url"
@@ -103,7 +106,7 @@ HTTPS_KEY_KEY = "httpsKey"
 DEPENDENCY_KEYS = ["dependencies", "depends_on"]
 SYNC_INTERVAL_KEYS = ["interval", "sync_interval"]
 TIMEOUT_KEY = "timeout"
-REQUIRED_KUSTOMIZATION_KEYS = {"name", "path"}
+REQUIRED_KUSTOMIZATION_KEYS = {"name"}
 
 VALID_DURATION_REGEX = r"((?P<hours>\d+?)h)?((?P<minutes>\d+?)m)?((?P<seconds>\d+?)s)?"
 VALID_URL_REGEX = r"^(((http|https|ssh)://)|(git@))"
@@ -119,3 +122,5 @@ MANAGED_CLUSTERS = "managedclusters"
 
 MANAGED_RP_NAMESPACE = "Microsoft.ContainerService"
 CONNECTED_RP_NAMESPACE = "Microsoft.Kubernetes"
+
+KUBERNETES_MAX_NAME_SIZE = 63
