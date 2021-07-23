@@ -11,7 +11,7 @@ from azure.cli.core.commands.parameters import (
     get_three_state_flag,
     tags_type
 )
-from .validators import validate_configuration_name, validate_configuration_type, validate_namespace, validate_operator_instance_name, validate_operator_namespace
+from .validators import validate_configuration_name, validate_configuration_type, validate_extension_name, validate_fluxconfig_name, validate_namespace, validate_operator_instance_name, validate_operator_namespace
 from .action import (
     KustomizationAddAction,
     AddConfigurationProtectedSettings,
@@ -24,10 +24,6 @@ def load_arguments(self, _):
     with self.argument_context('k8s-config') as c:
         c.argument('tags', tags_type)
         c.argument('location', validator=get_default_location_from_resource_group)
-        c.argument('name',
-                   options_list=['--name', '-n'],
-                   help='Name of the configuration',
-                   validator=validate_configuration_name)
         c.argument('cluster_name',
                    options_list=['--cluster-name', '-c'],
                    help='Name of the Kubernetes cluster')
@@ -35,6 +31,12 @@ def load_arguments(self, _):
                    options_list=['--cluster-type', '-t'],
                    arg_type=get_enum_type(['connectedClusters', 'managedClusters']),
                    help='Specify Arc connected clusters or AKS managed clusters.')
+
+    with self.argument_context('k8s-config flux') as c:
+        c.argument('name',
+                    options_list=['--name', '-n'],
+                    help='Name of the flux configuration',
+                    validator=validate_fluxconfig_name)
 
     with self.argument_context('k8s-config flux create') as c:
         c.argument('scope',
@@ -103,6 +105,12 @@ def load_arguments(self, _):
         c.argument('force',
                    help='Specify whether to force delete the flux configuration from the cluster.')
 
+    with self.argument_context('k8s-config extension') as c:
+        c.argument('name',
+                    options_list=['--name', '-n'],
+                    help='Name of the extension',
+                    validator=validate_extension_name)
+
     with self.argument_context('k8s-config extension create') as c:
         c.argument('scope',
                    arg_type=get_enum_type(['cluster', 'namespace']),
@@ -148,6 +156,12 @@ def load_arguments(self, _):
     with self.argument_context('k8s-config extension delete') as c:
         c.argument('force',
                    help='Specify whether to force delete the extension from the cluster.')
+    
+    with self.argument_context('k8s-config fluxv1') as c:
+        c.argument('name',
+                    options_list=['--name', '-n'],
+                    help='Name of the configuration',
+                    validator=validate_configuration_type)
 
     with self.argument_context('k8s-config fluxv1 create') as c:
         c.argument('repository_url',

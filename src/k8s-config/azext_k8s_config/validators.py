@@ -47,6 +47,14 @@ def validate_configuration_name(namespace):
     __validate_k8s_name(namespace.name, "--name", 63)
 
 
+def validate_extension_name(namespace):
+    __validate_k8s_cr_name(namespace.name, "--name", 253)
+
+
+def validate_fluxconfig_name(namespace):
+    __validate_k8s_cr_name(namespace.name, "--name", 253)
+
+
 def validate_operator_namespace(namespace):
     if namespace.operator_namespace:
         __validate_k8s_name(namespace.operator_namespace, "--operator-namespace", 23)
@@ -73,6 +81,8 @@ def validate_kustomization(values):
 
 def validate_kustomization_list(kustomizations):
     kustomization_names = set()
+    if len(kustomizations) == 0:
+        logger.warning(consts.NO_KUSTOMIZATIONS_WARNING)
     for kustomization in kustomizations:
         if kustomization.name in kustomization_names:
             raise InvalidArgumentValueError(
@@ -132,15 +142,38 @@ def __validate_k8s_name(param_value, param_name, max_len):
             consts.INVALID_KUBERNETES_NAME_LENGTH_ERROR.format(param_name),
             consts.INVALID_KUBERNETES_NAME_LENGTH_HELP.format(param_name, max_len)
         )
-    if not re.match(consts.VALID_KUBERNETES_NAME_REGEX, param_value):
+    if not re.match(consts.VALID_KUBERNETES_DNS_NAME_REGEX, param_value):
         if param_value[0] == "-" or param_value[-1] == "-":
             raise InvalidArgumentValueError(
                 consts.INVALID_KUBERNETES_NAME_HYPHEN_ERROR.format(param_name),
                 consts.INVALID_KUBERNETES_NAME_HYPHEN_HELP.format(param_name)
             )
         raise InvalidArgumentValueError(
-            consts.INVALID_KUBERNETES_NAME_ERROR.format(param_name),
-            consts.INVALID_KUBERNETES_NAME_HELP.format(param_name)
+            consts.INVALID_KUBERNETES_DNS_NAME_ERROR.format(param_name),
+            consts.INVALID_KUBERNETES_DNS_NAME_HELP.format(param_name)
+        )
+
+
+def __validate_k8s_cr_name(param_value, param_name, max_len):
+    if len(param_value) > max_len:
+        raise InvalidArgumentValueError(
+            consts.INVALID_KUBERNETES_NAME_LENGTH_ERROR.format(param_name),
+            consts.INVALID_KUBERNETES_NAME_LENGTH_HELP.format(param_name, max_len)
+        )
+    if not re.match(consts.VALID_KUBERNETES_DNS_SUBDOMAIN_NAME_REGEX, param_value):
+        if param_value[0] == "-" or param_value[-1] == "-":
+            raise InvalidArgumentValueError(
+                consts.INVALID_KUBERNETES_NAME_HYPHEN_ERROR.format(param_name),
+                consts.INVALID_KUBERNETES_NAME_HYPHEN_HELP.format(param_name)
+            )
+        if param_value[0] == "." or param_value[-1] == ".":
+            raise InvalidArgumentValueError(
+                consts.INVALID_KUBERNETES_NAME_PERIOD_ERROR.format(param_name),
+                consts.INVALID_KUBERNETES_NAME_PERIOD_HELP.format(param_name)
+            )
+        raise InvalidArgumentValueError(
+            consts.INVALID_KUBERNETES_DNS_SUBDOMAIN_NAME_ERROR.format(param_name),
+            consts.INVALID_KUBERNETES_DNS_SUBDOMAIN_NAME_ERROR.format(param_name)
         )
 
 

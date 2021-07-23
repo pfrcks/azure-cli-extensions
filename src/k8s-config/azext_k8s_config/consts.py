@@ -37,8 +37,14 @@ INVALID_KUBERNETES_NAME_LENGTH_HELP = "Parameter {0} can be a maximum of {1} cha
 INVALID_KUBERNETES_NAME_HYPHEN_ERROR = "Error! Invalid {0}."
 INVALID_KUBERNETES_NAME_HYPHEN_HELP = "Parameter {0} cannot begin or end with a hyphen."
 
-INVALID_KUBERNETES_NAME_ERROR = "Error! Invalid {0}."
-INVALID_KUBERNETES_NAME_HELP = "Parameter {0} can only contain lowercase alphanumeric characters and hyphens"
+INVALID_KUBERNETES_NAME_PERIOD_ERROR = "Error! Invalid {0}."
+INVALID_KUBERNETES_NAME_PERIOD_HELP = "Parameter {0} cannot begin or end with a period."
+
+INVALID_KUBERNETES_DNS_NAME_ERROR = "Error! Invalid {0}."
+INVALID_KUBERNETES_DNS_NAME_HELP = "Parameter {0} can only contain lowercase alphanumeric characters and hyphens"
+
+INVALID_KUBERNETES_DNS_SUBDOMAIN_NAME_ERROR = "Error! Invalid {0}."
+INVALID_KUBERNETES_DNS_SUBDOMAIN_NAME_HELP = "Parameter {0} can only contain lowercase alphanumeric characters, hyphens, and periods"
 
 DUPLICATE_KUSTOMIZATION_NAME_ERROR = "Error! Invalid Kustomization list. Kustomization name {0} duplicated in multiple Kustomization objects"
 DUPLICATE_KUSTOMIZATION_NAME_HELP = "Ensure that all Kustomization names are unique and try again"
@@ -101,7 +107,9 @@ REQUIRED_KUSTOMIZATION_KEYS = {"name", "path"}
 
 VALID_DURATION_REGEX = r"((?P<hours>\d+?)h)?((?P<minutes>\d+?)m)?((?P<seconds>\d+?)s)?"
 VALID_URL_REGEX = r"^(((http|https|ssh)://)|(git@))"
-VALID_KUBERNETES_NAME_REGEX = r"^[a-z0-9]([.\-a-z0-9]*[a-z0-9])?$"
+
+VALID_KUBERNETES_DNS_SUBDOMAIN_NAME_REGEX = r"^[a-z0-9]([.\-a-z0-9]*[a-z0-9])?$"
+VALID_KUBERNETES_DNS_NAME_REGEX = r"^[a-z0-9]([.\-a-z0-9]*[a-z0-9])?$"
 
 GIT = "git"
 GIT_REPOSITORY = "GitRepository"
