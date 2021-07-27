@@ -3,6 +3,10 @@
 Release History
 ===============
 
+0.6.1
+++++++++++++++++++
+* Remove sending identity for clusters in Dogfood
+
 0.6.0
 ++++++++++++++++++
 * Update extension resource models to Track2
