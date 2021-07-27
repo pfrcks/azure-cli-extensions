@@ -81,8 +81,6 @@ def validate_kustomization(values):
 
 def validate_kustomization_list(name, kustomizations):
     kustomization_names = set()
-    if len(kustomizations) == 0:
-        logger.warning(consts.NO_KUSTOMIZATIONS_WARNING)
     for kustomization in kustomizations:
         if kustomization.name in kustomization_names:
             raise InvalidArgumentValueError(

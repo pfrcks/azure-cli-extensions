@@ -87,7 +87,7 @@ SCC_EXISTS_ON_CLUSTER_HELP = "Try removing all sourceControlConfigurations from 
 
 HTTP_URL_NO_AUTH_WARNING = "Warning! https url is being used without https auth params, ensure the repository url provided is not a private repo"
 
-NO_KUSTOMIZATIONS_WARNING = "Warning! No kustomizations were specified for this configuration. The specified source will not be applied to the cluster"
+NO_KUSTOMIZATIONS_WARNING = "Warning! No kustomizations were specified for this configuration. The specified source may not be applied to the cluster."
 
 # PROVIDER REGISTRATION -----------------------------------------
 

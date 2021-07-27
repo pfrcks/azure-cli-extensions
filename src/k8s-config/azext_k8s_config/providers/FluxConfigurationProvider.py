@@ -101,6 +101,8 @@ class FluxConfigurationProvider:
 
         if kustomization:
             validate_kustomization_list(name, kustomization)
+        else:
+            logger.warning(consts.NO_KUSTOMIZATIONS_WARNING)
 
         flux_configuration = FluxConfiguration(
             scope=scope,
@@ -114,6 +116,8 @@ class FluxConfigurationProvider:
 
         self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
         self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
+
+        logger.warning("Creating the fluxConfiguration '%s' in the cluster. This may take a minute...", name)
 
         return self.client.begin_create_or_update(resource_group_name, cluster_rp,
                                                   cluster_type, cluster_name, name, flux_configuration)
