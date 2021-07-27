@@ -294,5 +294,6 @@ def __get_config_settings_from_file(file_path):
 
     return settings
 
+
 def __is_dogfood_cluster(cmd):
     return cmd.cli_ctx.cloud.endpoints.resource_manager == consts.DF_RM_ENDPOINT

@@ -6,6 +6,7 @@ Release History
 0.6.1
 ++++++++++++++++++
 * Remove sending identity for clusters in Dogfood
+* Provide fix for getting tested distros for microsoft.openservicemesh
 
 0.6.0
 ++++++++++++++++++
