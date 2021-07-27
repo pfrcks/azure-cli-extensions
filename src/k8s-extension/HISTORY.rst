@@ -7,6 +7,7 @@ Release History
 ++++++++++++++++++
 * Remove sending identity for clusters in Dogfood
 * Provide fix for getting tested distros for microsoft.openservicemesh
+* Add location to model for identity
 
 0.6.0
 ++++++++++++++++++
