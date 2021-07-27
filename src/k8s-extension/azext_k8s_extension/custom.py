@@ -143,7 +143,6 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
         extension_instance.identity, extension_instance.location = \
             __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp)
 
-    print(extension_instance)
     # Try to create the resource
     return client.create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
 
@@ -235,7 +234,6 @@ def __create_identity(cmd, resource_group_name, cluster_name, cluster_type, clus
 
     try:
         resource = resources.get_by_id(cluster_resource_id, parent_api_version)
-        print(resource)
         location = str(resource.location.lower())
     except HttpResponseError as ex:
         raise ex
