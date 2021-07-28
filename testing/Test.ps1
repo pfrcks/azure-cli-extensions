@@ -51,10 +51,9 @@ if ($Type -eq 'k8s-extension') {
             exit 1
         }
     }
+    $testFilePath = "$PSScriptRoot/test/extensions"
     if ($OnlyPublicTests) {
-        $testFilePath = "$PSScriptRoot/test/extensions/public"
-    } else {
-        $testFilePath = "$PSScriptRoot/test/extensions"
+        $excludePath = "$PSScriptRoot/test/extensions/private"
     }
 } elseif ($Type -eq 'k8s-configuration') {
     $k8sConfigurationVersion = $ENVCONFIG.extensionVersion.'k8s-configuration'
@@ -75,11 +74,19 @@ if ($Type -eq 'k8s-extension') {
     }
     $Env:K8sExtensionName = "k8s-config"
     $testFilePath = "$PSScriptRoot/test"
+    $excludePath = "$PSScriptRoot/test/extensions/private"
 }
 
 if ($CI) {
     Write-Host "Invoking Pester to run tests from '$testFilePath'..."
-    $testResult = Invoke-Pester $testFilePath -Passthru -Output Detailed
+    if ($excludePath)
+    {
+        $testResult = Invoke-Pester $testFilePath -Passthru -Output Detailed -ExcludePath $excludePath
+    }
+    else
+    {
+        $testResult = Invoke-Pester $testFilePath -Passthru -Output Detailed
+    }
     $testResult | Export-JUnitReport -Path TestResults.xml
 } else {
     if ($Path) {

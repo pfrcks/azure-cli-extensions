@@ -154,7 +154,6 @@ class FluxConfigurationProvider:
                                                                   https_user, https_key, known_hosts,
                                                                   known_hosts_file, local_auth_ref)
 
-
         # Get the protected settings and validate the private key value
         protected_settings = get_protected_settings(
             ssh_private_key, ssh_private_key_file, https_user, https_key
