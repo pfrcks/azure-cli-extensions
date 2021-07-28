@@ -6,12 +6,22 @@
 # Changes may cause incorrect behavior and will be lost if the code is regenerated.
 # --------------------------------------------------------------------------
 
+from ._extensions_operations import ExtensionsOperations
+from ._operation_status_operations import OperationStatusOperations
+from ._cluster_extension_type_operations import ClusterExtensionTypeOperations
+from ._cluster_extension_types_operations import ClusterExtensionTypesOperations
+from ._extension_type_versions_operations import ExtensionTypeVersionsOperations
+from ._location_extension_types_operations import LocationExtensionTypesOperations
 from ._source_control_configurations_operations import SourceControlConfigurationsOperations
 from ._operations import Operations
-from ._extensions_operations import ExtensionsOperations
 
 __all__ = [
+    'ExtensionsOperations',
+    'OperationStatusOperations',
+    'ClusterExtensionTypeOperations',
+    'ClusterExtensionTypesOperations',
+    'ExtensionTypeVersionsOperations',
+    'LocationExtensionTypesOperations',
     'SourceControlConfigurationsOperations',
     'Operations',
-    'ExtensionsOperations',
 ]

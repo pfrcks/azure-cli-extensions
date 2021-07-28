@@ -12,7 +12,7 @@ from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveAr
     InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
 from azure.cli.core.commands.client_factory import get_subscription_id
 from azure.core.exceptions import HttpResponseError
-from .vendored_sdks.models import ConfigurationIdentity, Scope
+from .vendored_sdks.models import Identity, Scope
 from ._validators import validate_cc_registration
 
 from .partner_extensions.ContainerInsights import ContainerInsights
@@ -147,7 +147,7 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
             __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp)
 
     # Try to create the resource
-    return client.create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
+    return client.begin_create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
 
 
 def list_k8s_extension(client, resource_group_name, cluster_name, cluster_type):
@@ -211,7 +211,7 @@ def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluste
     # If there is any custom delete logic, this will call the logic
     extension_class.Delete(client, resource_group_name, cluster_name, name, cluster_type)
 
-    return client.delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+    return client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
 
 def __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp):
@@ -242,7 +242,7 @@ def __create_identity(cmd, resource_group_name, cluster_name, cluster_type, clus
         raise ex
     identity_type = "SystemAssigned"
 
-    return ConfigurationIdentity(type=identity_type), location
+    return Identity(type=identity_type), location
 
 
 def __get_cluster_rp(cluster_type):

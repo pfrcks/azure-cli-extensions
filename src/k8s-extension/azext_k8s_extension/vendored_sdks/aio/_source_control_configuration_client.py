@@ -17,24 +17,39 @@ if TYPE_CHECKING:
     from azure.core.credentials_async import AsyncTokenCredential
 
 from ._configuration import SourceControlConfigurationClientConfiguration
+from .operations import ExtensionsOperations
+from .operations import OperationStatusOperations
+from .operations import ClusterExtensionTypeOperations
+from .operations import ClusterExtensionTypesOperations
+from .operations import ExtensionTypeVersionsOperations
+from .operations import LocationExtensionTypesOperations
 from .operations import SourceControlConfigurationsOperations
 from .operations import Operations
-from .operations import ExtensionsOperations
 from .. import models
 
 
 class SourceControlConfigurationClient(object):
     """KubernetesConfiguration Client.
 
-    :ivar source_control_configurations: SourceControlConfigurationsOperations operations
-    :vartype source_control_configurations: azure.mgmt.kubernetesconfiguration.v2020_07_01_preview.aio.operations.SourceControlConfigurationsOperations
-    :ivar operations: Operations operations
-    :vartype operations: azure.mgmt.kubernetesconfiguration.v2020_07_01_preview.aio.operations.Operations
     :ivar extensions: ExtensionsOperations operations
-    :vartype extensions: azure.mgmt.kubernetesconfiguration.v2020_07_01_preview.aio.operations.ExtensionsOperations
+    :vartype extensions: azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.aio.operations.ExtensionsOperations
+    :ivar operation_status: OperationStatusOperations operations
+    :vartype operation_status: azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.aio.operations.OperationStatusOperations
+    :ivar cluster_extension_type: ClusterExtensionTypeOperations operations
+    :vartype cluster_extension_type: azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.aio.operations.ClusterExtensionTypeOperations
+    :ivar cluster_extension_types: ClusterExtensionTypesOperations operations
+    :vartype cluster_extension_types: azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.aio.operations.ClusterExtensionTypesOperations
+    :ivar extension_type_versions: ExtensionTypeVersionsOperations operations
+    :vartype extension_type_versions: azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.aio.operations.ExtensionTypeVersionsOperations
+    :ivar location_extension_types: LocationExtensionTypesOperations operations
+    :vartype location_extension_types: azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.aio.operations.LocationExtensionTypesOperations
+    :ivar source_control_configurations: SourceControlConfigurationsOperations operations
+    :vartype source_control_configurations: azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.aio.operations.SourceControlConfigurationsOperations
+    :ivar operations: Operations operations
+    :vartype operations: azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.aio.operations.Operations
     :param credential: Credential needed for the client to connect to Azure.
     :type credential: ~azure.core.credentials_async.AsyncTokenCredential
-    :param subscription_id: The Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000).
+    :param subscription_id: The ID of the target subscription.
     :type subscription_id: str
     :param str base_url: Service URL
     :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
@@ -57,11 +72,21 @@ class SourceControlConfigurationClient(object):
         self._serialize.client_side_validation = False
         self._deserialize = Deserializer(client_models)
 
+        self.extensions = ExtensionsOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.operation_status = OperationStatusOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.cluster_extension_type = ClusterExtensionTypeOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.cluster_extension_types = ClusterExtensionTypesOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.extension_type_versions = ExtensionTypeVersionsOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.location_extension_types = LocationExtensionTypesOperations(
+            self._client, self._config, self._serialize, self._deserialize)
         self.source_control_configurations = SourceControlConfigurationsOperations(
             self._client, self._config, self._serialize, self._deserialize)
         self.operations = Operations(
-            self._client, self._config, self._serialize, self._deserialize)
-        self.extensions = ExtensionsOperations(
             self._client, self._config, self._serialize, self._deserialize)
 
     async def _send_request(self, http_request: HttpRequest, **kwargs: Any) -> AsyncHttpResponse:
@@ -74,7 +99,7 @@ class SourceControlConfigurationClient(object):
         :rtype: ~azure.core.pipeline.transport.AsyncHttpResponse
         """
         path_format_arguments = {
-            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str', min_length=1),
         }
         http_request.url = self._client.format_url(http_request.url, **path_format_arguments)
         stream = kwargs.pop("stream", True)

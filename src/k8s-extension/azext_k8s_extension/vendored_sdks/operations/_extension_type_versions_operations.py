@@ -23,8 +23,8 @@ if TYPE_CHECKING:
     T = TypeVar('T')
     ClsType = Optional[Callable[[PipelineResponse[HttpRequest, HttpResponse], T, Dict[str, Any]], Any]]
 
-class Operations(object):
-    """Operations operations.
+class ExtensionTypeVersionsOperations(object):
+    """ExtensionTypeVersionsOperations operations.
 
     You should not instantiate this class directly. Instead, you should create a Client instance that
     instantiates it for you and attaches it as an attribute.
@@ -47,17 +47,23 @@ class Operations(object):
 
     def list(
         self,
+        location,  # type: str
+        extension_type_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["_models.ResourceProviderOperationList"]
-        """List all the available operations the KubernetesConfiguration resource provider supports.
+        # type: (...) -> Iterable["_models.ExtensionVersionList"]
+        """List available versions for an Extension Type.
 
+        :param location: extension location.
+        :type location: str
+        :param extension_type_name: Extension type name.
+        :type extension_type_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
-        :return: An iterator like instance of either ResourceProviderOperationList or the result of cls(response)
-        :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.models.ResourceProviderOperationList]
+        :return: An iterator like instance of either ExtensionVersionList or the result of cls(response)
+        :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.models.ExtensionVersionList]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ResourceProviderOperationList"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ExtensionVersionList"]
         error_map = {
             401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
         }
@@ -73,6 +79,12 @@ class Operations(object):
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
+                path_format_arguments = {
+                    'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str', min_length=1),
+                    'location': self._serialize.url("location", location, 'str'),
+                    'extensionTypeName': self._serialize.url("extension_type_name", extension_type_name, 'str'),
+                }
+                url = self._client.format_url(url, **path_format_arguments)
                 # Construct parameters
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
@@ -85,8 +97,8 @@ class Operations(object):
             return request
 
         def extract_data(pipeline_response):
-            deserialized = self._deserialize('ResourceProviderOperationList', pipeline_response)
-            list_of_elem = deserialized.value
+            deserialized = self._deserialize('ExtensionVersionList', pipeline_response)
+            list_of_elem = deserialized.versions
             if cls:
                 list_of_elem = cls(list_of_elem)
             return deserialized.next_link or None, iter(list_of_elem)
@@ -107,4 +119,4 @@ class Operations(object):
         return ItemPaged(
             get_next, extract_data
         )
-    list.metadata = {'url': '/providers/Microsoft.KubernetesConfiguration/operations'}  # type: ignore
+    list.metadata = {'url': '/subscriptions/{subscriptionId}/providers/Microsoft.KubernetesConfiguration/locations/{location}/extensionTypes/{extensionTypeName}/versions'}  # type: ignore

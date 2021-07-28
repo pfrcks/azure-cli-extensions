@@ -18,13 +18,13 @@ from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
-    from typing import Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
+    from typing import Any, Callable, Dict, Generic, Iterable, Optional, TypeVar, Union
 
     T = TypeVar('T')
     ClsType = Optional[Callable[[PipelineResponse[HttpRequest, HttpResponse], T, Dict[str, Any]], Any]]
 
-class Operations(object):
-    """Operations operations.
+class ClusterExtensionTypesOperations(object):
+    """ClusterExtensionTypesOperations operations.
 
     You should not instantiate this class directly. Instead, you should create a Client instance that
     instantiates it for you and attaches it as an attribute.
@@ -47,17 +47,27 @@ class Operations(object):
 
     def list(
         self,
+        resource_group_name,  # type: str
+        cluster_rp,  # type: Union[str, "_models.Enum0"]
+        cluster_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["_models.ResourceProviderOperationList"]
-        """List all the available operations the KubernetesConfiguration resource provider supports.
+        # type: (...) -> Iterable["_models.ExtensionTypeList"]
+        """Get Extension Types.
 
+        :param resource_group_name: The name of the resource group. The name is case insensitive.
+        :type resource_group_name: str
+        :param cluster_rp: The Kubernetes cluster RP - either Microsoft.ContainerService (for AKS
+         clusters) or Microsoft.Kubernetes (for OnPrem K8S clusters).
+        :type cluster_rp: str or ~azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.models.Enum0
+        :param cluster_name: The name of the kubernetes cluster.
+        :type cluster_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
-        :return: An iterator like instance of either ResourceProviderOperationList or the result of cls(response)
-        :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.models.ResourceProviderOperationList]
+        :return: An iterator like instance of either ExtensionTypeList or the result of cls(response)
+        :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.kubernetesconfiguration.v2021_05_01_preview.models.ExtensionTypeList]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ResourceProviderOperationList"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ExtensionTypeList"]
         error_map = {
             401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
         }
@@ -73,6 +83,13 @@ class Operations(object):
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
+                path_format_arguments = {
+                    'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str', min_length=1),
+                    'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str', max_length=90, min_length=1, pattern=r'^[-\w\._\(\)]+$'),
+                    'clusterRp': self._serialize.url("cluster_rp", cluster_rp, 'str'),
+                    'clusterName': self._serialize.url("cluster_name", cluster_name, 'str'),
+                }
+                url = self._client.format_url(url, **path_format_arguments)
                 # Construct parameters
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
@@ -85,7 +102,7 @@ class Operations(object):
             return request
 
         def extract_data(pipeline_response):
-            deserialized = self._deserialize('ResourceProviderOperationList', pipeline_response)
+            deserialized = self._deserialize('ExtensionTypeList', pipeline_response)
             list_of_elem = deserialized.value
             if cls:
                 list_of_elem = cls(list_of_elem)
@@ -107,4 +124,4 @@ class Operations(object):
         return ItemPaged(
             get_next, extract_data
         )
-    list.metadata = {'url': '/providers/Microsoft.KubernetesConfiguration/operations'}  # type: ignore
+    list.metadata = {'url': '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/connectedClusters/{clusterName}/providers/Microsoft.KubernetesConfiguration/extensionTypes'}  # type: ignore

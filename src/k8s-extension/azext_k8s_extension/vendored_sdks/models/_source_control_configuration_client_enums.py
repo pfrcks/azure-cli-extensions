@@ -26,6 +26,13 @@ class _CaseInsensitiveEnumMeta(EnumMeta):
             raise AttributeError(name)
 
 
+class ClusterTypes(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """Cluster types
+    """
+
+    CONNECTED_CLUSTERS = "connectedClusters"
+    MANAGED_CLUSTERS = "managedClusters"
+
 class ComplianceStateType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """The compliance state of the configuration.
     """
@@ -35,6 +42,15 @@ class ComplianceStateType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     NONCOMPLIANT = "Noncompliant"
     INSTALLED = "Installed"
     FAILED = "Failed"
+
+class CreatedByType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """The type of identity that created the resource.
+    """
+
+    USER = "User"
+    APPLICATION = "Application"
+    MANAGED_IDENTITY = "ManagedIdentity"
+    KEY = "Key"
 
 class Enum0(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
 
@@ -46,13 +62,10 @@ class Enum1(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     MANAGED_CLUSTERS = "managedClusters"
     CONNECTED_CLUSTERS = "connectedClusters"
 
-class InstallStateType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
-    """Status of installation of this instance of the extension.
-    """
+class Enum5(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
 
-    PENDING = "Pending"
-    INSTALLED = "Installed"
-    FAILED = "Failed"
+    MANAGED_CLUSTERS = "managedClusters"
+    CONNECTED_CLUSTERS = "connectedClusters"
 
 class LevelType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """Level of the status.
@@ -83,6 +96,17 @@ class OperatorType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
 
     FLUX = "Flux"
 
+class ProvisioningState(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """The provisioning state of the extension resource.
+    """
+
+    SUCCEEDED = "Succeeded"
+    FAILED = "Failed"
+    CANCELED = "Canceled"
+    CREATING = "Creating"
+    UPDATING = "Updating"
+    DELETING = "Deleting"
+
 class ProvisioningStateType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """The provisioning state of the resource provider.
     """
@@ -92,11 +116,3 @@ class ProvisioningStateType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum))
     RUNNING = "Running"
     SUCCEEDED = "Succeeded"
     FAILED = "Failed"
-
-class ResourceIdentityType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
-    """The type of identity used for the configuration. Type 'SystemAssigned' will use an implicitly
-    created identity. Type 'None' will not use Managed Identity for the configuration.
-    """
-
-    SYSTEM_ASSIGNED = "SystemAssigned"
-    NONE = "None"
