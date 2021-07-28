@@ -37,7 +37,8 @@ def ExtensionFactory(extension_name):
         'microsoft.openservicemesh': OpenServiceMesh,
         'microsoft.azureml.kubernetes': AzureMLKubernetes,
         'cassandradatacentersoperator': DefaultExtensionWithIdentity,
-        'microsoft.policyinsights': AzurePolicy
+        'microsoft.policyinsights': AzurePolicy,
+        'microsoft.flux': DefaultExtensionWithIdentity
     }
 
     # Return the extension if we find it in the map, else return the default

@@ -3,6 +3,10 @@
 Release History
 ===============
 
+0.6.1-beta.2
+++++++++++++++++++
+* Add microsoft.flux to private version
+
 0.6.1-beta.1
 ++++++++++++++++++
 * Remove sending identity for clusters in Dogfood
