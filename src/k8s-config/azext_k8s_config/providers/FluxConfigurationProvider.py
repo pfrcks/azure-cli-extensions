@@ -99,10 +99,18 @@ class FluxConfigurationProvider:
                                                                   https_key, known_hosts, known_hosts_file,
                                                                   local_auth_ref)
 
+        # Do Validations on the Kustomization List
         if kustomization:
             validate_kustomization_list(name, kustomization)
         else:
             logger.warning(consts.NO_KUSTOMIZATIONS_WARNING)
+
+        # Get the protected settings and validate the private key value
+        protected_settings = get_protected_settings(
+            ssh_private_key, ssh_private_key_file, https_user, https_key
+        )
+        if consts.SSH_PRIVATE_KEY_KEY in protected_settings:
+            validate_private_key(protected_settings['sshPrivateKey'])
 
         flux_configuration = FluxConfiguration(
             scope=scope,
@@ -111,7 +119,8 @@ class FluxConfigurationProvider:
             timeout=timeout,
             sync_interval=sync_interval,
             git_repository=git_repository,
-            kustomizations=kustomization
+            kustomizations=kustomization,
+            configuration_protected_settings=protected_settings,
         )
 
         self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
@@ -145,12 +154,23 @@ class FluxConfigurationProvider:
                                                                   https_user, https_key, known_hosts,
                                                                   known_hosts_file, local_auth_ref)
 
+
+        # Get the protected settings and validate the private key value
+        protected_settings = get_protected_settings(
+            ssh_private_key, ssh_private_key_file, https_user, https_key
+        )
+        if consts.SSH_PRIVATE_KEY_KEY in protected_settings:
+            validate_private_key(protected_settings['sshPrivateKey'])
+
+        print(protected_settings)
+
         flux_configuration = FluxConfiguration(
             scope=scope,
             namespace=namespace,
             source_kind=dp_source_kind,
             git_repository=git_repository,
-            kustomizations=[]
+            kustomizations=[],
+            configuration_protected_settings=protected_settings,
         )
 
         # cache the payload if --defer used or send to Azure
@@ -187,10 +207,11 @@ class FluxConfigurationProvider:
             force=force
         )
 
-        proposed_change = flux_configuration.kustomizations[:] + kustomization
+        proposed_change = flux_configuration.kustomizations[:] + [kustomization]
         validate_kustomization_list(name, proposed_change)
 
         upsert_to_collection(flux_configuration, 'kustomizations', kustomization, 'name')
+        flux_configuration.configuration_protected_settings = None
         flux_configuration = cached_put(self.cmd, self.client.begin_create_or_update, flux_configuration,
                                         resource_group_name=resource_group_name, flux_configuration_name=name,
                                         cluster_rp=cluster_rp, cluster_resource_name=cluster_type,
@@ -240,13 +261,6 @@ class FluxConfigurationProvider:
         # Pre-Validation
         validate_duration("--timeout", timeout)
         validate_duration("--sync-interval", sync_interval)
-
-        # Get the protected settings and validate the private key value
-        protected_settings = get_protected_settings(
-            ssh_private_key, ssh_private_key_file, https_user, https_key
-        )
-        if consts.SSH_PRIVATE_KEY_KEY in protected_settings:
-            validate_private_key(protected_settings['sshPrivateKey'])
 
         # Get the known hosts data and validate it
         knownhost_data = get_data_from_key_or_file(known_hosts, known_hosts_file)
