@@ -474,9 +474,9 @@ def _get_cluster_rp_api_version(cluster_type) -> Tuple[str, str]:
     elif cluster_type.lower() == 'appliances':
         rp = 'Microsoft.ResourceConnector'
         parent_api_version = '2020-09-15-privatepreview'
-    elif cluster_type.lower() == '':
+    elif cluster_type.lower() == '' or cluster_type.lower() == 'managedclusters':
         rp = 'Microsoft.ContainerService'
-        parent_api_version = '2017-07-01'
+        parent_api_version = '2021-05-01'
     else:
         raise InvalidArgumentValueError("Error! Cluster type '{}' is not supported".format(cluster_type))
     return rp, parent_api_version
