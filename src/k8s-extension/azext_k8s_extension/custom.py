@@ -139,8 +139,9 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
 
     # Create identity, if required
     if create_identity:
-        extension_instance.identity, extension_instance.location = \
-            __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp)
+        identity,location = __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp)
+        if identity is not None and location is not None:
+            extension_instance.identity, extension_instance.location = identity,location
 
     # Try to create the resource
     return sdk_no_wait(
@@ -226,7 +227,8 @@ def __create_identity(cmd, resource_group_name, cluster_name, cluster_type, clus
     elif cluster_rp == 'Microsoft.ResourceConnector':
         parent_api_version = '2020-09-15-privatepreview'
     elif cluster_rp == 'Microsoft.ContainerService':
-        parent_api_version = '2017-07-01'
+        # there are created by RP always
+        return None,None
     else:
         raise InvalidArgumentValueError(
             "Error! Cluster type '{}' is not supported for extension identity".format(cluster_type)
@@ -249,7 +251,7 @@ def __get_cluster_rp(cluster_type):
         rp = 'Microsoft.Kubernetes'
     elif cluster_type.lower() == 'appliances':
         rp = 'Microsoft.ResourceConnector'
-    elif cluster_type.lower() == '':
+    elif cluster_type.lower() == '' or cluster_type.lower() == 'managedclusters':
         rp = 'Microsoft.ContainerService'
     else:
         raise InvalidArgumentValueError("Error! Cluster type '{}' is not supported".format(cluster_type))

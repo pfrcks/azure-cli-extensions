@@ -71,9 +71,11 @@ def get_chart_path(registry_path, kube_config, kube_context):
     # Pulling helm chart from registry
     os.environ['HELM_EXPERIMENTAL_OCI'] = '1'
     pull_helm_chart(registry_path, kube_config, kube_context)
-
+    reg_path_array = registry_path.split(':')
+    agent_version = reg_path_array[1]
+    
     # Exporting helm chart after cleanup
-    chart_export_path = os.path.join(os.path.expanduser('~'), '.azure', 'AzureArcCharts')
+    chart_export_path = os.path.join(os.path.expanduser('~'), '.azure', 'AzureArcCharts', agent_version)
     try:
         if os.path.isdir(chart_export_path):
             shutil.rmtree(chart_export_path)
