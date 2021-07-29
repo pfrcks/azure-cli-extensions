@@ -11,6 +11,7 @@ from knack.log import get_logger
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
     InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
 from azure.cli.core.commands.client_factory import get_subscription_id
+from azure.cli.core.util import sdk_no_wait
 from azure.core.exceptions import HttpResponseError
 from .vendored_sdks.models import Identity, Scope
 from ._validators import validate_cc_registration
@@ -77,7 +78,7 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
                          extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
                          version=None, target_namespace=None, release_namespace=None, configuration_settings=None,
                          configuration_protected_settings=None, configuration_settings_file=None,
-                         configuration_protected_settings_file=None, tags=None):
+                         configuration_protected_settings_file=None, tags=None, no_wait=False):
     """Create a new Extension Instance.
 
     """
@@ -147,7 +148,7 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
             __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp)
 
     # Try to create the resource
-    return client.begin_create(resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
+    return sdk_no_wait(no_wait, client.begin_create, resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
 
 
 def list_k8s_extension(client, resource_group_name, cluster_name, cluster_type):
@@ -194,7 +195,7 @@ def update_k8s_extension(client, resource_group_name, cluster_type, cluster_name
     # return client.update(resource_group_name, cluster_rp, cluster_type, cluster_name, name, upd_extension)
 
 
-def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluster_type):
+def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluster_type, no_wait=False):
     """Delete an existing Kubernetes Extension.
 
     """
@@ -211,7 +212,7 @@ def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluste
     # If there is any custom delete logic, this will call the logic
     extension_class.Delete(client, resource_group_name, cluster_name, name, cluster_type)
 
-    return client.begin_delete(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+    return sdk_no_wait(no_wait, client.begin_delete, resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
 
 def __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp):
