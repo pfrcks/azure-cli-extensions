@@ -83,7 +83,7 @@ class FluxConfigurationProvider:
                namespace='default', kind=consts.GIT, timeout=None, sync_interval=None, branch=None,
                tag=None, semver=None, commit=None, local_auth_ref=None, ssh_private_key=None,
                ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
-               known_hosts_file=None, kustomization=None):
+               known_hosts_file=None, suspend=False, kustomization=None):
 
         # Determine the cluster RP
         cluster_rp = get_cluster_rp(cluster_type)
@@ -116,9 +116,8 @@ class FluxConfigurationProvider:
             scope=scope,
             namespace=namespace,
             source_kind=dp_source_kind,
-            timeout=timeout,
-            sync_interval=sync_interval,
             git_repository=git_repository,
+            suspend=suspend,
             kustomizations=kustomization,
             configuration_protected_settings=protected_settings,
         )

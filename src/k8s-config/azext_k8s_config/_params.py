@@ -95,6 +95,8 @@ def load_arguments(self, _):
                    options_list=['--local-auth-ref'],
                    arg_group="Auth",
                    help='Local reference to a kubernetes secret in the configuration namespace to use for communication to the source')
+        c.argument('suspend',
+                   help='Suspend the reconciliation of the source and kustomizations associated with this configuration')
         c.argument('kustomization',
                    options_list=['--kustomization', '-k'],
                    action=KustomizationAddAction,

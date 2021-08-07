@@ -58,12 +58,13 @@ def flux_config_create(cmd, client, resource_group_name, cluster_type, cluster_n
                        scope='cluster', namespace='default', kind=consts.GIT, timeout=None, sync_interval=None,
                        branch=None, tag=None, semver=None, commit=None, local_auth_ref=None, ssh_private_key=None,
                        ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
-                       known_hosts_file=None, kustomization=None):
+                       known_hosts_file=None, suspend=False, kustomization=None):
 
     provider = FluxConfigurationProvider(cmd)
     return provider.create(resource_group_name, cluster_type, cluster_name, name, url, scope, namespace, kind,
                            timeout, sync_interval, branch, tag, semver, commit, local_auth_ref, ssh_private_key,
-                           ssh_private_key_file, https_user, https_key, known_hosts, known_hosts_file, kustomization)
+                           ssh_private_key_file, https_user, https_key, known_hosts, known_hosts_file, suspend,
+                           kustomization)
 
 
 def flux_config_create_source(cmd, client, resource_group_name, cluster_type, cluster_name, name, url=None,
