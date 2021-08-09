@@ -7,6 +7,7 @@
 
 from azure.cli.core.azclierror import DeploymentError, ResourceNotFoundError
 from azure.cli.core.commands import cached_get, cached_put, upsert_to_collection, get_property
+from azure.cli.core.util import sdk_no_wait
 from azure.core.exceptions import HttpResponseError
 from knack.log import get_logger
 
@@ -83,7 +84,7 @@ class FluxConfigurationProvider:
                namespace='default', kind=consts.GIT, timeout=None, sync_interval=None, branch=None,
                tag=None, semver=None, commit=None, local_auth_ref=None, ssh_private_key=None,
                ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
-               known_hosts_file=None, suspend=False, kustomization=None):
+               known_hosts_file=None, suspend=False, kustomization=None, no_wait=False):
 
         # Determine the cluster RP
         cluster_rp = get_cluster_rp(cluster_type)
@@ -123,18 +124,18 @@ class FluxConfigurationProvider:
         )
 
         self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
-        self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
+        self._validate_extension_install(resource_group_name, cluster_type, cluster_name, no_wait)
 
-        logger.warning("Creating the fluxConfiguration '%s' in the cluster. This may take a minute...", name)
+        logger.warning("Creating the flux configuration '%s' in the cluster. This may take a minute...", name)
 
-        return self.client.begin_create_or_update(resource_group_name, cluster_rp,
-                                                  cluster_type, cluster_name, name, flux_configuration)
+        return sdk_no_wait(no_wait, self.client.begin_create_or_update, resource_group_name, cluster_rp,
+                           cluster_type, cluster_name, name, flux_configuration)
 
     def create_source(self, resource_group_name, cluster_type, cluster_name, name, url=None, scope='cluster',
                       namespace='default', kind=consts.GIT, timeout=None, sync_interval=None, branch=None,
                       tag=None, semver=None, commit=None, local_auth_ref=None, ssh_private_key=None,
                       ssh_private_key_file=None, https_user=None, https_key=None, known_hosts=None,
-                      known_hosts_file=None):
+                      known_hosts_file=None, no_wait=False):
         # Determine the cluster RP
         cluster_rp = get_cluster_rp(cluster_type)
         dp_source_kind = ""
@@ -143,7 +144,7 @@ class FluxConfigurationProvider:
         # Validate the extension install if this is not a deferred command
         if not self._is_deferred():
             self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
-            self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
+            self._validate_extension_install(resource_group_name, cluster_type, cluster_name, no_wait)
 
         if kind == consts.GIT:
             dp_source_kind = consts.GIT_REPOSITORY
@@ -216,13 +217,13 @@ class FluxConfigurationProvider:
                                         cluster_name=cluster_name, setter_arg_name='flux_configuration')
         return get_property(flux_configuration.kustomizations, name)
 
-    def delete(self, resource_group_name, cluster_type, cluster_name, name, force):
+    def delete(self, resource_group_name, cluster_type, cluster_name, name, force, no_wait):
         cluster_rp = get_cluster_rp(cluster_type)
 
         if not force:
             logger.info("Delting the flux configuration from the cluster. This may take a minute...")
-        return self.client.begin_delete(resource_group_name, cluster_rp, cluster_type,
-                                        cluster_name, name, force_delete=force)
+        return sdk_no_wait(no_wait, self.client.begin_delete, resource_group_name, cluster_rp, cluster_type,
+                           cluster_name, name)
 
     def _is_deferred(self):
         if '--defer' in self.cmd.cli_ctx.data.get('safe_params'):
@@ -238,7 +239,7 @@ class FluxConfigurationProvider:
                 consts.SCC_EXISTS_ON_CLUSTER_ERROR,
                 consts.SCC_EXISTS_ON_CLUSTER_HELP)
 
-    def _validate_extension_install(self, resource_group_name, cluster_type, cluster_name):
+    def _validate_extension_install(self, resource_group_name, cluster_type, cluster_name, no_wait):
         # Validate if the extension is installed, if not, install it
         extensions = self.extension_provider.list(resource_group_name, cluster_type, cluster_name)
         found_flux_extension = False
@@ -250,7 +251,7 @@ class FluxConfigurationProvider:
             logger.warning("'Micrsoft.Flux' extension not found on the cluster, installing it now."
                            " This may take a minute...")
             self.extension_provider.create(resource_group_name, cluster_type, cluster_name,
-                                           "flux", consts.FLUX_EXTENSION_TYPE).result()
+                                           "flux", consts.FLUX_EXTENSION_TYPE, no_wait=no_wait).result()
             logger.warning("'Microsoft.Flux' extension was successfully installed on the cluster")
 
     def _validate_and_get_gitrepository(self, url, branch, tag, semver, commit, timeout, sync_interval,

@@ -103,7 +103,7 @@ SSH_PRIVATE_KEY_KEY = "sshPrivateKey"
 HTTPS_USER_KEY = "httpsUser"
 HTTPS_KEY_KEY = "httpsKey"
 
-DEPENDENCY_KEYS = ["dependencies", "depends_on"]
+DEPENDENCY_KEYS = ["dependencies", "depends_on", "dependsOn", "depends"]
 SYNC_INTERVAL_KEYS = ["interval", "sync_interval", "syncInterval"]
 RETRY_INTERVAL_KEYS = ["retryInterval", "retry_interval"]
 TIMEOUT_KEYS = ["timeout"]

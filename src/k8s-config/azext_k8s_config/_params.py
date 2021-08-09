@@ -92,7 +92,7 @@ def load_arguments(self, _):
                    arg_group="Auth",
                    help='Filepath to known_hosts contents containing public SSH keys required to access private Git instances')
         c.argument('local_auth_ref',
-                   options_list=['--local-auth-ref'],
+                   options_list=['--local-auth-ref', '--local-ref'],
                    arg_group="Auth",
                    help='Local reference to a kubernetes secret in the configuration namespace to use for communication to the source')
         c.argument('suspend',

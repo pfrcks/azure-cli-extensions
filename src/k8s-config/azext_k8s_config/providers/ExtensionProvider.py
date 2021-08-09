@@ -11,6 +11,7 @@ from azure.core.exceptions import HttpResponseError
 
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError
 from azure.cli.core.commands.client_factory import get_subscription_id
+from azure.cli.core.util import sdk_no_wait
 
 from ..vendored_sdks.v2021_05_01_preview.models import Identity
 
@@ -80,23 +81,19 @@ class ExtensionProvider:
         cluster_rp = get_cluster_rp(cluster_type)
         return self.client.list(resource_group_name, cluster_rp, cluster_type, cluster_name)
 
-    def delete(self, resource_group_name, cluster_type, cluster_name, name, force):
+    def delete(self, resource_group_name, cluster_type, cluster_name, name, force, no_wait):
         cluster_rp = get_cluster_rp(cluster_type)
 
         if not force:
             logger.info("Delting the flux configuration from the cluster. This may take a minute...")
-        return self.client.begin_delete(resource_group_name,
-                                        cluster_rp,
-                                        cluster_type,
-                                        cluster_name,
-                                        name,
-                                        force_delete=force)
+        return sdk_no_wait(no_wait, self.client.begin_delete, resource_group_name,
+                           cluster_rp, cluster_type, cluster_name, name, force_delete=force)
 
     def create(self, resource_group_name, cluster_type, cluster_name, name,
                extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
                version=None, target_namespace=None, release_namespace=None, configuration_settings=None,
                configuration_protected_settings=None, configuration_settings_file=None,
-               configuration_protected_settings_file=None, tags=None):
+               configuration_protected_settings_file=None, tags=None, no_wait=False):
         """Create a new Extension Instance.
 
         """
@@ -165,12 +162,8 @@ class ExtensionProvider:
                                                      cluster_name)
 
         logger.info("Starting extension creation on the cluster. This might take a minute...")
-        return self.client.begin_create(resource_group_name,
-                                        cluster_rp,
-                                        cluster_type,
-                                        cluster_name,
-                                        name,
-                                        extension_instance)
+        return sdk_no_wait(no_wait, self.client.begin_create, resource_group_name, cluster_rp, cluster_type,
+                           cluster_name, name, extension_instance)
 
     def __add_identity(self, extension_instance, resource_group_name, cluster_rp, cluster_type, cluster_name):
         subscription_id = get_subscription_id(self.cmd.cli_ctx)
