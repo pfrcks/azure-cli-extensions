@@ -66,10 +66,12 @@ def validate_kustomization(values):
         key, value = item.split('=', 1)
         if key == "name":
             __validate_k8s_name(value, key, 63)
-        elif key == consts.SYNC_INTERVAL_KEYS:
-            validate_duration("interval", value)
-        elif key == consts.TIMEOUT_KEY:
+        elif key in consts.SYNC_INTERVAL_KEYS:
+            validate_duration("sync-interval", value)
+        elif key in consts.TIMEOUT_KEYS:
             validate_duration("timeout", value)
+        elif key in consts.RETRY_INTERVAL_KEYS:
+            validate_duration("retry-interval", value)
         if key in required_keys:
             required_keys.remove(key)
     if required_keys:

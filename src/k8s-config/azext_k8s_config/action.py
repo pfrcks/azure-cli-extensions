@@ -17,6 +17,8 @@ class KustomizationAddAction(argparse._AppendAction):
         validate_kustomization(values)
         dependencies = []
         sync_interval = None
+        retry_interval = None
+        timeout = None
         kwargs = {}
         for item in values:
             try:
@@ -25,6 +27,10 @@ class KustomizationAddAction(argparse._AppendAction):
                     dependencies = parse_dependencies(value)
                 elif key in consts.SYNC_INTERVAL_KEYS:
                     sync_interval = value
+                elif key in consts.RETRY_INTERVAL_KEYS:
+                    retry_interval = value
+                elif key in consts.TIMEOUT_KEYS:
+                    timeout = value
                 else:
                     kwargs[key] = value
             except ValueError as ex:
@@ -33,7 +39,7 @@ class KustomizationAddAction(argparse._AppendAction):
         super().__call__(
             parser,
             namespace,
-            KustomizationDefinition(depends_on=dependencies, sync_interval=get_duration(sync_interval), **kwargs),
+            KustomizationDefinition(depends_on=dependencies, sync_interval_in_seconds=get_duration(sync_interval), retry_interval_in_seconds=get_duration(retry_interval), timeout_in_seconds=get_duration(timeout), **kwargs),
             option_string
         )
 

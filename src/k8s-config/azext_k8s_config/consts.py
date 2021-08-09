@@ -104,8 +104,9 @@ HTTPS_USER_KEY = "httpsUser"
 HTTPS_KEY_KEY = "httpsKey"
 
 DEPENDENCY_KEYS = ["dependencies", "depends_on"]
-SYNC_INTERVAL_KEYS = ["interval", "sync_interval"]
-TIMEOUT_KEY = "timeout"
+SYNC_INTERVAL_KEYS = ["interval", "sync_interval", "syncInterval"]
+RETRY_INTERVAL_KEYS = ["retryInterval", "retry_interval"]
+TIMEOUT_KEYS = ["timeout"]
 REQUIRED_KUSTOMIZATION_KEYS = {"name"}
 
 VALID_DURATION_REGEX = r"((?P<hours>\d+?)h)?((?P<minutes>\d+?)m)?((?P<seconds>\d+?)s)?"
