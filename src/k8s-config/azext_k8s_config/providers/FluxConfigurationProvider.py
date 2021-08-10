@@ -126,7 +126,7 @@ class FluxConfigurationProvider:
         self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
         self._validate_extension_install(resource_group_name, cluster_type, cluster_name, no_wait)
 
-        logger.warning("Creating the flux configuration '%s' in the cluster. This may take a minute...", name)
+        logger.warning("Creating the flux configuration '%s' in the cluster. This may take a few minutes...", name)
 
         return sdk_no_wait(no_wait, self.client.begin_create_or_update, resource_group_name, cluster_rp,
                            cluster_type, cluster_name, name, flux_configuration)
@@ -188,7 +188,7 @@ class FluxConfigurationProvider:
         # Validate the extension install if this is not a deferred command
         if not self._is_deferred():
             self._validate_source_control_config_not_installed(resource_group_name, cluster_type, cluster_name)
-            self._validate_extension_install(resource_group_name, cluster_type, cluster_name)
+            self._validate_extension_install(resource_group_name, cluster_type, cluster_name, no_wait=False)
 
         flux_configuration = cached_get(self.cmd, self.client.get, resource_group_name=resource_group_name,
                                         flux_configuration_name=name, cluster_rp=cluster_rp,
@@ -221,7 +221,7 @@ class FluxConfigurationProvider:
         cluster_rp = get_cluster_rp(cluster_type)
 
         if not force:
-            logger.info("Delting the flux configuration from the cluster. This may take a minute...")
+            logger.info("Delting the flux configuration from the cluster. This may take a few minutes...")
         return sdk_no_wait(no_wait, self.client.begin_delete, resource_group_name, cluster_rp, cluster_type,
                            cluster_name, name)
 
@@ -248,8 +248,8 @@ class FluxConfigurationProvider:
                 found_flux_extension = True
                 break
         if not found_flux_extension:
-            logger.warning("'Micrsoft.Flux' extension not found on the cluster, installing it now."
-                           " This may take a minute...")
+            logger.warning("'Microsoft.Flux' extension not found on the cluster, installing it now."
+                           " This may take a few minutes...")
             self.extension_provider.create(resource_group_name, cluster_type, cluster_name,
                                            "flux", consts.FLUX_EXTENSION_TYPE, no_wait=no_wait).result()
             logger.warning("'Microsoft.Flux' extension was successfully installed on the cluster")

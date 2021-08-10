@@ -39,7 +39,13 @@ class KustomizationAddAction(argparse._AppendAction):
         super().__call__(
             parser,
             namespace,
-            KustomizationDefinition(depends_on=dependencies, sync_interval_in_seconds=get_duration(sync_interval), retry_interval_in_seconds=get_duration(retry_interval), timeout_in_seconds=get_duration(timeout), **kwargs),
+            KustomizationDefinition(
+                depends_on=dependencies,
+                sync_interval_in_seconds=get_duration(sync_interval),
+                retry_interval_in_seconds=get_duration(retry_interval),
+                timeout_in_seconds=get_duration(timeout),
+                **kwargs
+            ),
             option_string
         )
 

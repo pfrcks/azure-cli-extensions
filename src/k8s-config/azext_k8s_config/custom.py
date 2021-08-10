@@ -121,4 +121,4 @@ def extension_create(cmd, client, resource_group_name, cluster_type, cluster_nam
 
 def extension_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name, force=False, no_wait=False):
     provider = ExtensionProvider(cmd)
-    return provider.delete(resource_group_name, cluster_type, cluster_name, name, force)
+    return provider.delete(resource_group_name, cluster_type, cluster_name, name, force, no_wait)
