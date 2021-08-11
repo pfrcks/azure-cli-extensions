@@ -9,7 +9,8 @@ from azure.core.exceptions import HttpResponseError
 from knack.log import get_logger
 
 from .._client_factory import k8s_config_sourcecontrol_client
-from ..utils import fix_compliance_state, get_cluster_rp, get_data_from_key_or_file, get_protected_settings
+from ..utils import fix_compliance_state, get_cluster_rp, get_data_from_key_or_file, to_base64
+from .. import consts
 
 from ..vendored_sdks.v2021_03_01.models import (
     HelmOperatorProperties,
@@ -81,14 +82,6 @@ class SourceControlConfigurationProvider:
             helm_operator_properties.chart_version = helm_operator_chart_version.strip()
             helm_operator_properties.chart_values = helm_operator_params.strip()
 
-        protected_settings = get_protected_settings(ssh_private_key,
-                                                    ssh_private_key_file,
-                                                    https_user,
-                                                    https_key)
-        knownhost_data = get_data_from_key_or_file(ssh_known_hosts, ssh_known_hosts_file)
-        if knownhost_data:
-            validate_known_hosts(knownhost_data)
-
         validate_url_with_params(repository_url,
                                  ssh_private_key,
                                  ssh_private_key_file,
@@ -96,6 +89,14 @@ class SourceControlConfigurationProvider:
                                  ssh_known_hosts_file,
                                  https_user,
                                  https_key)
+
+        protected_settings = get_protected_settings(ssh_private_key,
+                                                    ssh_private_key_file,
+                                                    https_user,
+                                                    https_key)
+        knownhost_data = get_data_from_key_or_file(ssh_known_hosts, ssh_known_hosts_file)
+        if knownhost_data:
+            validate_known_hosts(knownhost_data)
 
         # Validate that the subscription is registered to Microsoft.KubernetesConfiguration
         validate_cc_registration(self.cmd)
@@ -119,3 +120,20 @@ class SourceControlConfigurationProvider:
                                               name, source_control_configuration)
 
         return fix_compliance_state(config)
+
+
+def get_protected_settings(ssh_private_key, ssh_private_key_file, https_user, https_key):
+    protected_settings = {}
+    ssh_private_key_data = get_data_from_key_or_file(ssh_private_key, ssh_private_key_file)
+
+    # Add gitops private key data to protected settings if exists
+    # Dry-run all key types to determine if the private key is in a valid format
+    if ssh_private_key_data:
+        protected_settings[consts.SSH_PRIVATE_KEY_KEY] = ssh_private_key_data
+
+    # Check if both httpsUser and httpsKey exist, then add to protected settings
+    if https_user and https_key:
+        protected_settings[consts.HTTPS_USER_KEY] = to_base64(https_user)
+        protected_settings[consts.HTTPS_KEY_KEY] = to_base64(https_key)
+
+    return protected_settings

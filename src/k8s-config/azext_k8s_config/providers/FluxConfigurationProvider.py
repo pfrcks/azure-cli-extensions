@@ -12,7 +12,7 @@ from azure.core.exceptions import HttpResponseError
 from knack.log import get_logger
 
 from .._client_factory import k8s_config_fluxconfig_client
-from ..utils import get_cluster_rp, get_data_from_key_or_file, get_protected_settings, get_duration
+from ..utils import get_cluster_rp, get_data_from_key_or_file, get_duration, to_base64
 from ..validators import (
     validate_cc_registration,
     validate_known_hosts,
@@ -281,7 +281,7 @@ class FluxConfigurationProvider:
             sync_interval_in_seconds=get_duration(sync_interval),
             repository_ref=repository_ref,
             ssh_known_hosts=knownhost_data,
-            https_user=https_user,
+            https_user=to_base64(https_user),
             local_auth_ref=local_auth_ref
         )
 
@@ -295,3 +295,18 @@ def validate_and_get_repository_ref(branch, tag, semver, commit):
         semver=semver,
         commit=commit
     )
+
+def get_protected_settings(ssh_private_key, ssh_private_key_file, https_user, https_key):
+    protected_settings = {}
+    ssh_private_key_data = get_data_from_key_or_file(ssh_private_key, ssh_private_key_file)
+
+    # Add gitops private key data to protected settings if exists
+    # Dry-run all key types to determine if the private key is in a valid format
+    if ssh_private_key_data:
+        protected_settings[consts.SSH_PRIVATE_KEY_KEY] = ssh_private_key_data
+
+    # Check if both httpsUser and httpsKey exist, then add to protected settings
+    if https_user and https_key:
+        protected_settings[consts.HTTPS_KEY_KEY] = to_base64(https_key)
+
+    return protected_settings
