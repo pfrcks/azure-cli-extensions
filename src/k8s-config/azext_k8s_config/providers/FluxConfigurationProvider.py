@@ -275,13 +275,17 @@ class FluxConfigurationProvider:
 
         repository_ref = validate_and_get_repository_ref(branch, tag, semver, commit)
 
+        # Encode the https username to base64
+        if https_user:
+            https_user = to_base64(https_user)
+
         return GitRepositoryDefinition(
             url=url,
             timeout_in_seconds=get_duration(timeout),
             sync_interval_in_seconds=get_duration(sync_interval),
             repository_ref=repository_ref,
             ssh_known_hosts=knownhost_data,
-            https_user=to_base64(https_user),
+            https_user=https_user,
             local_auth_ref=local_auth_ref
         )
 

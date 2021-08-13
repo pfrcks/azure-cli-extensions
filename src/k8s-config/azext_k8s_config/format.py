@@ -38,8 +38,8 @@ def __get_extension_table_row(result):
         ('name', result['name']),
         ('extensionType', result['extensionType']),
         ('version', result['version']),
-        ('installState', result['installState']),
-        ('lastModifiedTime', result['lastModifiedTime'])
+        ('provisioningState', result['provisioningState']),
+        ('lastModifiedAt', result['systemData']['lastModifiedAt'])
     ])
 
 
