@@ -70,11 +70,8 @@ KNOWN_HOSTS_FORMAT_HELP = "Verify that all lines in the known_hosts contents are
 SSH_PRIVATE_KEY_ERROR = "Error! --ssh-private-key provided in invalid format"
 SSH_PRIVATE_KEY_HELP = "Verify the key provided is a valid PEM-formatted key of type RSA, ECC, DSA, or Ed25519"
 
-HTTPS_USER_WITHOUT_KEY_ERROR = "Error! --https-user used without --https-key"
-HTTPS_USER_WITHOUT_KEY_HELP = "Try providing both --https-user and --https-key together"
-
-HTTPS_KEY_WITHOUT_USER_ERROR = "Error! --http-key used without --http-user"
-HTTPS_KEY_WITHOUT_USER_HELP = "Try providing both --https-user and --https-key together"
+HTTPS_USER_KEY_MATCH_ERROR = "Error! --https-user and --https-key cannot be used separately"
+HTTPS_USER_KEY_MATCH_HELP = "Try providing both --https-user and --https-key together"
 
 KEY_FILE_READ_ERROR = "Error! Unable to read key file specified with: {0}"
 KEY_FILE_READ_HELP = "Verify that the filepath specified exists and contains valid utf-8 data"

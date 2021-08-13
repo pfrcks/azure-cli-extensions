@@ -222,9 +222,9 @@ class FluxConfigurationProvider:
         cluster_rp = get_cluster_rp(cluster_type)
 
         if not force:
-            logger.info("Delting the flux configuration from the cluster. This may take a few minutes...")
+            logger.info("Deleting the flux configuration from the cluster. This may take a few minutes...")
         return sdk_no_wait(no_wait, self.client.begin_delete, resource_group_name, cluster_rp, cluster_type,
-                           cluster_name, name)
+                           cluster_name, name, force_delete=force)
 
     def _is_deferred(self):
         if '--defer' in self.cmd.cli_ctx.data.get('safe_params'):

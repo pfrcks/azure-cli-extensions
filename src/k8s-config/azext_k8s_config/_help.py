@@ -13,7 +13,7 @@ helps['k8s-config'] = """
 
 helps['k8s-config flux'] = """
     type: group
-    short-summary: Commands to manage Flux V2 Kubernetes configurations.
+    short-summary: Commands to manage Flux Configurations.
 """
 
 helps['k8s-config flux create'] = """
@@ -67,7 +67,7 @@ helps['k8s-config flux delete'] = """
 
 helps['k8s-config extension'] = """
     type: group
-    short-summary: Commands to manage Flux V2 Kubernetes configurations.
+    short-summary: Commands to manage Kubernetes Extensions.
 """
 
 helps['k8s-config extension create'] = """
@@ -83,9 +83,9 @@ helps['k8s-config extension create'] = """
 
 helps['k8s-config extension list'] = """
     type: command
-    short-summary: List Kubernetes Flux Configurations.
+    short-summary: List Kubernetes Extensions.
     examples:
-      - name: List all Kubernetes Flux Configurations on a cluster
+      - name: List all Kubernetes Extensions on a cluster
         text: |-
           az k8s-config extension list --resource-group my-resource-group --cluster-name mycluster \\
           --cluster-type connectedClusters
@@ -93,9 +93,9 @@ helps['k8s-config extension list'] = """
 
 helps['k8s-config extension show'] = """
     type: command
-    short-summary: Show a Kubernetes Flux Configuration.
+    short-summary: Show a Kubernetes Extension.
     examples:
-      - name: Show details of a Kubernetes Flux Configuration
+      - name: Show details of a Kubernetes Extension
         text: |-
           az k8s-config extension show --resource-group my-resource-group --cluster-name mycluster \\
           --cluster-type connectedClusters --name myextension
@@ -103,9 +103,9 @@ helps['k8s-config extension show'] = """
 
 helps['k8s-config extension delete'] = """
     type: command
-    short-summary: Delete a Kubernetes Flux Configuration.
+    short-summary: Delete a Kubernetes Extension.
     examples:
-      - name: Delete an existing Kubernetes Flux Configuration
+      - name: Delete an existing Kubernetes Extension
         text: |-
           az k8s-config extension delete --resource-group my-resource-group --cluster-name mycluster \\
           --cluster-type connectedClusters --name myextension

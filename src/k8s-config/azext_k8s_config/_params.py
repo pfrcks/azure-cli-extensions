@@ -52,27 +52,24 @@ def load_arguments(self, _):
                    help='Source kind to reconcile')
         c.argument('url',
                    options_list=['--url', '-u'],
-                   help='URL of the source to reconcile')
+                   help='URL of the git repo source to reconcile')
         c.argument('timeout',
                    help='Maximum time to reconcile the source before timing out')
         c.argument('sync_interval',
                    options_list=['--interval', '--sync-interval'],
                    help='Time between reconciliations of the source on the cluster')
         c.argument('branch',
-                   arg_group="Repo Ref",
-                   help='Branch to reconcile with the git source')
+                   arg_group="Git Repo Ref",
+                   help='Branch within the git source to reconcile with the cluster')
         c.argument('tag',
-                   arg_group="Repo Ref",
-                   help='Tag to reconcile with the git source')
+                   arg_group="Git Repo Ref",
+                   help='Tag within the git source to reconcile with the cluster')
         c.argument('semver',
-                   arg_group="Repo Ref",
-                   help='Semver range to reconcile with the git source')
+                   arg_group="Git Repo Ref",
+                   help='Semver range within the git source to reconcile with the cluster')
         c.argument('commit',
-                   arg_group="Repo Ref",
-                   help='Specific commit to reconcile with the git source')
-        c.argument('branch_commit',
-                   arg_group="Repo Ref",
-                   help="Specific commit and branch to reconcile with the git source")
+                   arg_group="Git Repo Ref",
+                   help='Commit within the git source to reconcile with the cluster')
         c.argument('ssh_private_key',
                    arg_group="Auth",
                    help='Base64-encoded private ssh key for private repository sync')
@@ -98,7 +95,6 @@ def load_arguments(self, _):
         c.argument('suspend',
                    help='Suspend the reconciliation of the source and kustomizations associated with this configuration')
         c.argument('kustomization',
-                   options_list=['--kustomization', '-k'],
                    action=KustomizationAddAction,
                    help="Define kustomizations to sync sources with parameters ['name', 'path', 'depends_on', 'timeout', 'sync_interval', 'retry_interval', 'prune', 'validation', 'force']",
                    nargs='+')

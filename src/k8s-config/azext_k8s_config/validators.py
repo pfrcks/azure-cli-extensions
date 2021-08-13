@@ -205,16 +205,14 @@ def validate_url_with_params(url: str, ssh_private_key, ssh_private_key_file,
                 consts.HTTPS_AUTH_WITH_SSH_URL_ERROR,
                 consts.HTTPS_AUTH_WITH_SSH_URL_HELP
             )
+
     if https_user and https_key:
         return
-    if https_user:
+    # If we just provide one or the other raise an error
+    if https_user or https_key:
         raise RequiredArgumentMissingError(
-            consts.HTTPS_USER_WITHOUT_KEY_ERROR,
-            consts.HTTPS_USER_WITHOUT_KEY_HELP)
-    elif https_key:
-        raise RequiredArgumentMissingError(
-            consts.HTTPS_KEY_WITHOUT_USER_ERROR,
-            consts.HTTPS_KEY_WITHOUT_USER_HELP)
+            consts.HTTPS_USER_KEY_MATCH_ERROR,
+            consts.HTTPS_USER_KEY_MATCH_HELP)
 
 
 def validate_known_hosts(knownhost_data):
