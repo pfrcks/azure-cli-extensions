@@ -11,56 +11,6 @@ helps['k8s-config'] = """
     short-summary: Commands to manage resources from Microsoft.KubernetesConfiguration.
 """
 
-helps['k8s-config fluxv1'] = """
-    type: group
-    short-summary: Commands to manage Flux V1 Kubernetes configurations.
-"""
-
-helps['k8s-config fluxv1 create'] = """
-    type: command
-    short-summary: Create a Kubernetes configuration.
-    examples:
-      - name: Create a Kubernetes configuration
-        text: |-
-            az k8s-config fluxv1 create --resource-group MyResourceGroup --cluster-name MyClusterName \\
-            --cluster-type connectedClusters --name MyGitConfig --operator-instance-name OperatorInst01 \\
-            --operator-namespace OperatorNamespace01 --operator-type flux --operator-params "'--git-readonly'" \\
-            --repository-url git://github.com/fluxHowTo/flux-get-started --enable-helm-operator  \\
-            --helm-operator-chart-version 1.2.0 --scope namespace --helm-operator-params '--set helm.versions=v3' \\
-            --ssh-private-key '' --ssh-private-key-file '' --https-user '' --https-key '' \\
-            --ssh-known-hosts '' --ssh-known-hosts-file ''
-"""
-
-helps['k8s-config fluxv1 list'] = """
-    type: command
-    short-summary: List Kubernetes configurations.
-    examples:
-      - name: List all Kubernetes configurations of a cluster
-        text: |-
-            az k8s-config fluxv1 list --resource-group MyResourceGroup --cluster-name MyClusterName \\
-            --cluster-type connectedClusters
-"""
-
-helps['k8s-config fluxv1 delete'] = """
-    type: command
-    short-summary: Delete a Kubernetes configuration.
-    examples:
-      - name: Delete a Kubernetes configuration
-        text: |-
-            az k8s-config fluxv1 delete --resource-group MyResourceGroup --cluster-name MyClusterName \\
-            --cluster-type connectedClusters --name MyConfigurationName
-"""
-
-helps['k8s-config fluxv1 show'] = """
-    type: command
-    short-summary: Show details of a Kubernetes configuration.
-    examples:
-      - name: Show a Kubernetes configuration
-        text: |-
-            az k8s-config fluxv1 show --resource-group MyResourceGroup --cluster-name MyClusterName \\
-            --cluster-type connectedClusters --name MyConfigurationName
-"""
-
 helps['k8s-config flux'] = """
     type: group
     short-summary: Commands to manage Flux V2 Kubernetes configurations.

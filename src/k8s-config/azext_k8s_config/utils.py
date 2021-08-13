@@ -9,8 +9,7 @@ import re
 from datetime import timedelta
 from azure.cli.core.azclierror import (
     MutuallyExclusiveArgumentError,
-    InvalidArgumentValueError,
-    RequiredArgumentMissingError
+    InvalidArgumentValueError
 )
 from . import consts
 

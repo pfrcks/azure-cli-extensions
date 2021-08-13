@@ -207,7 +207,7 @@ def validate_url_with_params(url: str, ssh_private_key, ssh_private_key_file,
             )
     if https_user and https_key:
         return
-    elif https_user:
+    if https_user:
         raise RequiredArgumentMissingError(
             consts.HTTPS_USER_WITHOUT_KEY_ERROR,
             consts.HTTPS_USER_WITHOUT_KEY_HELP)

@@ -7,7 +7,7 @@
 
 from azure.cli.core.azclierror import DeploymentError, ResourceNotFoundError
 from azure.cli.core.commands import cached_get, cached_put, upsert_to_collection, get_property
-from azure.cli.core.util import sdk_no_wait
+from azure.cli.core.util import sdk_no_wait, user_confirmation
 from azure.core.exceptions import HttpResponseError
 from knack.log import get_logger
 
@@ -105,6 +105,7 @@ class FluxConfigurationProvider:
             validate_kustomization_list(name, kustomization)
         else:
             logger.warning(consts.NO_KUSTOMIZATIONS_WARNING)
+            user_confirmation("Are you sure you want to proceed without any kustomizations?")
 
         # Get the protected settings and validate the private key value
         protected_settings = get_protected_settings(
@@ -299,6 +300,7 @@ def validate_and_get_repository_ref(branch, tag, semver, commit):
         semver=semver,
         commit=commit
     )
+
 
 def get_protected_settings(ssh_private_key, ssh_private_key_file, https_user, https_key):
     protected_settings = {}

@@ -5,40 +5,9 @@
 
 # pylint: disable=unused-argument
 
-from azext_k8s_config.providers.SourceControlConfigurationProvider import SourceControlConfigurationProvider
 from .providers.ExtensionProvider import ExtensionProvider
 from .providers.FluxConfigurationProvider import FluxConfigurationProvider
 from . import consts
-
-# Source Control Configuration Methods
-
-
-def sourcecontrol_create(cmd, client, resource_group_name, cluster_name, name, repository_url, scope, cluster_type,
-                         operator_instance_name=None, operator_namespace='default',
-                         helm_operator_chart_version='1.2.0', operator_type='flux', operator_params='',
-                         ssh_private_key='', ssh_private_key_file='', https_user='', https_key='',
-                         ssh_known_hosts='', ssh_known_hosts_file='', enable_helm_operator=None,
-                         helm_operator_params=''):
-    provider = SourceControlConfigurationProvider(cmd)
-    return provider.create(resource_group_name, cluster_name, name, repository_url, scope, cluster_type,
-                           operator_instance_name, operator_namespace, helm_operator_chart_version, operator_type,
-                           operator_params, ssh_private_key, ssh_private_key_file, https_user, https_key,
-                           ssh_known_hosts, ssh_known_hosts_file, enable_helm_operator, helm_operator_params)
-
-
-def sourcecontrol_show(cmd, client, resource_group_name, cluster_type, cluster_name, name):
-    provider = SourceControlConfigurationProvider(cmd)
-    return provider.show(resource_group_name, cluster_type, cluster_name, name)
-
-
-def sourcecontrol_list(cmd, client, resource_group_name, cluster_type, cluster_name):
-    provider = SourceControlConfigurationProvider(cmd)
-    return provider.list(resource_group_name, cluster_type, cluster_name)
-
-
-def sourcecontrol_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name):
-    provider = SourceControlConfigurationProvider(cmd)
-    return provider.delete(resource_group_name, cluster_type, cluster_name, name)
 
 
 # Flux Configuration Methods
