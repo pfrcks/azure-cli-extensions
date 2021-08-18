@@ -24,15 +24,8 @@ helps['k8s-config flux create'] = """
         text: |-
           az k8s-config flux create --resource-group my-resource-group --cluster-name mycluster \\
           --cluster-type connectedClusters --name myconfig --scope cluster --namespace my-namespace \\
-          --kind git --url https://github.com/Azure/arc-k8s-demo --branch main --kustomization \\
-          name=my-kustomization path="./apps"
-      - name: Create a Kubernetes Flux Configuration with Multiple Kustomizations
-        text: |-
-          az k8s-config flux create --resource-group my-resource-group --cluster-name mycluster \\
-          --cluster-type connectedClusters --name myconfig --scope cluster --namespace my-namespace \\
-          --kind git --url https://github.com/Azure/arc-k8s-demo --https-user my-username \\
-          --https-key my-password --branch main --kustomization name=my-crds path="./crds" \\
-          --kustomization name=my-apps path="./apps" depends_on=my-crds timeout=PT5M
+          --kind git --url https://github.com/Azure/arc-k8s-demo --branch master --kustomization \\
+          name=my-kustomization
 """
 
 helps['k8s-config flux list'] = """
