@@ -31,7 +31,7 @@ def load_command_table(self, _):
     with self.command_group('k8s-config flux', k8s_config_fluxconfig_sdk, client_factory=k8s_config_fluxconfig_client, is_experimental=True) as g:
         g.custom_command('create', 'flux_config_create', supports_no_wait=True)
         g.custom_command('list', "flux_config_list", table_transformer=fluxconfig_list_table_format)
-        g.custom_command('show', 'flux_config_show', table_transformer=fluxconfig_show_table_format)
+        g.custom_show_command('show', 'flux_config_show', table_transformer=fluxconfig_show_table_format)
         g.custom_command('delete', 'flux_config_delete', confirmation=True, supports_no_wait=True)
         # g.custom_command('source create', 'flux_config_create_source', supports_local_cache=True)
         # g.custom_command('kustomization create', 'flux_config_create_kustomization', supports_local_cache=True)
@@ -39,5 +39,5 @@ def load_command_table(self, _):
     with self.command_group('k8s-config extension', k8s_config_extension_sdk, client_factory=k8s_config_extension_client, is_preview=True) as g:
         g.custom_command('create', 'extension_create', supports_no_wait=True)
         g.custom_command('list', "extension_list", table_transformer=extension_list_table_format)
-        g.custom_command('show', 'extension_show', table_transformer=extension_show_table_format)
+        g.custom_show_command('show', 'extension_show', table_transformer=extension_show_table_format)
         g.custom_command('delete', 'extension_delete', confirmation=True, supports_no_wait=True)

@@ -69,8 +69,9 @@ helps['k8s-config extension create'] = """
     examples:
       - name: Create a Kubernetes Extension
         text: |-
-          az k8s-config extension create --resource-group my-resource-group --cluster-name mycluster \\
-          --cluster-type connectedClusters --name myextension --extension-type microsoft.openservicemesh \\
+          az k8s-config extension create --resource-group my-resource-group \\
+          --cluster-name mycluster --cluster-type connectedClusters \\
+          --name myextension --extension-type microsoft.openservicemesh \\
           --scope cluster --release-train stable
 """
 

@@ -110,6 +110,8 @@ def load_arguments(self, _):
                    validator=validate_extension_name)
 
     with self.argument_context('k8s-config extension create') as c:
+        c.argument('extension_type',
+                   help='Name of the extension type.')
         c.argument('scope',
                    arg_type=get_enum_type(['cluster', 'namespace']),
                    help='Specify the extension scope.')
