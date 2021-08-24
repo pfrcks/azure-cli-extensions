@@ -117,8 +117,12 @@ GIT_REPOSITORY = "GitRepository"
 
 CONNECTED_CLUSTERS = "connectedclusters"
 MANAGED_CLUSTERS = "managedclusters"
+APPLIANCES = "appliances"
 
 MANAGED_RP_NAMESPACE = "Microsoft.ContainerService"
 CONNECTED_RP_NAMESPACE = "Microsoft.Kubernetes"
+APPLIANCE_RP_NAMESPACE = "Microsoft.ResourceConnector"
 
 KUBERNETES_MAX_NAME_SIZE = 63
+
+DF_RM_ENDPOINT = 'https://api-dogfood.resources.windows-int.net/'

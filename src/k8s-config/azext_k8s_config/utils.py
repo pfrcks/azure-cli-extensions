@@ -17,8 +17,11 @@ from . import consts
 def get_cluster_rp(cluster_type):
     if cluster_type.lower() == consts.CONNECTED_CLUSTERS:
         return consts.CONNECTED_RP_NAMESPACE
-    # Since cluster_type is an enum of only two values, if not connectedClusters, it will be managedClusters.
-    return consts.MANAGED_RP_NAMESPACE
+    if cluster_type.lower() == consts.APPLIANCES:
+        return consts.APPLIANCE_RP_NAMESPACE
+    if cluster_type.lower() == '' or cluster_type.lower() == 'managedclusters':
+        return consts.MANAGED_RP_NAMESPACE
+    raise InvalidArgumentValueError("Error! Cluster type '{}' is not supported".format(cluster_type))
 
 
 def get_data_from_key_or_file(key, filepath):
@@ -108,3 +111,7 @@ def get_parent_api_version(cluster_rp):
         return '2017-07-01'
     raise InvalidArgumentValueError("Error! Cluster RP '{}' is not supported"
                                     " for extension identity".format(cluster_rp))
+
+
+def is_dogfood_cluster(cmd):
+    return cmd.cli_ctx.cloud.endpoints.resource_manager == consts.DF_RM_ENDPOINT

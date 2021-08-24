@@ -21,7 +21,7 @@ from ..partner_extensions.AzureMLKubernetes import AzureMLKubernetes
 from ..partner_extensions.DefaultExtension import DefaultExtension
 from ..partner_extensions.DefaultExtensionWithIdentity import DefaultExtensionWithIdentity
 
-from ..utils import get_cluster_rp, get_parent_api_version, read_config_settings_file
+from ..utils import get_cluster_rp, get_parent_api_version, read_config_settings_file, is_dogfood_cluster
 from ..validators import (
     validate_scope_and_namespace,
     validate_version_and_auto_upgrade,
@@ -30,6 +30,8 @@ from ..validators import (
 
 from .._client_factory import cf_resources
 from .._client_factory import k8s_config_extension_client
+
+from .. import consts
 
 logger = get_logger(__name__)
 
@@ -154,7 +156,7 @@ class ExtensionProvider:
         validate_scope_after_customization(extension_instance.scope)
 
         # Create identity, if required
-        if create_identity:
+        if create_identity and not is_dogfood_cluster(self.cmd):
             extension_instance = self.__add_identity(extension_instance,
                                                      resource_group_name,
                                                      cluster_rp,
@@ -175,6 +177,8 @@ class ExtensionProvider:
                                                                                                    cluster_type,
                                                                                                    cluster_name)
 
+        if cluster_rp == consts.MANAGED_RP_NAMESPACE:
+            return extension_instance
         parent_api_version = get_parent_api_version(cluster_rp)
         try:
             resource = resources.get_by_id(cluster_resource_id, parent_api_version)
