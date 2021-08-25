@@ -73,7 +73,7 @@ if ($Type -eq 'k8s-extension') {
         az extension add --source ./bin/k8s_config-$k8sConfigVersion-py3-none-any.whl
     }
     $Env:K8sExtensionName = "k8s-config"
-    $testFilePath = "$PSScriptRoot/test"
+    $testFilePath = "$PSScriptRoot/test/extensions"
     $excludePath = "$PSScriptRoot/test/extensions/private"
 }
 

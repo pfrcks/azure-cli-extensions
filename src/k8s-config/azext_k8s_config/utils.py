@@ -115,3 +115,10 @@ def get_parent_api_version(cluster_rp):
 
 def is_dogfood_cluster(cmd):
     return cmd.cli_ctx.cloud.endpoints.resource_manager == consts.DF_RM_ENDPOINT
+
+
+def has_prune_enabled(config):
+    for kustomization in config.kustomizations:
+        if kustomization.prune:
+            return True
+    return False

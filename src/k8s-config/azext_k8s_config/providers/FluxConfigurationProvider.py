@@ -5,6 +5,10 @@
 
 # pylint: disable=unused-argument
 
+import os
+from re import L
+from azext_k8s_config.confirm import user_confirmation_factory
+
 from azure.cli.core.azclierror import DeploymentError, ResourceNotFoundError
 from azure.cli.core.commands import cached_get, cached_put, upsert_to_collection, get_property
 from azure.cli.core.util import sdk_no_wait, user_confirmation
@@ -12,7 +16,7 @@ from azure.core.exceptions import HttpResponseError
 from knack.log import get_logger
 
 from .._client_factory import k8s_config_fluxconfig_client
-from ..utils import get_cluster_rp, get_data_from_key_or_file, get_duration, to_base64
+from ..utils import get_cluster_rp, get_data_from_key_or_file, get_duration, has_prune_enabled, to_base64
 from ..validators import (
     validate_cc_registration,
     validate_known_hosts,
@@ -218,8 +222,19 @@ class FluxConfigurationProvider:
                                         cluster_name=cluster_name, setter_arg_name='flux_configuration')
         return get_property(flux_configuration.kustomizations, name)
 
-    def delete(self, resource_group_name, cluster_type, cluster_name, name, force, no_wait):
+    def delete(self, resource_group_name, cluster_type, cluster_name, name, force, no_wait, yes):
         cluster_rp = get_cluster_rp(cluster_type)
+
+        config = None
+        try:
+            config = self.client.get(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+        except HttpResponseError:
+            logger.warning("No flux configuration with name '%s' found on cluster '%s', so nothing to delete", name, cluster_name)
+            return None
+
+        if has_prune_enabled(config):
+            logger.warning("Prune is enabled on one or more of your kustomizations. Deleting a Flux configuration with prune enabled will also delete the Kubernetes objects deployed by the kustomization(s).")
+            user_confirmation_factory(self.cmd, yes, "Do you want to continue?")
 
         if not force:
             logger.info("Deleting the flux configuration from the cluster. This may take a few minutes...")
@@ -252,7 +267,10 @@ class FluxConfigurationProvider:
             logger.warning("'Microsoft.Flux' extension not found on the cluster, installing it now."
                            " This may take a few minutes...")
             self.extension_provider.create(resource_group_name, cluster_type, cluster_name,
-                                           "flux", consts.FLUX_EXTENSION_TYPE, no_wait=no_wait).result()
+                                           "flux", consts.FLUX_EXTENSION_TYPE,
+                                           release_train=os.getenv(consts.FLUX_EXTENSION_RELEASETRAIN),
+                                           version=os.getenv(consts.FLUX_EXTENSION_VERSION),
+                                           no_wait=no_wait).result()
             logger.warning("'Microsoft.Flux' extension was successfully installed on the cluster")
 
     def _validate_and_get_gitrepository(self, url, branch, tag, semver, commit, timeout, sync_interval,

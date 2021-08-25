@@ -59,9 +59,9 @@ def flux_config_create_kustomization(cmd, client, resource_group_name, cluster_t
                                          validation, force)
 
 
-def flux_config_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name, force=False, no_wait=False):
+def flux_config_delete(cmd, client, resource_group_name, cluster_type, cluster_name, name, force=False, no_wait=False, yes=False):
     provider = FluxConfigurationProvider(cmd)
-    return provider.delete(resource_group_name, cluster_type, cluster_name, name, force, no_wait)
+    return provider.delete(resource_group_name, cluster_type, cluster_name, name, force, no_wait, yes)
 
 
 # Extension Methods
