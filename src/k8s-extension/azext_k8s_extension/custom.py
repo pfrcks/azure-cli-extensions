@@ -195,7 +195,7 @@ def update_k8s_extension(client, resource_group_name, cluster_type, cluster_name
     # return client.update(resource_group_name, cluster_rp, cluster_type, cluster_name, name, upd_extension)
 
 
-def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluster_type, no_wait=False, yes=False):
+def delete_k8s_extension(cmd, client, resource_group_name, cluster_name, name, cluster_type, no_wait=False, yes=False):
     """Delete an existing Kubernetes Extension.
 
     """
