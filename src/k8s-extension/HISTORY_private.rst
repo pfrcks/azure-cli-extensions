@@ -3,6 +3,15 @@
 Release History
 ===============
 
+0.7.1-beta.1
+++++++++++++++++++
+* Fix DF resource manager endpoint check
+* Enable identity by default for extensions
+* Use custom delete confirmation for partners
+* microsoft.azureml.kubernetes: Adding a flag for AKS to AMLARC migration and set up corresponding FE helm values
+* microsoft.openservicemesh: Remove version requirement and auto upgrade minor version check
+* Adds -t as alternative to --cluster-type
+
 0.6.1-beta.3
 ++++++++++++++++++
 * Add async models to private version
