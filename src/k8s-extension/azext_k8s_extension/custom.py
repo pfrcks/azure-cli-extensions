@@ -7,6 +7,7 @@
 
 import json
 from knack.log import get_logger
+from urllib.parse import urlparse
 
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
     InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
@@ -18,7 +19,6 @@ from ._validators import validate_cc_registration
 
 from .partner_extensions.ContainerInsights import ContainerInsights
 from .partner_extensions.AzureDefender import AzureDefender
-from .partner_extensions.DefaultExtensionWithIdentity import DefaultExtensionWithIdentity
 from .partner_extensions.OpenServiceMesh import OpenServiceMesh
 from .partner_extensions.AzureMLKubernetes import AzureMLKubernetes
 from .partner_extensions.AzurePolicy import AzurePolicy
@@ -37,9 +37,7 @@ def ExtensionFactory(extension_name):
         'microsoft.azuredefender.kubernetes': AzureDefender,
         'microsoft.openservicemesh': OpenServiceMesh,
         'microsoft.azureml.kubernetes': AzureMLKubernetes,
-        'cassandradatacentersoperator': DefaultExtensionWithIdentity,
         'microsoft.policyinsights': AzurePolicy,
-        'microsoft.flux': DefaultExtensionWithIdentity
     }
 
     # Return the extension if we find it in the map, else return the default
@@ -71,7 +69,8 @@ def show_k8s_extension(client, resource_group_name, cluster_name, name, cluster_
                               cluster_rp, cluster_type, cluster_name, name)
             else:
                 message = ex.message
-            raise ResourceNotFoundError(message)
+            raise ResourceNotFoundError(message) from ex
+        raise ex
 
 
 def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, cluster_type,
@@ -102,7 +101,7 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
     config_protected_settings = {}
     # Get Configuration Settings from file
     if configuration_settings_file is not None:
-        config_settings = __get_config_settings_from_file(configuration_settings_file)
+        config_settings = __read_config_settings_file(configuration_settings_file)
 
     if configuration_settings is not None:
         for dicts in configuration_settings:
@@ -111,7 +110,7 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
 
     # Get Configuration Protected Settings from file
     if configuration_protected_settings_file is not None:
-        config_protected_settings = __get_config_settings_from_file(configuration_protected_settings_file)
+        config_protected_settings = __read_config_settings_file(configuration_protected_settings_file)
 
     if configuration_protected_settings is not None:
         for dicts in configuration_protected_settings:
@@ -143,7 +142,7 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
 
     # Create identity, if required
     # We don't create the identity if we are in DF
-    if create_identity and not __is_dogfood_cluster(cmd):
+    if create_identity and not is_dogfood_cluster(cmd):
         identity_object, location = __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp)
         if identity_object is not None and location is not None:
             extension_instance.identity, extension_instance.location = identity_object, location
@@ -196,7 +195,7 @@ def update_k8s_extension(client, resource_group_name, cluster_type, cluster_name
     # return client.update(resource_group_name, cluster_rp, cluster_type, cluster_name, name, upd_extension)
 
 
-def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluster_type, no_wait=False):
+def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluster_type, no_wait=False, yes=False):
     """Delete an existing Kubernetes Extension.
 
     """
@@ -206,12 +205,12 @@ def delete_k8s_extension(client, resource_group_name, cluster_name, name, cluste
     try:
         extension = client.get(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
     except HttpResponseError:
-        logger.warning("No extension with name '%s' found on cluster '%s', so nothing to delete", cluster_name, name)
+        logger.warning("No extension with name '%s' found on cluster '%s', so nothing to delete", name, cluster_name)
         return None
     extension_class = ExtensionFactory(extension.extension_type.lower())
 
     # If there is any custom delete logic, this will call the logic
-    extension_class.Delete(client, resource_group_name, cluster_name, name, cluster_type)
+    extension_class.Delete(cmd, client, resource_group_name, cluster_name, name, cluster_type, yes)
 
     return sdk_no_wait(no_wait, client.begin_delete, resource_group_name, cluster_rp, cluster_type, cluster_name, name)
 
@@ -286,19 +285,16 @@ def __validate_version_and_auto_upgrade(version, auto_upgrade_minor_version):
         auto_upgrade_minor_version = False
 
 
-def __get_config_settings_from_file(file_path):
+def __read_config_settings_file(file_path):
     try:
-        config_file = open(file_path,)
-        settings = json.load(config_file)
-    except ValueError:
-        raise Exception("File {} is not a valid JSON file".format(file_path))
-
-    files = len(settings)
-    if files == 0:
-        raise Exception("File {} is empty".format(file_path))
-
-    return settings
+        with open(file_path, 'r') as f:
+            settings = json.load(f)
+            if len(settings) == 0:
+                raise Exception("File {} is empty".format(file_path))
+            return settings
+    except ValueError as ex:
+        raise Exception("File {} is not a valid JSON file".format(file_path)) from ex
 
 
-def __is_dogfood_cluster(cmd):
-    return cmd.cli_ctx.cloud.endpoints.resource_manager == consts.DF_RM_ENDPOINT
+def is_dogfood_cluster(cmd):
+    return urlparse(cmd.cli_ctx.cloud.endpoints.resource_manager).hostname == consts.DF_RM_HOSTNAME

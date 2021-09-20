@@ -20,7 +20,7 @@ from ..vendored_sdks.models import Extension
 from ..vendored_sdks.models import ScopeCluster
 from ..vendored_sdks.models import Scope
 
-from .PartnerExtensionModel import PartnerExtensionModel
+from .DefaultExtension import DefaultExtension
 
 from .._client_factory import (
     cf_resources, cf_resource_groups, cf_log_analytics)
@@ -28,7 +28,7 @@ from .._client_factory import (
 logger = get_logger(__name__)
 
 
-class ContainerInsights(PartnerExtensionModel):
+class ContainerInsights(DefaultExtension):
     def Create(self, cmd, client, resource_group_name, cluster_name, name, cluster_type, extension_type,
                scope, auto_upgrade_minor_version, release_train, version, target_namespace,
                release_namespace, configuration_settings, configuration_protected_settings,
@@ -69,20 +69,6 @@ class ContainerInsights(PartnerExtensionModel):
             configuration_protected_settings=configuration_protected_settings
         )
         return extension_instance, name, create_identity
-
-    def Update(self, extension, auto_upgrade_minor_version, release_train, version):
-        """ExtensionType 'microsoft.azuremonitor.containers' specific validations & defaults for Update
-           Must create and return a valid 'Extension' object.
-
-        """
-        return Extension(
-            auto_upgrade_minor_version=auto_upgrade_minor_version,
-            release_train=release_train,
-            version=version
-        )
-
-    def Delete(self, client, resource_group_name, cluster_name, name, cluster_type):
-        pass
 
 
 # Custom Validation Logic for Container Insights
