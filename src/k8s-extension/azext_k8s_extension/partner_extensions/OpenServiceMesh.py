@@ -7,7 +7,6 @@
 # pylint: disable=redefined-outer-name
 # pylint: disable=no-member
 
-from azext_k8s_extension.partner_extensions.DefaultExtension import DefaultExtension
 from knack.log import get_logger
 
 from azure.cli.core.azclierror import InvalidArgumentValueError

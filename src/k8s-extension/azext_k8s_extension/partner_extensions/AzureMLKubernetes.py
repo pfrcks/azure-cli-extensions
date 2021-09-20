@@ -10,7 +10,6 @@
 import copy
 from hashlib import md5
 from typing import Any, Dict, List, Tuple
-from azext_k8s_extension.partner_extensions.DefaultExtension import DefaultExtension
 
 import azure.mgmt.relay
 import azure.mgmt.relay.models

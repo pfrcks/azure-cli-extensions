@@ -6,8 +6,8 @@
 # pylint: disable=unused-argument,too-many-locals
 
 import json
-from knack.log import get_logger
 from urllib.parse import urlparse
+from knack.log import get_logger
 
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
     InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
@@ -148,7 +148,8 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
             extension_instance.identity, extension_instance.location = identity_object, location
 
     # Try to create the resource
-    return sdk_no_wait(no_wait, client.begin_create, resource_group_name, cluster_rp, cluster_type, cluster_name, name, extension_instance)
+    return sdk_no_wait(no_wait, client.begin_create, resource_group_name,
+                       cluster_rp, cluster_type, cluster_name, name, extension_instance)
 
 
 def list_k8s_extension(client, resource_group_name, cluster_name, cluster_type):
@@ -195,7 +196,8 @@ def update_k8s_extension(client, resource_group_name, cluster_type, cluster_name
     # return client.update(resource_group_name, cluster_rp, cluster_type, cluster_name, name, upd_extension)
 
 
-def delete_k8s_extension(cmd, client, resource_group_name, cluster_name, name, cluster_type, no_wait=False, yes=False):
+def delete_k8s_extension(cmd, client, resource_group_name, cluster_name, name, cluster_type,
+                         no_wait=False, yes=False, force=False):
     """Delete an existing Kubernetes Extension.
 
     """
@@ -210,9 +212,11 @@ def delete_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
     extension_class = ExtensionFactory(extension.extension_type.lower())
 
     # If there is any custom delete logic, this will call the logic
-    extension_class.Delete(cmd, client, resource_group_name, cluster_name, name, cluster_type, yes)
+    extension_class.Delete(cmd, client, resource_group_name, cluster_name,
+                           name, cluster_type, yes)
 
-    return sdk_no_wait(no_wait, client.begin_delete, resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+    return sdk_no_wait(no_wait, client.begin_delete, resource_group_name,
+                       cluster_rp, cluster_type, cluster_name, name, force_delete=force)
 
 
 def __create_identity(cmd, resource_group_name, cluster_name, cluster_type, cluster_rp):

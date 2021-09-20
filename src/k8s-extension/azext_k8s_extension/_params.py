@@ -79,3 +79,5 @@ def load_arguments(self, _):
         c.argument('yes',
                    options_list=['--yes', '-y'],
                    help='Ignore confirmation prompts')
+        c.argument('force',
+                   help='Specify whether to force delete the extension from the cluster.')

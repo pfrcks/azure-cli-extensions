@@ -12,12 +12,12 @@ from ..vendored_sdks.models import Extension
 from ..vendored_sdks.models import ScopeCluster
 from ..vendored_sdks.models import Scope
 
-from .PartnerExtensionModel import PartnerExtensionModel
+from .DefaultExtension import DefaultExtension
 
 logger = get_logger(__name__)
 
 
-class AzurePolicy(PartnerExtensionModel):
+class AzurePolicy(DefaultExtension):
     def Create(self, cmd, client, resource_group_name, cluster_name, name, cluster_type, extension_type,
                scope, auto_upgrade_minor_version, release_train, version, target_namespace,
                release_namespace, configuration_settings, configuration_protected_settings,
