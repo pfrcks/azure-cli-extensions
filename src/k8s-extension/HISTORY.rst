@@ -3,6 +3,11 @@
 Release History
 ===============
 
+1.0.0
+++++++++++++++++++
+* Switch to GA api-version of Extensions (2021-09-01)
+* Support Extensions PATCH
+
 0.7.1
 ++++++++++++++++++
 * Fix DF resource manager endpoint check

@@ -58,7 +58,8 @@ class AzurePolicy(DefaultExtension):
         )
         return extension_instance, name, create_identity
 
-    def Update(self, extension, auto_upgrade_minor_version, release_train, version):
+    def Update(self, auto_upgrade_minor_version, release_train, version, configuration_settings,
+               configuration_protected_settings):
         """ExtensionType 'Microsoft.PolicyInsights' specific validations & defaults for Update
            Must create and return a valid 'Extension' object.
 

@@ -54,3 +54,18 @@ helps[f'{consts.EXTENSION_NAME} show'] = f"""
           az {consts.EXTENSION_NAME} show --resource-group my-resource-group \\
           --cluster-name mycluster --cluster-type connectedClusters --name myextension
 """
+
+helps[f'{consts.EXTENSION_NAME} update'] = f"""
+    type: command
+    short-summary: Update mutable properties of a Kubernetes Extension.
+    examples:
+      - name: Update a Kubernetes Extension
+        text: |-
+          az {consts.EXTENSION_NAME} update --resource-group my-resource-group \\
+          --cluster-name mycluster --cluster-type connectedClusters \\
+          --name myextension --auto-upgrade true/false --version extension-version \\
+          --release-train stable --configuration-settings settings-key=settings-value \\
+          --configuration-protected-settings protected-settings-key=protected-value \\
+          --configuration-settings-file=config-settings-file, \\
+          --configuration-protected-settings-file=protected-settings-file, \\
+"""

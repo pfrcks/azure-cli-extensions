@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 from knack.log import get_logger
 
 from azure.cli.core.azclierror import ResourceNotFoundError, MutuallyExclusiveArgumentError, \
-    InvalidArgumentValueError, CommandNotFoundError, RequiredArgumentMissingError
+    InvalidArgumentValueError, RequiredArgumentMissingError
 from azure.cli.core.commands.client_factory import get_subscription_id
 from azure.cli.core.util import sdk_no_wait
 from azure.core.exceptions import HttpResponseError
@@ -77,7 +77,7 @@ def create_k8s_extension(cmd, client, resource_group_name, cluster_name, name, c
                          extension_type, scope=None, auto_upgrade_minor_version=None, release_train=None,
                          version=None, target_namespace=None, release_namespace=None, configuration_settings=None,
                          configuration_protected_settings=None, configuration_settings_file=None,
-                         configuration_protected_settings_file=None, tags=None, no_wait=False):
+                         configuration_protected_settings_file=None, no_wait=False):
     """Create a new Extension Instance.
 
     """
@@ -157,43 +157,52 @@ def list_k8s_extension(client, resource_group_name, cluster_name, cluster_type):
     return client.list(resource_group_name, cluster_rp, cluster_type, cluster_name)
 
 
-def update_k8s_extension(client, resource_group_name, cluster_type, cluster_name, name,
-                         auto_upgrade_minor_version='', release_train='', version='', tags=None):
+def update_k8s_extension(cmd, client, resource_group_name, cluster_name, name, cluster_type,
+                         auto_upgrade_minor_version='', release_train='', version='',
+                         configuration_settings=None, configuration_protected_settings=None,
+                         configuration_settings_file=None, configuration_protected_settings_file=None,
+                         no_wait=False):
 
     """Patch an existing Extension Instance.
 
     """
+    # Determine ClusterRP
+    cluster_rp = __get_cluster_rp(cluster_type)
 
-    # TODO: Remove this after we eventually get PATCH implemented for update and uncomment
-    raise CommandNotFoundError(
-        f"\"{consts.EXTENSION_NAME} update\" currently is not available. "
-        f"Use \"{consts.EXTENSION_NAME} create\" to update a previously created extension instance."
-    )
+    # We need to determine the ExtensionType to call ExtensionFactory and create Extension class
+    extension = show_k8s_extension(client, resource_group_name, cluster_name, name, cluster_type)
+    extension_type_lower = extension.extension_type.lower()
 
-    # # Ensure some values are provided for update
-    # if auto_upgrade_minor_version is None and release_train is None and version is None:
-    #     message = "Error! No values provided for update. Provide new value(s) for one or more of these properties:" \
-    #               " auto-upgrade-minor-version, release-train or version."
-    #     raise RequiredArgumentMissingError(message)
+    __validate_version_and_auto_upgrade(version, auto_upgrade_minor_version)
 
-    # # Determine ClusterRP
-    # cluster_rp = __get_cluster_rp(cluster_type)
+    config_settings = {}
+    config_protected_settings = {}
+    # Get Configuration Settings from file
+    if configuration_settings_file is not None:
+        config_settings = __read_config_settings_file(configuration_settings_file)
 
-    # # Get the existing extensionInstance
-    # extension = client.get(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
+    if configuration_settings is not None:
+        for dicts in configuration_settings:
+            for key, value in dicts.items():
+                config_settings[key] = value
 
-    # extension_type_lower = extension.extension_type.lower()
+    # Get Configuration Protected Settings from file
+    if configuration_protected_settings_file is not None:
+        config_protected_settings = __read_config_settings_file(configuration_protected_settings_file)
 
-    # # Get the extension class based on the extension name
-    # extension_class = ExtensionFactory(extension_type_lower)
-    # upd_extension = extension_class.Update(extension, auto_upgrade_minor_version, release_train, version)
+    if configuration_protected_settings is not None:
+        for dicts in configuration_protected_settings:
+            for key, value in dicts.items():
+                config_protected_settings[key] = value
 
-    # __validate_version_and_auto_upgrade(version, auto_upgrade_minor_version)
+    # Get the extension class based on the extension type
+    extension_class = ExtensionFactory(extension_type_lower)
 
-    # upd_extension = ExtensionInstanceUpdate(auto_upgrade_minor_version=auto_upgrade_minor_version,
-    #                                         release_train=release_train, version=version)
+    upd_extension = extension_class.Update(cmd, auto_upgrade_minor_version, release_train, version,
+                                           configuration_settings, configuration_protected_settings)
 
-    # return client.update(resource_group_name, cluster_rp, cluster_type, cluster_name, name, upd_extension)
+    return sdk_no_wait(no_wait, client.begin_update, resource_group_name, cluster_rp, cluster_type,
+                       cluster_name, name, upd_extension)
 
 
 def delete_k8s_extension(cmd, client, resource_group_name, cluster_name, name, cluster_type,
