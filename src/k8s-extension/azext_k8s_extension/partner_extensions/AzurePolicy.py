@@ -47,7 +47,7 @@ class AzurePolicy(DefaultExtension):
         # Create Managed Identity for extension
         create_identity = True
 
-        extension_instance = Extension(
+        extension = Extension(
             extension_type=extension_type,
             auto_upgrade_minor_version=auto_upgrade_minor_version,
             release_train=release_train,
@@ -56,24 +56,4 @@ class AzurePolicy(DefaultExtension):
             configuration_settings=configuration_settings,
             configuration_protected_settings=configuration_protected_settings,
         )
-        return extension_instance, name, create_identity
-
-    def Update(self, extension, auto_upgrade_minor_version, release_train, version):
-        """ExtensionType 'Microsoft.PolicyInsights' specific validations & defaults for Update
-           Must create and return a valid 'Extension' object.
-
-        """
-        # If release-train is not provided, set it to 'preview'
-        valid_release_trains = ['preview', 'dev']
-        if release_train is None:
-            release_train = 'preview'
-
-        # If release-train is other than valid_release_trains raise error
-        if release_train.lower() not in valid_release_trains:
-            raise CLIError("Invalid release-train '{}'.  Valid values are 'preview', 'dev'.".format(release_train))
-
-        return Extension(
-            auto_upgrade_minor_version=auto_upgrade_minor_version,
-            release_train=release_train,
-            version=version
-        )
+        return extension, name, create_identity
