@@ -41,9 +41,9 @@ if ($Type -eq 'k8s-extension') {
         }
     }
     if ($OnlyPublicTests) {
-        $testFilePaths = "$PSScriptRoot/test/extensions/public"
+        $testFilePath = "$PSScriptRoot/test/extensions/public"
     } else {
-        $testFilePaths = "$PSScriptRoot/test/extensions/public", "$PSScriptRoot/test/extensions/private-preview"
+        $testFilePath = "$PSScriptRoot/test/extensions"
     }
 } elseif ($Type -eq 'k8s-extension-private') {
     $k8sExtensionPrivateVersion = $ENVCONFIG.extensionVersion.'k8s-extension-private'
