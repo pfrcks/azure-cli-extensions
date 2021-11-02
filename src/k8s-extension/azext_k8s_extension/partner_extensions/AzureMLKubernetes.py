@@ -166,40 +166,41 @@ class AzureMLKubernetes(DefaultExtension):
 
     def Update(self, cmd, resource_group_name, cluster_name, auto_upgrade_minor_version, release_train, version, configuration_settings,
                configuration_protected_settings):
-        subscription_id = get_subscription_id(cmd.cli_ctx)
+        if len(configuration_protected_settings) > 0:
+            subscription_id = get_subscription_id(cmd.cli_ctx)
 
-        if self.AZURE_LOG_ANALYTICS_CONNECTION_STRING not in configuration_protected_settings:
-            try:
-                _, shared_key = _get_log_analytics_ws_connection_string(
-                    cmd, subscription_id, resource_group_name, cluster_name, '', True)
-                configuration_protected_settings[self.AZURE_LOG_ANALYTICS_CONNECTION_STRING] = shared_key
-                logger.info("Get log analytics connection string succeeded.")
-            except azure.core.exceptions.HttpResponseError:
-                logger.info("Failed to get log analytics connection string.")
+            if self.AZURE_LOG_ANALYTICS_CONNECTION_STRING not in configuration_protected_settings:
+                try:
+                    _, shared_key = _get_log_analytics_ws_connection_string(
+                        cmd, subscription_id, resource_group_name, cluster_name, '', True)
+                    configuration_protected_settings[self.AZURE_LOG_ANALYTICS_CONNECTION_STRING] = shared_key
+                    logger.info("Get log analytics connection string succeeded.")
+                except azure.core.exceptions.HttpResponseError:
+                    logger.info("Failed to get log analytics connection string.")
 
-        if self.RELAY_SERVER_CONNECTION_STRING not in configuration_protected_settings:
-            try:
-                relay_connection_string, _, _ = _get_relay_connection_str(
-                    cmd, subscription_id, resource_group_name, cluster_name, '', self.RELAY_HC_AUTH_NAME, True)
-                configuration_protected_settings[self.RELAY_SERVER_CONNECTION_STRING] = relay_connection_string
-                logger.info("Get relay connection string succeeded.")
-            except azure.mgmt.relay.models.ErrorResponseException as ex:
-                if ex.response.status_code == 404:
-                    raise ResourceNotFoundError("Relay server not found.") from ex
-                raise AzureResponseError("Failed to get relay connection string.") from ex
+            if self.RELAY_SERVER_CONNECTION_STRING not in configuration_protected_settings:
+                try:
+                    relay_connection_string, _, _ = _get_relay_connection_str(
+                        cmd, subscription_id, resource_group_name, cluster_name, '', self.RELAY_HC_AUTH_NAME, True)
+                    configuration_protected_settings[self.RELAY_SERVER_CONNECTION_STRING] = relay_connection_string
+                    logger.info("Get relay connection string succeeded.")
+                except azure.mgmt.relay.models.ErrorResponseException as ex:
+                    if ex.response.status_code == 404:
+                        raise ResourceNotFoundError("Relay server not found.") from ex
+                    raise AzureResponseError("Failed to get relay connection string.") from ex
 
-        if self.SERVICE_BUS_CONNECTION_STRING not in configuration_protected_settings:
-            try:
-                service_bus_connection_string, _ = _get_service_bus_connection_string(
-                    cmd, subscription_id, resource_group_name, cluster_name, '', {}, True)
-                configuration_protected_settings[self.SERVICE_BUS_CONNECTION_STRING] = service_bus_connection_string
-                logger.info("Get service bus connection string succeeded.")
-            except azure.core.exceptions.HttpResponseError as ex:
-                if ex.response.status_code == 404:
-                    raise ResourceNotFoundError("Service bus not found.") from ex
-                raise AzureResponseError("Failed to get service bus connection string.") from ex
+            if self.SERVICE_BUS_CONNECTION_STRING not in configuration_protected_settings:
+                try:
+                    service_bus_connection_string, _ = _get_service_bus_connection_string(
+                        cmd, subscription_id, resource_group_name, cluster_name, '', {}, True)
+                    configuration_protected_settings[self.SERVICE_BUS_CONNECTION_STRING] = service_bus_connection_string
+                    logger.info("Get service bus connection string succeeded.")
+                except azure.core.exceptions.HttpResponseError as ex:
+                    if ex.response.status_code == 404:
+                        raise ResourceNotFoundError("Service bus not found.") from ex
+                    raise AzureResponseError("Failed to get service bus connection string.") from ex
 
-        configuration_protected_settings = _dereference(self.reference_mapping, configuration_protected_settings)
+            configuration_protected_settings = _dereference(self.reference_mapping, configuration_protected_settings)
 
         return PatchExtension(auto_upgrade_minor_version=auto_upgrade_minor_version,
                               release_train=release_train,
