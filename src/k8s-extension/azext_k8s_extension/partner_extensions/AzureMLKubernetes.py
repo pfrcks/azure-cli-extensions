@@ -173,6 +173,7 @@ class AzureMLKubernetes(DefaultExtension):
                 _, shared_key = _get_log_analytics_ws_connection_string(
                     cmd, subscription_id, resource_group_name, cluster_name, '', True)
                 configuration_protected_settings[self.AZURE_LOG_ANALYTICS_CONNECTION_STRING] = shared_key
+                logger.info("Get log analytics connection string succeeded.")
             except azure.core.exceptions.HttpResponseError:
                 logger.info("Failed to get log analytics connection string.")
 
@@ -181,6 +182,7 @@ class AzureMLKubernetes(DefaultExtension):
                 relay_connection_string, _, _ = _get_relay_connection_str(
                     cmd, subscription_id, resource_group_name, cluster_name, '', self.RELAY_HC_AUTH_NAME, True)
                 configuration_protected_settings[self.RELAY_SERVER_CONNECTION_STRING] = relay_connection_string
+                logger.info("Get relay connection string succeeded.")
             except azure.mgmt.relay.models.ErrorResponseException as ex:
                 if ex.response.status_code == 404:
                     raise ResourceNotFoundError("Relay server not found.") from ex
@@ -191,6 +193,7 @@ class AzureMLKubernetes(DefaultExtension):
                 service_bus_connection_string, _ = _get_service_bus_connection_string(
                     cmd, subscription_id, resource_group_name, cluster_name, '', {}, True)
                 configuration_protected_settings[self.SERVICE_BUS_CONNECTION_STRING] = service_bus_connection_string
+                logger.info("Get service bus connection string succeeded.")
             except azure.core.exceptions.HttpResponseError as ex:
                 if ex.response.status_code == 404:
                     raise ResourceNotFoundError("Service bus not found.") from ex
