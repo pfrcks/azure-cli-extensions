@@ -202,6 +202,11 @@ class AzureMLKubernetes(DefaultExtension):
 
             configuration_protected_settings = _dereference(self.reference_mapping, configuration_protected_settings)
 
+            if self.sslKeyPemFile in configuration_protected_settings and \
+                    self.sslCertPemFile in configuration_protected_settings:
+                logger.info(f"Both {self.sslKeyPemFile} and {self.sslCertPemFile} are set, update ssl key.")
+                self.__set_inference_ssl_from_file(configuration_protected_settings)
+
         return PatchExtension(auto_upgrade_minor_version=auto_upgrade_minor_version,
                               release_train=release_train,
                               version=version,
@@ -285,24 +290,27 @@ class AzureMLKubernetes(DefaultExtension):
             logger.warning(
                 'Internal load balancer only supported on AKS and AKS Engine Clusters.')
 
+    def __set_inference_ssl_from_file(self, configuration_protected_settings):
+        import base64
+        feSslCertFile = configuration_protected_settings.get(self.sslCertPemFile)
+        feSslKeyFile = configuration_protected_settings.get(self.sslKeyPemFile)
+        with open(feSslCertFile) as f:
+            cert_data = f.read()
+            cert_data_bytes = cert_data.encode("ascii")
+            ssl_cert = base64.b64encode(cert_data_bytes).decode()
+            configuration_protected_settings['scoringFe.sslCert'] = ssl_cert
+        with open(feSslKeyFile) as f:
+            key_data = f.read()
+            key_data_bytes = key_data.encode("ascii")
+            ssl_key = base64.b64encode(key_data_bytes).decode()
+            configuration_protected_settings['scoringFe.sslKey'] = ssl_key
+
     def __set_up_inference_ssl(self, configuration_settings, configuration_protected_settings):
         allowInsecureConnections = _get_value_from_config_protected_config(
             self.allowInsecureConnections, configuration_settings, configuration_protected_settings)
         allowInsecureConnections = str(allowInsecureConnections).lower() == 'true'
         if not allowInsecureConnections:
-            import base64
-            feSslCertFile = configuration_protected_settings.get(self.sslCertPemFile)
-            feSslKeyFile = configuration_protected_settings.get(self.sslKeyPemFile)
-            with open(feSslCertFile) as f:
-                cert_data = f.read()
-                cert_data_bytes = cert_data.encode("ascii")
-                ssl_cert = base64.b64encode(cert_data_bytes).decode()
-                configuration_protected_settings['scoringFe.sslCert'] = ssl_cert
-            with open(feSslKeyFile) as f:
-                key_data = f.read()
-                key_data_bytes = key_data.encode("ascii")
-                ssl_key = base64.b64encode(key_data_bytes).decode()
-                configuration_protected_settings['scoringFe.sslKey'] = ssl_key
+            self.__set_inference_ssl_from_file(configuration_protected_settings)
         else:
             logger.warning(
                 'SSL is not enabled. Allowing insecure connections to the deployed services.')
