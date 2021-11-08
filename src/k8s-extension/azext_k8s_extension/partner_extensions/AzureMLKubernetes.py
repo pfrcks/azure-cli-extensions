@@ -166,6 +166,8 @@ class AzureMLKubernetes(DefaultExtension):
 
     def Update(self, cmd, resource_group_name, cluster_name, auto_upgrade_minor_version, release_train, version, configuration_settings,
                configuration_protected_settings):
+        self.__normalize_config(configuration_settings, configuration_protected_settings)
+
         if len(configuration_protected_settings) > 0:
             subscription_id = get_subscription_id(cmd.cli_ctx)
 
@@ -212,6 +214,17 @@ class AzureMLKubernetes(DefaultExtension):
                               version=version,
                               configuration_settings=configuration_settings,
                               configuration_protected_settings=configuration_protected_settings)
+
+    def __normalize_config(self, configuration_settings, configuration_protected_settings):
+        # inference
+        isTestCluster = _get_value_from_config_protected_config(
+            self.inferenceLoadBalancerHA, configuration_settings, configuration_protected_settings)
+        if isTestCluster is not None:
+            isTestCluster = str(isTestCluster).lower() == 'false'
+            if isTestCluster:
+                configuration_settings['clusterPurpose'] = 'DevTest'
+            else:
+                configuration_settings['clusterPurpose'] = 'FastProd'
 
     def __validate_config(self, configuration_settings, configuration_protected_settings):
         # perform basic validation of the input config
