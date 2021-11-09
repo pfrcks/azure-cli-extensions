@@ -141,7 +141,7 @@ stages:
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '**/testing/results/*.xml'
+          testResultsFiles: '**/testing/test/results/*.xml'
           failTaskOnFailedTests: true
         condition: succeededOrFailed()
 
