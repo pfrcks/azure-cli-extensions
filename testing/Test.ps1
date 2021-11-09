@@ -115,9 +115,13 @@ if ($ParallelCI) {
         throw "One or more tests failed"
     }
 } elseif ($CI) {
+    if ($Path) {
+        $testFilePath = "$PSScriptRoot/$Path"
+    }
     Write-Host "Invoking Pester to run tests from '$testFilePath'..."
     $testResult = Invoke-Pester $testFilePath -Passthru -Output Detailed
-    $testResult | Export-JUnitReport -Path "$testFileDirectory/TestResults.xml"
+    $testName = Split-Path $testFilePath –leaf
+    $testResult | Export-JUnitReport -Path "$testFileDirectory/$testName.xml"
 } else {
     if ($Path) {
         Write-Host "Invoking Pester to run tests from '$PSScriptRoot/$Path'"
