@@ -6,6 +6,7 @@
 # pylint: disable=unused-argument
 
 import os
+from azext_k8s_configuration.query import QueryBuilder
 
 from azure.cli.core.azclierror import (
     DeploymentError,
@@ -25,6 +26,7 @@ from .._client_factory import (
     cf_resources,
     k8s_configuration_extension_client,
     k8s_configuration_sourcecontrol_client,
+    resource_graph_client,
 )
 from ..utils import (
     get_cluster_rp_api_version,
@@ -606,6 +608,30 @@ def show_deployed_object(
         ),
         consts.SHOW_DEPLOYED_OBJECT_NO_EXIST_HELP,
     )
+
+
+def list_cross_cluster(
+    cmd,
+    client,
+    resource_groups=None,
+    cluster_types=None,
+    subscriptions=None,
+    provisioning_states=None,
+    compliance_states=None,
+):
+    qb = QueryBuilder("fluxconfigurations")
+    if resource_groups:
+        qb.with_resource_groups(resource_groups)
+    if cluster_types:
+        qb.with_cluster_types(cluster_types)
+    if provisioning_states:
+        qb.with_provisioning_states(provisioning_states)
+    if compliance_states:
+        qb.with_compliance_states(compliance_states)
+    if subscriptions:
+        qb.with_subscriptions(subscriptions)
+    response = client.resources(qb.build())
+    return response.data
 
 
 def delete_config(

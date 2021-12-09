@@ -213,6 +213,41 @@ def load_arguments(self, _):
             help="Kind of the object deployed by the configuration on the cluster.",
         )
 
+    with self.argument_context("k8s-configuration flux cross-cluster") as c:
+        c.argument(
+            "subscriptions",
+            options_list=["-s", "--subscriptions"],
+            type=str,
+            nargs="+",
+            help="List of subscription Ids.",
+        )
+        c.argument(
+            "resource_groups",
+            options_list=["-g", "--resource-groups"],
+            type=str,
+            nargs="+",
+            help="List of resource groups.",
+        )
+        c.argument(
+            "cluster_types",
+            options_list=["-t", "--cluster-types"],
+            type=str,
+            nargs="+",
+            help="List of cluster types.",
+        )
+        c.argument(
+            "provisioning_states",
+            type=str,
+            nargs="+",
+            help="List of provisioning states.",
+        )
+        c.argument(
+            "compliance_states",
+            type=str,
+            nargs="+",
+            help="List of compliance states.",
+        )
+
     with self.argument_context("k8s-configuration") as c:
         c.argument(
             "name",

@@ -8,6 +8,7 @@ from azure.cli.core.commands import CliCommandType
 from azext_k8s_configuration._client_factory import (
     k8s_configuration_fluxconfig_client,
     k8s_configuration_sourcecontrol_client,
+    resource_graph_client,
 )
 from .format import (
     fluxconfig_deployed_object_list_table_format,
@@ -16,6 +17,7 @@ from .format import (
     fluxconfig_show_table_format,
     fluxconfig_kustomization_list_table_format,
     fluxconfig_kustomization_show_table_format,
+    fluxconfig_cross_cluster_list_table_format,
     sourcecontrol_list_table_format,
     sourcecontrol_show_table_format,
 )
@@ -83,6 +85,18 @@ def load_command_table(self, _):
             "show",
             "show_deployed_object",
             table_transformer=fluxconfig_deployed_object_show_table_format,
+        )
+
+    with self.command_group(
+        "k8s-configuration flux cross-cluster",
+        client_factory=resource_graph_client,
+        custom_command_type=flux_configuration_custom_type,
+        is_experimental=True,
+    ) as g:
+        g.custom_command(
+            "list",
+            "list_cross_cluster",
+            table_transformer=fluxconfig_cross_cluster_list_table_format,
         )
 
     with self.command_group(

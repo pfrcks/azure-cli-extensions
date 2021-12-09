@@ -4,6 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 from azure.cli.core.commands.client_factory import get_mgmt_service_client
+from azure.mgmt.resourcegraph import ResourceGraphClient
 from azure.cli.core.profiles import ResourceType
 from . import consts
 
@@ -50,11 +51,9 @@ def cf_resources(cli_ctx, subscription_id=None):
     ).resources
 
 
-def cf_log_analytics(cli_ctx, subscription_id=None):
-    from azure.mgmt.loganalytics import (
-        LogAnalyticsManagementClient,
-    )  # pylint: disable=no-name-in-module
-
+def resource_graph_client(cli_ctx, _):
     return get_mgmt_service_client(
-        cli_ctx, LogAnalyticsManagementClient, subscription_id=subscription_id
+        cli_ctx,
+        ResourceGraphClient,
+        subscription_bound=False,
     )

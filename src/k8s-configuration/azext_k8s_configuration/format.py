@@ -101,3 +101,33 @@ def __get_fluxconfig_deployed_object_table_row(result):
             ("message", message),
         ]
     )
+
+
+def fluxconfig_cross_cluster_list_table_format(results):
+    return [__get_fluxconfig_cross_cluster_table_row(result) for result in results]
+
+
+def __get_fluxconfig_cross_cluster_table_row(result):
+    ret_id = result.get("id")
+    if ret_id:
+        cluster_type = ret_id.split("/")[7]
+        cluster_name = ret_id.split("/")[8]
+
+    num_non_compliant = 0
+    for elem in result.get("properties", {}).get("statuses") or []:
+        if elem.get("complianceState") == "Non-Compliant":
+            num_non_compliant += 1
+    return OrderedDict(
+        [
+            ("subscriptionId", result.get("subscriptionId")),
+            ("resourceGroup", result["resourceGroup"]),
+            ("clusterType", cluster_type),
+            ("clusterName", cluster_name),
+            ("configName", result["name"]),
+            (
+                "provisioningState",
+                result.get("properties", {}).get("provisioningState"),
+            ),
+            ("complianceState", result.get("properties", {}).get("complianceState")),
+        ]
+    )
