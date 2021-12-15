@@ -232,18 +232,21 @@ def load_arguments(self, _):
             "cluster_types",
             options_list=["-t", "--cluster-types"],
             type=str,
+            arg_type=get_enum_type(["connectedClusters", "managedClusters"]),
             nargs="+",
             help="List of cluster types.",
         )
         c.argument(
             "provisioning_states",
             type=str,
+            arg_type=get_enum_type(["creating", "updating", "succeeded", "deleting", "failed"]),
             nargs="+",
             help="List of provisioning states.",
         )
         c.argument(
             "compliance_states",
             type=str,
+            arg_type=get_enum_type(["compliant", "non-compliant", "pending", "unknown"]),
             nargs="+",
             help="List of compliance states.",
         )

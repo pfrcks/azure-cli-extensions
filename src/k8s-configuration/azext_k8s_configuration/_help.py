@@ -221,7 +221,7 @@ helps[
     "k8s-configuration flux deployed-object"
 ] = """
     type: group
-    short-summary: Commands to see deployed objects associated with Flux v2 Kubernetes configurations.
+    short-summary: Commands to view deployed objects associated with Flux v2 Kubernetes configurations.
 """
 
 helps[
@@ -247,4 +247,24 @@ helps[
           az k8s-configuration flux deployed-object show --resource-group my-resource-group \\
           --cluster-name mycluster --cluster-type connectedClusters --name myconfig \\
           --object-name my-object --object-namespace my-namespace --object-kind GitRepository
+"""
+
+helps[
+    "k8s-configuration flux cross-cluster"
+] = """
+    type: group
+    short-summary: Commands to view Flux v2 Kubernetes configurations and their state across different clusters.
+"""
+
+helps[
+    "k8s-configuration flux cross-cluster list"
+] = """
+    type: command
+    short-summary: List Flux v2 Kubernetes configurations across clusters and subscriptions.
+    examples:
+      - name: List Flux v2 Kubernetes configurations and their states across clusters and subscriptions
+        text: |-
+          az k8s-configuration flux cross-cluster list \\
+          --resource-groups my-resource-group my-other-resource-group \\
+          --cluster-types connectedClusters managedClusters \\
 """
