@@ -47,7 +47,11 @@ class ContainerServiceClientConfiguration(Configuration):
 
         self.credential = credential
         self.subscription_id = subscription_id
+<<<<<<< HEAD:src/aks-preview/azext_aks_preview/vendored_sdks/azure_mgmt_preview_aks/v2021_09_01/_configuration.py
         self.api_version = "2021-09-01"
+=======
+        self.api_version = "2021-10-01"
+>>>>>>> k8s-extension/public:src/aks-preview/azext_aks_preview/vendored_sdks/azure_mgmt_preview_aks/v2021_10_01/_configuration.py
         self.credential_scopes = kwargs.pop('credential_scopes', ['https://management.azure.com/.default'])
         kwargs.setdefault('sdk_moniker', 'mgmt-containerservice/{}'.format(VERSION))
         self._configure(**kwargs)

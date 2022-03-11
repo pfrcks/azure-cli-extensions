@@ -34,6 +34,7 @@ class ContainerServiceClient(object):
     """The Container Service Client.
 
     :ivar operations: Operations operations
+<<<<<<< HEAD:src/aks-preview/azext_aks_preview/vendored_sdks/azure_mgmt_preview_aks/v2021_09_01/_container_service_client.py
     :vartype operations: azure.mgmt.containerservice.v2021_09_01.operations.Operations
     :ivar managed_clusters: ManagedClustersOperations operations
     :vartype managed_clusters: azure.mgmt.containerservice.v2021_09_01.operations.ManagedClustersOperations
@@ -49,6 +50,23 @@ class ContainerServiceClient(object):
     :vartype resolve_private_link_service_id: azure.mgmt.containerservice.v2021_09_01.operations.ResolvePrivateLinkServiceIdOperations
     :ivar snapshots: SnapshotsOperations operations
     :vartype snapshots: azure.mgmt.containerservice.v2021_09_01.operations.SnapshotsOperations
+=======
+    :vartype operations: azure.mgmt.containerservice.v2021_10_01.operations.Operations
+    :ivar managed_clusters: ManagedClustersOperations operations
+    :vartype managed_clusters: azure.mgmt.containerservice.v2021_10_01.operations.ManagedClustersOperations
+    :ivar maintenance_configurations: MaintenanceConfigurationsOperations operations
+    :vartype maintenance_configurations: azure.mgmt.containerservice.v2021_10_01.operations.MaintenanceConfigurationsOperations
+    :ivar agent_pools: AgentPoolsOperations operations
+    :vartype agent_pools: azure.mgmt.containerservice.v2021_10_01.operations.AgentPoolsOperations
+    :ivar private_endpoint_connections: PrivateEndpointConnectionsOperations operations
+    :vartype private_endpoint_connections: azure.mgmt.containerservice.v2021_10_01.operations.PrivateEndpointConnectionsOperations
+    :ivar private_link_resources: PrivateLinkResourcesOperations operations
+    :vartype private_link_resources: azure.mgmt.containerservice.v2021_10_01.operations.PrivateLinkResourcesOperations
+    :ivar resolve_private_link_service_id: ResolvePrivateLinkServiceIdOperations operations
+    :vartype resolve_private_link_service_id: azure.mgmt.containerservice.v2021_10_01.operations.ResolvePrivateLinkServiceIdOperations
+    :ivar snapshots: SnapshotsOperations operations
+    :vartype snapshots: azure.mgmt.containerservice.v2021_10_01.operations.SnapshotsOperations
+>>>>>>> k8s-extension/public:src/aks-preview/azext_aks_preview/vendored_sdks/azure_mgmt_preview_aks/v2021_10_01/_container_service_client.py
     :param credential: Credential needed for the client to connect to Azure.
     :type credential: ~azure.core.credentials.TokenCredential
     :param subscription_id: Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.
