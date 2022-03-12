@@ -103,6 +103,18 @@ jobs:
     continueOnError: true
     condition: and(succeeded(), eq(variables['IS_PRIVATE_BRANCH'], 'False'))
 
+  - task: AzureCLI@2
+    displayName: Run the Test Suite for ${{ parameters.path }}
+    inputs:
+      azureSubscription: AzureResourceConnection
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        .\Test.ps1 -CI -Path ${{ parameters.path }} -Type k8s-extension-private
+      workingDirectory: $(TEST_PATH)
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['IS_PRIVATE_BRANCH'], 'True'))
+
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
