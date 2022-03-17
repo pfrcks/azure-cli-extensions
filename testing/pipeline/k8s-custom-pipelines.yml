@@ -20,9 +20,6 @@ stages:
     RESOURCE_GROUP: "K8sPartnerExtensionTest"
     BASE_CLUSTER_NAME: "k8s-extension-cluster"
     IS_PRIVATE_BRANCH: $[or(eq(variables['Build.SourceBranch'], 'refs/heads/k8s-extension/private'), eq(variables['System.PullRequest.TargetBranch'], 'k8s-extension/private'))]
-
-    EXTENSION_NAME: "k8s-extension"
-    EXTENSION_FILE_NAME: "k8s_extension"
   jobs:
   - template: ./templates/run-test.yml
     parameters:
