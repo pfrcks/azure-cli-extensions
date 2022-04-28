@@ -48,19 +48,19 @@ from ..validators import (
     validate_url_with_params,
 )
 from .. import consts
-from ..vendored_sdks.v2022_01_01_preview.models import (
+from ..vendored_sdks.v2022_03_01.models import (
     FluxConfiguration,
     FluxConfigurationPatch,
     GitRepositoryDefinition,
     GitRepositoryPatchDefinition,
     BucketDefinition,
+    BucketPatchDefinition,
     RepositoryRefDefinition,
     KustomizationDefinition,
     KustomizationPatchDefinition,
-    DependsOnDefinition,
     SourceKindType,
 )
-from ..vendored_sdks.v2021_09_01.models import Extension, Identity
+from ..vendored_sdks.v2022_03_01.models import Extension, Identity
 
 logger = get_logger(__name__)
 
@@ -146,9 +146,9 @@ def create_config(
     https_ca_cert_file=None,
     known_hosts=None,
     known_hosts_file=None,
-    access_key=None,
-    secret_key=None,
-    insecure=False,
+    bucket_access_key=None,
+    bucket_secret_key=None,
+    bucket_insecure=False,
     suspend=False,
     kustomization=None,
     no_wait=False,
@@ -177,9 +177,9 @@ def create_config(
         https_ca_cert_file=https_ca_cert_file,
         known_hosts=known_hosts,
         known_hosts_file=known_hosts_file,
-        access_key=access_key,
-        secret_key=secret_key,
-        insecure=insecure,
+        bucket_access_key=bucket_access_key,
+        bucket_secret_key=bucket_secret_key,
+        bucket_insecure=bucket_insecure,
     )
 
     # This update func is a generated update function that modifies
@@ -195,7 +195,7 @@ def create_config(
 
     # Get the protected settings and validate the private key value
     protected_settings = get_protected_settings(
-        ssh_private_key, ssh_private_key_file, https_key, secret_key
+        ssh_private_key, ssh_private_key_file, https_key, bucket_secret_key
     )
     if protected_settings and consts.SSH_PRIVATE_KEY_KEY in protected_settings:
         validate_private_key(protected_settings["sshPrivateKey"])
@@ -258,9 +258,9 @@ def update_config(
     https_ca_cert_file=None,
     known_hosts=None,
     known_hosts_file=None,
-    access_key=None,
-    secret_key=None,
-    insecure=None,
+    bucket_access_key=None,
+    bucket_secret_key=None,
+    bucket_insecure=None,
     suspend=None,
     kustomization=None,
     no_wait=False,
@@ -295,9 +295,9 @@ def update_config(
         https_ca_cert_file=https_ca_cert_file,
         known_hosts=known_hosts,
         known_hosts_file=known_hosts_file,
-        access_key=access_key,
-        secret_key=secret_key,
-        insecure=insecure,
+        bucket_access_key=bucket_access_key,
+        bucket_secret_key=bucket_secret_key,
+        bucket_insecure=bucket_insecure,
     )
 
     # This update func is a generated update function that modifies
@@ -326,7 +326,7 @@ def update_config(
 
     # Get the protected settings and validate the private key value
     protected_settings = get_protected_settings(
-        ssh_private_key, ssh_private_key_file, https_key, secret_key
+        ssh_private_key, ssh_private_key_file, https_key, bucket_secret_key
     )
     if protected_settings and consts.SSH_PRIVATE_KEY_KEY in protected_settings:
         validate_private_key(protected_settings["sshPrivateKey"])
@@ -386,17 +386,10 @@ def create_kustomization(
             consts.CREATE_KUSTOMIZATION_EXIST_HELP,
         )
 
-    # Add the dependencies in their model to the kustomization
-    model_dependencies = None
-    if dependencies:
-        model_dependencies = []
-        for dep in parse_dependencies(dependencies):
-            model_dependencies.append(DependsOnDefinition(kustomization_name=dep))
-
     kustomization = {
         kustomization_name: KustomizationPatchDefinition(
             path=path,
-            depends_on=model_dependencies,
+            depends_on=parse_dependencies(dependencies),
             timeout_in_seconds=parse_duration(timeout),
             sync_interval_in_seconds=parse_duration(sync_interval),
             retry_interval_in_seconds=parse_duration(retry_interval),
@@ -453,17 +446,10 @@ def update_kustomization(
             consts.UPDATE_KUSTOMIZATION_NO_EXIST_HELP,
         )
 
-    # Add the dependencies in their model to the kustomization
-    model_dependencies = None
-    if dependencies:
-        model_dependencies = []
-        for dep in parse_dependencies(dependencies):
-            model_dependencies.append(DependsOnDefinition(kustomization_name=dep))
-
     kustomization = {
         kustomization_name: KustomizationPatchDefinition(
             path=path,
-            depends_on=model_dependencies,
+            depends_on=parse_dependencies(dependencies),
             timeout_in_seconds=parse_duration(timeout),
             sync_interval_in_seconds=parse_duration(sync_interval),
             retry_interval_in_seconds=parse_duration(retry_interval),
@@ -994,15 +980,17 @@ class BucketGenerator(SourceKindGenerator):
         self.bucket_name = kwargs.get("bucket_name")
         self.timeout = kwargs.get("timeout")
         self.sync_interval = kwargs.get("sync_interval")
-        self.access_key = kwargs.get("access_key")
-        self.secret_key = kwargs.get("secret_key")
+        self.bucket_access_key = kwargs.get("bucket_access_key")
+        self.bucket_secret_key = kwargs.get("bucket_secret_key")
         self.local_auth_ref = kwargs.get("local_auth_ref")
-        self.insecure = kwargs.get("insecure")
+        self.bucket_insecure = kwargs.get("bucket_insecure")
 
     def validate(self):
         super().validate_required_params(**self.kwargs)
         validate_bucket_url(self.url)
-        if not ((self.access_key and self.secret_key) or self.local_auth_ref):
+        if not (
+            (self.bucket_access_key and self.bucket_secret_key) or self.local_auth_ref
+        ):
             raise RequiredArgumentMissingError(
                 consts.REQUIRED_BUCKET_VALUES_MISSING_ERROR,
                 consts.REQUIRED_BUCKET_VALUES_MISSING_HELP,
@@ -1021,9 +1009,9 @@ class BucketGenerator(SourceKindGenerator):
                 bucket_name=self.bucket_name,
                 timeout_in_seconds=parse_duration(self.timeout),
                 sync_interval_in_seconds=parse_duration(self.sync_interval),
-                access_key=self.access_key,
+                access_key=self.bucket_access_key,
                 local_auth_ref=self.local_auth_ref,
-                insecure=self.insecure,
+                insecure=self.bucket_insecure,
             )
             config.source_kind = SourceKindType.BUCKET
             return config
@@ -1039,14 +1027,14 @@ class BucketGenerator(SourceKindGenerator):
 
         def bucket_patch_updater(config):
             if any(kwarg is not None for kwarg in self.kwargs.values()):
-                config.bucket = BucketDefinition(
+                config.bucket = BucketPatchDefinition(
                     url=self.url,
                     bucket_name=self.bucket_name,
                     timeout_in_seconds=parse_duration(self.timeout),
                     sync_interval_in_seconds=parse_duration(self.sync_interval),
-                    access_key=self.access_key,
+                    access_key=self.bucket_access_key,
                     local_auth_ref=self.local_auth_ref,
-                    insecure=self.insecure,
+                    insecure=self.bucket_insecure,
                 )
                 if swapped_kind:
                     self.validate()
@@ -1058,7 +1046,7 @@ class BucketGenerator(SourceKindGenerator):
 
 
 def get_protected_settings(
-    ssh_private_key, ssh_private_key_file, https_key, secret_key
+    ssh_private_key, ssh_private_key_file, https_key, bucket_secret_key
 ):
     protected_settings = {}
     ssh_private_key_data = get_data_from_key_or_file(
@@ -1072,8 +1060,8 @@ def get_protected_settings(
     if https_key:
         protected_settings[consts.HTTPS_KEY_KEY] = to_base64(https_key)
 
-    if secret_key:
-        protected_settings[consts.BUCKET_SECRET_KEY_KEY] = to_base64(secret_key)
+    if bucket_secret_key:
+        protected_settings[consts.BUCKET_SECRET_KEY_KEY] = to_base64(bucket_secret_key)
 
     # Return the protected settings dict if there are any values there
     return protected_settings if len(protected_settings) > 0 else None

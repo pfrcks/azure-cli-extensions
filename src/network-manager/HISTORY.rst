@@ -2,6 +2,21 @@
 
 Release History
 ===============
+0.4.1
++++++
+* 'az network manager connect-config update': update parameter '--connectivity-topology'
+* 'az network manager group create': update parameter '--member-type' and remove parameters `--group-members` and '--conditional-membership'
+* 'az network manager security-admin-config create': add parameter '--apply-on'
+
+0.4.0
++++++
+* Add new cmd `az network manager connection`
+* Add new cmd `az network manager connection management-group`
+* Add new cmd `az network manager scope connection`
+* Add new cmd `az network manager group static-member`
+* `az network manager group delete`: add parameter `force`
+* `az network manager security-admin-config delete`: add parameter `force` and add parameter `recursive`
+* Bump up azure-mgmt-network SDK to 2021_05_01_preview
 
 0.3.0
 +++++
