@@ -16,7 +16,7 @@ except ImportError:
 
     logger.warn("Wheel is not available, disabling bdist_wheel hook")
 
-VERSION = "1.5.1"
+VERSION = "1.6.0"
 
 # The full list of classifiers is available at
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -34,7 +34,7 @@ CLASSIFIERS = [
     "License :: OSI Approved :: MIT License",
 ]
 
-DEPENDENCIES = ["pycryptodome~=3.14.1"]
+DEPENDENCIES = ["pycryptodome~=3.14.1", "azure.mgmt.resourcegraph"]
 
 with open("README.rst", "r", encoding="utf-8") as f:
     README = f.read()

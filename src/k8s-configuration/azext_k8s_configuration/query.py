@@ -18,6 +18,9 @@ class QueryBuilder:
         if resource_type.lower() == "fluxconfigurations":
             self.query += " | where type =~ 'microsoft.kubernetesconfiguration/fluxConfigurations'"
 
+    def with_urls(self, urls):
+        self.query = add_filter_to_query(self.query, "properties.gitRepository.url", urls)
+
     def with_resource_groups(self, resource_groups):
         self.query = add_filter_to_query(self.query, "resourceGroup", resource_groups)
         return self
@@ -38,6 +41,17 @@ class QueryBuilder:
             self.query, "properties['complianceState']", compliance_states
         )
         return self
+
+    def with_branch(self, branch):
+        self.query = add_filter_to_query(
+            self.query, "properties.gitRepository.repositoryRef.branch", branch
+        )
+        return branch
+
+    def with_commit(self, commit):
+        self.query = add_contains_filter_to_query(
+            self.query, "properties.sourceSyncedCommitId", commit
+        )
 
     def with_subscriptions(self, subscriptions):
         self.subs = subscriptions
@@ -61,6 +75,9 @@ def add_filter_to_query(query, key, values):
 
         value_filter_string = "','".join(values)
         query += " | where " + key + " in~ ('" + value_filter_string + "')"
+    return query
 
-        return query
+def add_contains_filter_to_query(query, key, value):
+    if value is not None:
+        query += " | where " + key + " contains '" + value + "'"
     return query

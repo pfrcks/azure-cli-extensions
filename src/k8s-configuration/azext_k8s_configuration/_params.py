@@ -213,6 +213,32 @@ def load_arguments(self, _):
             help="Kind of the object deployed by the configuration on the cluster.",
         )
 
+    with self.argument_context("k8s-configuration flux cross-cluster rollout") as c:
+        c.argument(
+            "url",
+            options_list=["--url", "-u"],
+            type=str,
+            help="Url of the configuration to validate"
+        )
+        c.argument(
+            "branch",
+            options_list=["-b", "--branch"],
+            type=str,
+            help="Branch name.",
+        )
+        c.argument(
+            "commit",
+            options_list=["-c", "--commit"],
+            type=str,
+            help="Commit ID.",
+        )
+        c.argument(
+            "timeout",
+            options_list=["-t", "--timeout"],
+            type=str,
+            help="Timeout in golang duration format.",
+        )
+
     with self.argument_context("k8s-configuration flux cross-cluster") as c:
         c.argument(
             "subscriptions",

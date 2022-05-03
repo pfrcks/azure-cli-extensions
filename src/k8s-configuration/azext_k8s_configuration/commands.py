@@ -95,6 +95,10 @@ def load_command_table(self, _):
             "list_cross_cluster",
             table_transformer=fluxconfig_cross_cluster_list_table_format,
         )
+        g.custom_command(
+            "rollout",
+            "rollout_cross_cluster",
+        )
 
     with self.command_group(
         "k8s-configuration",

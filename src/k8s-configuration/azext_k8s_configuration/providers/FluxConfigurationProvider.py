@@ -6,6 +6,7 @@
 # pylint: disable=unused-argument
 
 import os
+import time
 from azext_k8s_configuration.query import QueryBuilder
 
 from azure.cli.core.azclierror import (
@@ -63,6 +64,42 @@ from ..vendored_sdks.v2022_03_01.models import (
 from ..vendored_sdks.v2022_03_01.models import Extension, Identity
 
 logger = get_logger(__name__)
+
+
+def rollout_cross_cluster(cmd, client, url, branch, commit, timeout="1h"):
+    qb = QueryBuilder("fluxconfigurations")
+    qb.with_provisioning_states("Succeeded")
+    qb.with_urls(url)
+    qb.with_branch(branch)
+    
+    all_clusters_query = qb.build()
+
+    qb.with_commit(commit)
+    qb.with_compliance_states("Compliant")
+
+    rolled_out_clusters_query = qb.build()
+
+    print("Validating rollout to clusters...")
+    reported_compliant_clusters = set()
+
+    timeout_time = time.time() + parse_duration(timeout)
+    while time.time() < timeout_time:
+        all_clusters_response = client.resources(all_clusters_query)
+        total_arm_ids = set([elem.get("id") for elem in all_clusters_response.data])
+        rolled_out_clusters_response = client.resources(rolled_out_clusters_query)
+        rolled_out_arm_ids = set([elem.get("id") for elem in rolled_out_clusters_response.data])
+        
+        reported_compliant_clusters = reported_compliant_clusters.union(rolled_out_arm_ids)
+        rem_arm_ids = total_arm_ids - reported_compliant_clusters
+        print("{}/{} clusters updated...".format(len(total_arm_ids) - len(rem_arm_ids), len(total_arm_ids)))
+        print("Configurations that haven't updated:")
+        for elem in rem_arm_ids:
+            print("- {}".format(elem))
+        if len(rem_arm_ids) == 0:
+            print("Rollout validation completed successfully!")
+            return 
+        time.sleep(30)
+    raise Exception("Rollout validation hit timeout while waiting for configurations to update!")
 
 
 def show_config(cmd, client, resource_group_name, cluster_type, cluster_name, name):
