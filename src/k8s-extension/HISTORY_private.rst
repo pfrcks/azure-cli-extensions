@@ -3,6 +3,11 @@
 Release History
 ===============
 
+1.2.1-beta.1
+++++++++++++++++++
+* Provide no default values for Patch of Extension
+* microsoft.azureml.kubernetes: clusterip
+
 1.1.0-beta.1
 ++++++++++++++++++
 * Migrate Extensions api-version to 2022-03-01
