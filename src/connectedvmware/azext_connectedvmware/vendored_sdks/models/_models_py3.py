@@ -319,6 +319,196 @@ class Datastore(msrest.serialization.Model):
     :param location: Required. Gets or sets the location.
     :type location: str
     :param extended_location: Gets or sets the extended location.
+    :type extended_location: ~azure_arc_vmware_management_service_api.models.ExtendedLocation
+    :ivar system_data: The system data.
+    :vartype system_data: ~azure_arc_vmware_management_service_api.models.SystemData
+    :param tags: A set of tags. Gets or sets the Resource tags.
+    :type tags: dict[str, str]
+    :ivar name: Gets or sets the name.
+    :vartype name: str
+    :ivar id: Gets or sets the Id.
+    :vartype id: str
+    :ivar type: Gets or sets the type of the resource.
+    :vartype type: str
+    :param kind: Metadata used by portal/tooling/etc to render different UX experiences for
+     resources of the same type; e.g. ApiApps are a kind of Microsoft.Web/sites type.  If supported,
+     the resource provider must validate and persist this value.
+    :type kind: str
+    :ivar uuid: Gets or sets a unique identifier for this resource.
+    :vartype uuid: str
+    :param v_center_id: Gets or sets the ARM Id of the vCenter resource in which this datastore
+     resides.
+    :type v_center_id: str
+    :param mo_ref_id: Gets or sets the vCenter MoRef (Managed Object Reference) ID for the
+     datastore.
+    :type mo_ref_id: str
+    :param inventory_item_id: Gets or sets the inventory Item ID for the datastore.
+    :type inventory_item_id: str
+    :ivar mo_name: Gets or sets the vCenter Managed Object name for the datastore.
+    :vartype mo_name: str
+    :ivar statuses: The resource status information.
+    :vartype statuses: list[~azure_arc_vmware_management_service_api.models.ResourceStatus]
+    :ivar custom_resource_name: Gets the name of the corresponding resource in Kubernetes.
+    :vartype custom_resource_name: str
+    :ivar provisioning_state: Provisioning state of the resource. Possible values include:
+     "Succeeded", "Failed", "Canceled", "Provisioning", "Updating", "Deleting", "Accepted",
+     "Created".
+    :vartype provisioning_state: str or
+     ~azure_arc_vmware_management_service_api.models.ProvisioningState
+    """
+
+    _validation = {
+        'location': {'required': True},
+        'system_data': {'readonly': True},
+        'name': {'readonly': True},
+        'id': {'readonly': True},
+        'type': {'readonly': True},
+        'uuid': {'readonly': True},
+        'mo_name': {'readonly': True},
+        'statuses': {'readonly': True},
+        'custom_resource_name': {'readonly': True},
+        'provisioning_state': {'readonly': True},
+    }
+
+    _attribute_map = {
+        'location': {'key': 'location', 'type': 'str'},
+        'extended_location': {'key': 'extendedLocation', 'type': 'ExtendedLocation'},
+        'system_data': {'key': 'systemData', 'type': 'SystemData'},
+        'tags': {'key': 'tags', 'type': '{str}'},
+        'name': {'key': 'name', 'type': 'str'},
+        'id': {'key': 'id', 'type': 'str'},
+        'type': {'key': 'type', 'type': 'str'},
+        'kind': {'key': 'kind', 'type': 'str'},
+        'uuid': {'key': 'properties.uuid', 'type': 'str'},
+        'v_center_id': {'key': 'properties.vCenterId', 'type': 'str'},
+        'mo_ref_id': {'key': 'properties.moRefId', 'type': 'str'},
+        'inventory_item_id': {'key': 'properties.inventoryItemId', 'type': 'str'},
+        'mo_name': {'key': 'properties.moName', 'type': 'str'},
+        'statuses': {'key': 'properties.statuses', 'type': '[ResourceStatus]'},
+        'custom_resource_name': {'key': 'properties.customResourceName', 'type': 'str'},
+        'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        location: str,
+        extended_location: Optional["ExtendedLocation"] = None,
+        tags: Optional[Dict[str, str]] = None,
+        kind: Optional[str] = None,
+        v_center_id: Optional[str] = None,
+        mo_ref_id: Optional[str] = None,
+        inventory_item_id: Optional[str] = None,
+        **kwargs
+    ):
+        super(Datastore, self).__init__(**kwargs)
+        self.location = location
+        self.extended_location = extended_location
+        self.system_data = None
+        self.tags = tags
+        self.name = None
+        self.id = None
+        self.type = None
+        self.kind = kind
+        self.uuid = None
+        self.v_center_id = v_center_id
+        self.mo_ref_id = mo_ref_id
+        self.inventory_item_id = inventory_item_id
+        self.mo_name = None
+        self.statuses = None
+        self.custom_resource_name = None
+        self.provisioning_state = None
+
+
+class DatastoreInventoryItem(InventoryItemProperties):
+    """The datastore inventory item.
+
+    Variables are only populated by the server, and will be ignored when sending a request.
+
+    All required parameters must be populated in order to send to Azure.
+
+    :param inventory_type: Required. They inventory type.Constant filled by server.  Possible
+     values include: "ResourcePool", "VirtualMachine", "VirtualMachineTemplate", "VirtualNetwork",
+     "Cluster", "Datastore".
+    :type inventory_type: str or ~azure_arc_vmware_management_service_api.models.InventoryType
+    :param managed_resource_id: Gets or sets the tracked resource id corresponding to the inventory
+     resource.
+    :type managed_resource_id: str
+    :param mo_ref_id: Gets or sets the MoRef (Managed Object Reference) ID for the inventory item.
+    :type mo_ref_id: str
+    :param mo_name: Gets or sets the vCenter Managed Object name for the inventory item.
+    :type mo_name: str
+    :ivar provisioning_state: Gets or sets the provisioning state.
+    :vartype provisioning_state: str
+    """
+
+    _validation = {
+        'inventory_type': {'required': True},
+        'provisioning_state': {'readonly': True},
+    }
+
+    _attribute_map = {
+        'inventory_type': {'key': 'inventoryType', 'type': 'str'},
+        'managed_resource_id': {'key': 'managedResourceId', 'type': 'str'},
+        'mo_ref_id': {'key': 'moRefId', 'type': 'str'},
+        'mo_name': {'key': 'moName', 'type': 'str'},
+        'provisioning_state': {'key': 'provisioningState', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        managed_resource_id: Optional[str] = None,
+        mo_ref_id: Optional[str] = None,
+        mo_name: Optional[str] = None,
+        **kwargs
+    ):
+        super(DatastoreInventoryItem, self).__init__(managed_resource_id=managed_resource_id, mo_ref_id=mo_ref_id, mo_name=mo_name, **kwargs)
+        self.inventory_type = 'Datastore'  # type: str
+
+
+class DatastoresList(msrest.serialization.Model):
+    """List of Datastores.
+
+    All required parameters must be populated in order to send to Azure.
+
+    :param next_link: Url to follow for getting next page of Datastores.
+    :type next_link: str
+    :param value: Required. Array of Datastores.
+    :type value: list[~azure_arc_vmware_management_service_api.models.Datastore]
+    """
+
+    _validation = {
+        'value': {'required': True},
+    }
+
+    _attribute_map = {
+        'next_link': {'key': 'nextLink', 'type': 'str'},
+        'value': {'key': 'value', 'type': '[Datastore]'},
+    }
+
+    def __init__(
+        self,
+        *,
+        value: List["Datastore"],
+        next_link: Optional[str] = None,
+        **kwargs
+    ):
+        super(DatastoresList, self).__init__(**kwargs)
+        self.next_link = next_link
+        self.value = value
+
+
+class Datastore(msrest.serialization.Model):
+    """Define the datastore.
+
+    Variables are only populated by the server, and will be ignored when sending a request.
+
+    All required parameters must be populated in order to send to Azure.
+
+    :param location: Required. Gets or sets the location.
+    :type location: str
+    :param extended_location: Gets or sets the extended location.
     :type extended_location: ~azure.mgmt.connectedvmware.models.ExtendedLocation
     :ivar system_data: The system data.
     :vartype system_data: ~azure.mgmt.connectedvmware.models.SystemData

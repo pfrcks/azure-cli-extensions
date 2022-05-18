@@ -152,6 +152,15 @@ from .vendored_sdks.azure_mgmt_preview_aks.v2022_04_02_preview.models import (
 logger = get_logger(__name__)
 
 
+def prepare_nat_gateway_models():
+    from .vendored_sdks.azure_mgmt_preview_aks.v2021_09_01.models import ManagedClusterNATGatewayProfile
+    from .vendored_sdks.azure_mgmt_preview_aks.v2021_09_01.models import ManagedClusterManagedOutboundIPProfile
+    nat_gateway_models = {}
+    nat_gateway_models["ManagedClusterNATGatewayProfile"] = ManagedClusterNATGatewayProfile
+    nat_gateway_models["ManagedClusterManagedOutboundIPProfile"] = ManagedClusterManagedOutboundIPProfile
+    return nat_gateway_models
+
+
 def which(binary):
     path_var = os.getenv('PATH')
     if platform.system() == 'Windows':
