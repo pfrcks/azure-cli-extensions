@@ -13,7 +13,7 @@ from ..utils import get_cluster_rp_api_version
 from knack.log import get_logger
 
 from azure.cli.core.azclierror import InvalidArgumentValueError
-from azure.cli.core.commands.client_factory import  get_subscription_id
+from azure.cli.core.commands.client_factory import get_subscription_id
 from msrestazure.azure_exceptions import CloudError
 
 from ..vendored_sdks.models import Extension
@@ -35,10 +35,9 @@ class AzureBackupAgent(DefaultExtension):
                scope, auto_upgrade_minor_version, release_train, version, target_namespace,
                release_namespace, configuration_settings, configuration_protected_settings,
                configuration_settings_file, configuration_protected_settings_file):
-        
+
         # set release name explicitly to backupagent-ns
         target_namespace = self.DEFAULT_RELEASE_NAMESPACE
-        
 
         # validate the config
         self.__validate_config(configuration_settings, configuration_protected_settings, release_namespace)
@@ -61,7 +60,7 @@ class AzureBackupAgent(DefaultExtension):
         configuration_settings['cluster_name'] = configuration_settings.get('cluster_name', cluster_resource_id)
         configuration_settings['extension_name'] = configuration_settings.get('extension_name', name)
         configuration_settings['location'] = configuration_settings.get('location', cluster_location)
-       
+
         # create Azure resources need by the extension based on the config.
         self.__create_required_resource(
             cmd, configuration_settings, configuration_protected_settings, subscription_id, resource_group_name,
@@ -84,8 +83,6 @@ class AzureBackupAgent(DefaultExtension):
         )
         return extension, name, create_identity
 
-    
-   
     def __validate_config(self, configuration_settings, configuration_protected_settings, release_namespace):
         # perform basic validation of the input config
         config_keys = configuration_settings.keys()
@@ -96,12 +93,3 @@ class AzureBackupAgent(DefaultExtension):
                 logger.warning(
                     'Duplicate keys found in both configuration settings and configuration protected setttings: %s', key)
             raise InvalidArgumentValueError("Duplicate keys found.")
-
-       
-   
- 
-   
-
-
-
-
