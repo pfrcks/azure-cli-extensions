@@ -39,9 +39,6 @@ class AzureBackupAgent(DefaultExtension):
         # set release name explicitly to backupagent-ns
         target_namespace = self.DEFAULT_RELEASE_NAMESPACE
 
-        # validate the config
-        self.__validate_config(configuration_settings, configuration_protected_settings, release_namespace)
-
         # get the arc's location
         subscription_id = get_subscription_id(cmd.cli_ctx)
         cluster_rp, parent_api_version = get_cluster_rp_api_version(cluster_type)
@@ -82,13 +79,3 @@ class AzureBackupAgent(DefaultExtension):
             configuration_protected_settings=configuration_protected_settings,
         )
         return extension, name, create_identity
-
-    def __validate_config(self, configuration_settings, configuration_protected_settings, release_namespace):
-        # perform basic validation of the input config
-        config_keys = configuration_settings.keys()
-        config_protected_keys = configuration_protected_settings.keys()
-        dup_keys = set(config_keys) & set(config_protected_keys)
-        if dup_keys:
-            for key in dup_keys:
-                logger.warning(
-                    'Duplicate keys found in both configuration settings and configuration protected setttings: %s', key)
