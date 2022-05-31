@@ -92,4 +92,3 @@ class AzureBackupAgent(DefaultExtension):
             for key in dup_keys:
                 logger.warning(
                     'Duplicate keys found in both configuration settings and configuration protected setttings: %s', key)
-            raise InvalidArgumentValueError("Duplicate keys found.")
