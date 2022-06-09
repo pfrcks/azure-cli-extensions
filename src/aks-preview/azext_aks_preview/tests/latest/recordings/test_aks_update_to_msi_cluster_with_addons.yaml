@@ -965,6 +965,8 @@ interactions:
     headers:
       cache-control:
       - no-cache
+      connection:
+      - close
       content-length:
       - '1021'
       content-type:
@@ -975,8 +977,6 @@ interactions:
       - '-1'
       pragma:
       - no-cache
-      set-cookie:
-      - x-ms-gateway-slice=Production; path=/; secure; samesite=none; httponly
       strict-transport-security:
       - max-age=31536000; includeSubDomains
       x-content-type-options:
@@ -984,8 +984,8 @@ interactions:
       x-ms-ratelimit-remaining-subscription-writes:
       - '1199'
     status:
-      code: 201
-      message: Created
+      code: 403
+      message: Forbidden
 - request:
     body: null
     headers:
@@ -994,11 +994,11 @@ interactions:
       Accept-Encoding:
       - gzip, deflate
       CommandName:
-      - aks update
+      - aks create
       Connection:
       - keep-alive
       ParameterSetName:
-      - --resource-group --name --enable-managed-identity --yes
+      - --resource-group --name --enable-addons --ssh-key-value
       User-Agent:
       - AZURECLI/2.37.0 azsdk-python-azure-mgmt-containerservice/19.1.0b Python/3.8.10
         (Linux-5.13.0-1025-azure-x86_64-with-glibc2.29)
@@ -1059,15 +1059,15 @@ interactions:
       content-length:
       - '4654'
       content-type:
-      - application/json
+      - application/json; charset=utf-8
       date:
       - Thu, 02 Jun 2022 08:30:19 GMT
       expires:
       - '-1'
       pragma:
       - no-cache
-      server:
-      - nginx
+      set-cookie:
+      - x-ms-gateway-slice=Production; path=/; secure; samesite=none; httponly
       strict-transport-security:
       - max-age=31536000; includeSubDomains
       transfer-encoding:
@@ -1110,7 +1110,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate
       CommandName:
-      - aks update
+      - aks create
       Connection:
       - keep-alive
       Content-Length:
@@ -1118,7 +1118,7 @@ interactions:
       Content-Type:
       - application/json
       ParameterSetName:
-      - --resource-group --name --enable-managed-identity --yes
+      - --resource-group --name --enable-addons --ssh-key-value
       User-Agent:
       - AZURECLI/2.37.0 azsdk-python-azure-mgmt-containerservice/19.1.0b Python/3.8.10
         (Linux-5.13.0-1025-azure-x86_64-with-glibc2.29)
@@ -1176,24 +1176,20 @@ interactions:
       - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westus2/operations/ba8adbf4-f8ec-4f5b-9193-4ffec6c18635?api-version=2016-03-30
       cache-control:
       - no-cache
+      connection:
+      - close
       content-length:
       - '4295'
       content-type:
-      - application/json
+      - application/json; charset=utf-8
       date:
       - Thu, 02 Jun 2022 08:30:23 GMT
       expires:
       - '-1'
       pragma:
       - no-cache
-      server:
-      - nginx
       strict-transport-security:
       - max-age=31536000; includeSubDomains
-      transfer-encoding:
-      - chunked
-      vary:
-      - Accept-Encoding
       x-content-type-options:
       - nosniff
       x-ms-ratelimit-remaining-subscription-writes:
@@ -1202,18 +1198,25 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: null
+    body: '{"properties": {"roleDefinitionId": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/3913510d-42f4-4e42-8a64-420c390055eb",
+      "principalId":"00000000-0000-0000-0000-000000000001"}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate
       CommandName:
-      - aks update
+      - aks create
       Connection:
       - keep-alive
+      Content-Length:
+      - '233'
+      Content-Type:
+      - application/json; charset=utf-8
+      Cookie:
+      - x-ms-gateway-slice=Production
       ParameterSetName:
-      - --resource-group --name --enable-managed-identity --yes
+      - --resource-group --name --enable-addons --ssh-key-value
       User-Agent:
       - AZURECLI/2.37.0 azsdk-python-azure-mgmt-containerservice/19.1.0b Python/3.8.10
         (Linux-5.13.0-1025-azure-x86_64-with-glibc2.29)
@@ -1226,6 +1229,8 @@ interactions:
     headers:
       cache-control:
       - no-cache
+      connection:
+      - close
       content-length:
       - '126'
       content-type:
@@ -1277,39 +1282,35 @@ interactions:
       content-length:
       - '126'
       content-type:
-      - application/json
+      - application/json; charset=utf-8
       date:
       - Thu, 02 Jun 2022 08:31:23 GMT
       expires:
       - '-1'
       pragma:
       - no-cache
-      server:
-      - nginx
       strict-transport-security:
       - max-age=31536000; includeSubDomains
-      transfer-encoding:
-      - chunked
-      vary:
-      - Accept-Encoding
       x-content-type-options:
       - nosniff
+      x-ms-failure-cause:
+      - gateway
     status:
-      code: 200
-      message: OK
+      code: 403
+      message: Forbidden
 - request:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/json
       Accept-Encoding:
       - gzip, deflate
       CommandName:
-      - aks update
+      - aks create
       Connection:
       - keep-alive
       ParameterSetName:
-      - --resource-group --name --enable-managed-identity --yes
+      - --resource-group --name --enable-addons --ssh-key-value
       User-Agent:
       - AZURECLI/2.37.0 azsdk-python-azure-mgmt-containerservice/19.1.0b Python/3.8.10
         (Linux-5.13.0-1025-azure-x86_64-with-glibc2.29)
@@ -1419,15 +1420,15 @@ interactions:
       content-length:
       - '4654'
       content-type:
-      - application/json
+      - application/json; charset=utf-8
       date:
       - Thu, 02 Jun 2022 08:31:53 GMT
       expires:
       - '-1'
       pragma:
       - no-cache
-      server:
-      - nginx
+      set-cookie:
+      - x-ms-gateway-slice=Production; path=/; secure; samesite=none; httponly
       strict-transport-security:
       - max-age=31536000; includeSubDomains
       transfer-encoding:
@@ -1439,6 +1440,65 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: '{"properties": {"roleDefinitionId": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/3913510d-42f4-4e42-8a64-420c390055eb",
+      "principalId":"00000000-0000-0000-0000-000000000001"}}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      CommandName:
+      - aks create
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '233'
+      Content-Type:
+      - application/json; charset=utf-8
+      Cookie:
+      - x-ms-gateway-slice=Production
+      ParameterSetName:
+      - --resource-group --name --enable-addons --ssh-key-value
+      User-Agent:
+      - python/3.8.11 (Linux-5.4.0-1059-azure-x86_64-with-glibc2.27) msrest/0.6.21
+        msrest_azure/0.6.3 azure-mgmt-authorization/0.61.0 Azure-SDK-For-Python AZURECLI/2.29.0
+      accept-language:
+      - en-US
+    method: PUT
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.ContainerService/managedClusters/cliakstest000002/providers/Microsoft.Authorization/roleAssignments/0fa29914-9e33-4a77-8603-b21d36484ce1?api-version=2020-04-01-preview
+  response:
+    body:
+      string: '{"error":{"code":"AuthorizationFailed","message":"The client ''119e1aeb-4592-42d6-9507-c66df857924f''
+        with object id ''119e1aeb-4592-42d6-9507-c66df857924f'' does not have authorization
+        to perform action ''Microsoft.Authorization/roleAssignments/write'' over scope
+        ''/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.ContainerService/managedClusters/cliakstest000002/providers/Microsoft.Authorization/roleAssignments/0fa29914-9e33-4a77-8603-b21d36484ce1''
+        or the scope is invalid. If access was recently granted, please refresh your
+        credentials."}}'
+    headers:
+      cache-control:
+      - no-cache
+      connection:
+      - close
+      content-length:
+      - '595'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 19 Oct 2021 07:10:37 GMT
+      expires:
+      - '-1'
+      pragma:
+      - no-cache
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains
+      x-content-type-options:
+      - nosniff
+      x-ms-failure-cause:
+      - gateway
+    status:
+      code: 403
+      message: Forbidden
 - request:
     body: null
     headers:

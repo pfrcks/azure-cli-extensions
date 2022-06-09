@@ -104,8 +104,6 @@ interactions:
       - max-age=31536000; includeSubDomains
       x-content-type-options:
       - nosniff
-      x-ms-ratelimit-remaining-subscription-writes:
-      - '1199'
     status:
       code: 201
       message: Created
@@ -272,14 +270,57 @@ interactions:
     uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azurecli-tests/providers/Microsoft.Kubernetes/connectedClusters/arc-cluster/providers/Microsoft.KubernetesConfiguration/extensions/dapr?api-version=2022-03-01&forceDelete=true
   response:
     body:
-      string: '{"content":null,"statusCode":200,"headers":[],"version":"1.1","reasonPhrase":"OK","trailingHeaders":[],"requestMessage":null,"isSuccessStatusCode":true}'
+      string: ''
     headers:
       api-supported-versions:
       - 2020-07-01-Preview, 2021-05-01-preview, 2021-09-01, 2022-03-01, 2022-04-02-preview
       cache-control:
       - no-cache
       content-length:
-      - '152'
+      - '0'
+      date:
+      - Wed, 13 Oct 2021 22:55:51 GMT
+      expires:
+      - '-1'
+      pragma:
+      - no-cache
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains
+      x-content-type-options:
+      - nosniff
+      x-ms-ratelimit-remaining-subscription-deletes:
+      - '14999'
+    status:
+      code: 202
+      message: Accepted
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      CommandName:
+      - k8s-extension delete
+      Connection:
+      - keep-alive
+      ParameterSetName:
+      - -g -c -n --cluster-type -y
+      User-Agent:
+      - AZURECLI/2.25.0 azsdk-python-mgmt-kubernetesconfiguration/1.0.0b1 Python/3.8.0
+        (Windows-10-10.0.19041-SP0)
+    method: GET
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/nanthirg1006/providers/Microsoft.Kubernetes/ConnectedClusters/nanthiaks1006/providers/Microsoft.KubernetesConfiguration/extensions/openservicemesh/operations/c242312c-0d18-413d-8b0a-efd7cfd0ad0e?api-Version=2021-09-01
+  response:
+    body:
+      string: '{"id":"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/nanthirg1006/providers/Microsoft.Kubernetes/ConnectedClusters/nanthiaks1006/providers/Microsoft.KubernetesConfiguration/extensions/openservicemesh/operations/c242312c-0d18-413d-8b0a-efd7cfd0ad0e","name":"c242312c-0d18-413d-8b0a-efd7cfd0ad0e","status":"Deleting"}'
+    headers:
+      api-supported-versions:
+      - 2019-11-01-Preview, 2021-05-01-preview, 2021-06-01-preview, 2021-09-01
+      cache-control:
+      - no-cache
+      content-length:
+      - '336'
       content-type:
       - application/json; charset=utf-8
       date:
@@ -296,8 +337,6 @@ interactions:
       - Accept-Encoding
       x-content-type-options:
       - nosniff
-      x-ms-ratelimit-remaining-subscription-deletes:
-      - '14999'
     status:
       code: 200
       message: OK
