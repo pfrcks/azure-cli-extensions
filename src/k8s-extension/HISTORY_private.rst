@@ -3,6 +3,17 @@
 Release History
 ===============
 
+1.2.3-beta.1
+++++++++++++++++++
+* Fix warning message returned on PATCH
+* microsoft.azureml.kubernetes: remove deprecated warning message.
+* microsoft.azureml.kubernetes: Use cluster scale to control clusterPurpose and inferenceRouterHA
+
+1.2.2-beta.1
+++++++++++++++++++
+* microsoft.azureml.kubernetes: Disable service bus by default, do not create relay for managed clusters.
+* microsoft.azureml.kubernetes: Rename inferenceLoadBalancerHA to inferenceRouterHA and unify related logic.
+
 1.2.1-beta.1
 ++++++++++++++++++
 * Provide no default values for Patch of Extension
