@@ -17,6 +17,7 @@ class PartnerExtensionModel(ABC):
         resource_group_name: str,
         cluster_name: str,
         name: str,
+        cluster_rp: str,
         cluster_type: str,
         extension_type: str,
         scope: str,
@@ -56,6 +57,7 @@ class PartnerExtensionModel(ABC):
         resource_group_name: str,
         cluster_name: str,
         name: str,
+        cluster_rp: str,
         cluster_type: str,
         yes: bool,
     ):

@@ -32,10 +32,11 @@ logger = get_logger(__name__)
 
 
 class ContainerInsights(DefaultExtension):
-    def Create(self, cmd, client, resource_group_name, cluster_name, name, cluster_type, extension_type,
-               scope, auto_upgrade_minor_version, release_train, version, target_namespace,
+    def Create(self, cmd, client, resource_group_name, cluster_name, name, cluster_rp, cluster_type,
+               extension_type, scope, auto_upgrade_minor_version, release_train, version, target_namespace,
                release_namespace, configuration_settings, configuration_protected_settings,
                configuration_settings_file, configuration_protected_settings_file):
+               
         """ExtensionType 'microsoft.azuremonitor.containers' specific validations & defaults for Create
            Must create and return a valid 'Extension' object.
 
@@ -72,11 +73,11 @@ class ContainerInsights(DefaultExtension):
         )
         return extension, name, create_identity
 
-    def Delete(self, cmd, client, resource_group_name, cluster_name, name, cluster_type, yes):
+    def Delete(self, cmd, client, resource_group_name, cluster_name, name, cluster_rp, cluster_type, yes):
         # Delete DCR-A if it exists incase of MSI Auth
         useAADAuth = False
         isDCRAExists = False
-        cluster_rp, _ = get_cluster_rp_api_version(cluster_type)
+        cluster_rp, _ = get_cluster_rp_api_version(cluster_rp=cluster_rp, cluster_type=cluster_type)
         try:
             extension = client.get(resource_group_name, cluster_rp, cluster_type, cluster_name, name)
         except Exception:
@@ -140,8 +141,8 @@ def _invoke_deployment(cmd, resource_group_name, deployment_name, template, para
     return sdk_no_wait(no_wait, smc.begin_create_or_update, resource_group_name, deployment_name, deployment)
 
 
-def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id,
-                                                           cluster_resource_group_name, cluster_name):
+def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id, cluster_resource_group_name,
+                                                           cluster_rp, cluster_type, cluster_name):
     # mapping for azure public cloud
     # log analytics workspaces cannot be created in WCUS region due to capacity limits
     # so mapped to EUS per discussion with log analytics team
@@ -236,8 +237,9 @@ def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id,
     cluster_location = ''
     resources = cf_resources(cmd.cli_ctx, subscription_id)
 
-    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Kubernetes' \
-        '/connectedClusters/{2}'.format(subscription_id, cluster_resource_group_name, cluster_name)
+    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format( \
+        subscription_id, cluster_resource_group_name, cluster_rp, cluster_type, cluster_name)
+
     try:
         resource = resources.get_by_id(cluster_resource_id, '2020-01-01-preview')
         cluster_location = resource.location.lower()
@@ -541,13 +543,14 @@ def get_existing_container_insights_extension_dcr_tags(cmd, dcr_url):
     return tags
 
 
-def _ensure_container_insights_dcr_for_monitoring(cmd, subscription_id, cluster_resource_group_name, cluster_name, workspace_resource_id):
+def _ensure_container_insights_dcr_for_monitoring(cmd, subscription_id, cluster_resource_group_name, cluster_rp, cluster_type, cluster_name, workspace_resource_id):
     from azure.core.exceptions import HttpResponseError
 
     cluster_region = ''
     resources = cf_resources(cmd.cli_ctx, subscription_id)
-    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Kubernetes' \
-        '/connectedClusters/{2}'.format(subscription_id, cluster_resource_group_name, cluster_name)
+    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format( \
+        subscription_id, cluster_resource_group_name, cluster_rp, cluster_type, cluster_name)
+
     try:
         resource = resources.get_by_id(cluster_resource_id, '2020-01-01-preview')
         cluster_region = resource.location.lower()

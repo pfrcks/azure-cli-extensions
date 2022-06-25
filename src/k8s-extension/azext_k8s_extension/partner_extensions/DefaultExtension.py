@@ -24,6 +24,7 @@ class DefaultExtension(PartnerExtensionModel):
         resource_group_name,
         cluster_name,
         name,
+        cluster_rp,
         cluster_type,
         extension_type,
         scope,
@@ -87,7 +88,7 @@ class DefaultExtension(PartnerExtensionModel):
         )
 
     def Delete(
-        self, cmd, client, resource_group_name, cluster_name, name, cluster_type, yes
+        self, cmd, client, resource_group_name, cluster_name, name, cluster_rp, cluster_type, yes
     ):
         user_confirmation_factory(cmd, yes)
 
