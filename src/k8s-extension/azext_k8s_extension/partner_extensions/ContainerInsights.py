@@ -57,7 +57,7 @@ class ContainerInsights(DefaultExtension):
                        'only supports cluster scope and single instance of this extension.', extension_type)
         logger.warning("Defaulting to extension name '%s' and release-namespace '%s'", name, release_namespace)
 
-        _get_container_insights_settings(cmd, resource_group_name, cluster_name, configuration_settings,
+        _get_container_insights_settings(cmd, resource_group_name, cluster_rp, cluster_type, cluster_name, configuration_settings,
                                          configuration_protected_settings, is_ci_extension_type)
 
         # NOTE-2: Return a valid Extension object, Instance name and flag for Identity
@@ -141,7 +141,7 @@ def _invoke_deployment(cmd, resource_group_name, deployment_name, template, para
     return sdk_no_wait(no_wait, smc.begin_create_or_update, resource_group_name, deployment_name, deployment)
 
 
-def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id, cluster_resource_group_name,
+def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id, cluster_resource_group_name, 
                                                            cluster_rp, cluster_type, cluster_name):
     # mapping for azure public cloud
     # log analytics workspaces cannot be created in WCUS region due to capacity limits
@@ -440,8 +440,8 @@ def _ensure_container_insights_for_monitoring(cmd, workspace_resource_id):
                               validate=False, no_wait=False, subscription_id=subscription_id)
 
 
-def _get_container_insights_settings(cmd, cluster_resource_group_name, cluster_name, configuration_settings,
-                                     configuration_protected_settings, is_ci_extension_type):
+def _get_container_insights_settings(cmd, cluster_resource_group_name, cluster_rp, cluster_type, cluster_name,
+                                     configuration_settings, configuration_protected_settings, is_ci_extension_type):
 
     subscription_id = get_subscription_id(cmd.cli_ctx)
     workspace_resource_id = ''
@@ -479,7 +479,7 @@ def _get_container_insights_settings(cmd, cluster_resource_group_name, cluster_n
 
     if not workspace_resource_id:
         workspace_resource_id = _ensure_default_log_analytics_workspace_for_monitoring(
-            cmd, subscription_id, cluster_resource_group_name, cluster_name)
+            cmd, subscription_id, cluster_resource_group_name, cluster_rp, cluster_type, cluster_name)
     else:
         if not is_valid_resource_id(workspace_resource_id):
             raise InvalidArgumentValueError('{} is not a valid Azure resource ID.'.format(workspace_resource_id))
