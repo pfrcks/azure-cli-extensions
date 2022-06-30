@@ -87,9 +87,9 @@ def _validate_tested_distro(cmd, cluster_resource_group_name, cluster_rp, cluste
     subscription_id = get_subscription_id(cmd.cli_ctx)
     resources = cf_resources(cmd.cli_ctx, subscription_id)
 
-    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format( \
+    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format(
         subscription_id, cluster_resource_group_name, cluster_rp, cluster_type, cluster_name)
-    
+
     cluster_rp, parent_api_version = get_cluster_rp_api_version(cluster_rp=cluster_rp,
                                                                 cluster_type=cluster_type)
 

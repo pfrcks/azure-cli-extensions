@@ -36,7 +36,7 @@ class ContainerInsights(DefaultExtension):
                extension_type, scope, auto_upgrade_minor_version, release_train, version, target_namespace,
                release_namespace, configuration_settings, configuration_protected_settings,
                configuration_settings_file, configuration_protected_settings_file):
-               
+
         """ExtensionType 'microsoft.azuremonitor.containers' specific validations & defaults for Create
            Must create and return a valid 'Extension' object.
 
@@ -141,7 +141,7 @@ def _invoke_deployment(cmd, resource_group_name, deployment_name, template, para
     return sdk_no_wait(no_wait, smc.begin_create_or_update, resource_group_name, deployment_name, deployment)
 
 
-def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id, cluster_resource_group_name, 
+def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id, cluster_resource_group_name,
                                                            cluster_rp, cluster_type, cluster_name):
     # mapping for azure public cloud
     # log analytics workspaces cannot be created in WCUS region due to capacity limits
@@ -237,7 +237,7 @@ def _ensure_default_log_analytics_workspace_for_monitoring(cmd, subscription_id,
     cluster_location = ''
     resources = cf_resources(cmd.cli_ctx, subscription_id)
 
-    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format( \
+    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format(
         subscription_id, cluster_resource_group_name, cluster_rp, cluster_type, cluster_name)
 
     try:
@@ -548,7 +548,7 @@ def _ensure_container_insights_dcr_for_monitoring(cmd, subscription_id, cluster_
 
     cluster_region = ''
     resources = cf_resources(cmd.cli_ctx, subscription_id)
-    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format( \
+    cluster_resource_id = '/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}'.format(
         subscription_id, cluster_resource_group_name, cluster_rp, cluster_type, cluster_name)
 
     try:

@@ -204,7 +204,7 @@ def create_k8s_extension(
         identity_object, location = __create_identity(cmd=cmd, resource_group_name=resource_group_name,
                                                       cluster_name=cluster_name, cluster_type=cluster_type,
                                                       cluster_rp=cluster_rp
-        )
+                                                      )
         if identity_object is not None and location is not None:
             extension_instance.identity, extension_instance.location = (
                 identity_object,

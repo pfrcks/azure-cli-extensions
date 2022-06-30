@@ -18,13 +18,30 @@ logger = get_logger(__name__)
 
 
 class AzureDefender(DefaultExtension):
-    def Create(self, cmd, client, resource_group_name, cluster_name, name, cluster_rp, cluster_type,
-               extension_type, scope, auto_upgrade_minor_version, release_train, version, target_namespace,
-               release_namespace, configuration_settings, configuration_protected_settings,
-               configuration_settings_file, configuration_protected_settings_file):
+    def Create(
+        self,
+        cmd,
+        client,
+        resource_group_name,
+        cluster_name,
+        name,
+        cluster_rp,
+        cluster_type,
+        extension_type,
+        scope,
+        auto_upgrade_minor_version,
+        release_train,
+        version,
+        target_namespace,
+        release_namespace,
+        configuration_settings,
+        configuration_protected_settings,
+        configuration_settings_file,
+        configuration_protected_settings_file,
+    ):
 
         """ExtensionType 'microsoft.azuredefender.kubernetes' specific validations & defaults for Create
-           Must create and return a valid 'Extension' object.
+        Must create and return a valid 'Extension' object.
 
         """
         # NOTE-1: Replace default scope creation with your customization!
@@ -39,12 +56,27 @@ class AzureDefender(DefaultExtension):
 
         is_ci_extension_type = False
 
-        logger.warning('Ignoring name, release-namespace and scope parameters since %s '
-                       'only supports cluster scope and single instance of this extension.', extension_type)
-        logger.warning("Defaulting to extension name '%s' and release-namespace '%s'", name, release_namespace)
+        logger.warning(
+            "Ignoring name, release-namespace and scope parameters since %s "
+            "only supports cluster scope and single instance of this extension.",
+            extension_type,
+        )
+        logger.warning(
+            "Defaulting to extension name '%s' and release-namespace '%s'",
+            name,
+            release_namespace,
+        )
 
-        _get_container_insights_settings(cmd, resource_group_name, cluster_rp, cluster_type, cluster_name, configuration_settings,
-                                         configuration_protected_settings, is_ci_extension_type)
+        _get_container_insights_settings(
+            cmd,
+            resource_group_name,
+            cluster_rp,
+            cluster_type,
+            cluster_name,
+            configuration_settings,
+            configuration_protected_settings,
+            is_ci_extension_type,
+        )
 
         # NOTE-2: Return a valid Extension object, Instance name and flag for Identity
         create_identity = True
@@ -55,6 +87,6 @@ class AzureDefender(DefaultExtension):
             version=version,
             scope=ext_scope,
             configuration_settings=configuration_settings,
-            configuration_protected_settings=configuration_protected_settings
+            configuration_protected_settings=configuration_protected_settings,
         )
         return extension_instance, name, create_identity
