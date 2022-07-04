@@ -36,8 +36,6 @@ class AzureBackupAgent(DefaultExtension):
                release_namespace, configuration_settings, configuration_protected_settings,
                configuration_settings_file, configuration_protected_settings_file):
 
-        # set release name explicitly to backupagent-ns
-        target_namespace = self.DEFAULT_RELEASE_NAMESPACE
 
         # get the arc's location
         subscription_id = get_subscription_id(cmd.cli_ctx)
@@ -57,15 +55,6 @@ class AzureBackupAgent(DefaultExtension):
         configuration_settings['cluster_name'] = configuration_settings.get('cluster_name', cluster_resource_id)
         configuration_settings['extension_name'] = configuration_settings.get('extension_name', name)
         configuration_settings['location'] = configuration_settings.get('location', cluster_location)
-
-        # create Azure resources need by the extension based on the config.
-        self.__create_required_resource(
-            cmd, configuration_settings, configuration_protected_settings, subscription_id, resource_group_name,
-            cluster_name, cluster_location)
-
-        # If release-train is not input, set it to default 'stable'
-        if release_train is None:
-            release_train = 'stable'
 
         create_identity = True
         extension = Extension(
