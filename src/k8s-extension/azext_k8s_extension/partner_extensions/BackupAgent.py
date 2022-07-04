@@ -50,7 +50,7 @@ class AzureBackupAgent(DefaultExtension):
             raise ex
 
         # generate values for the extension if none is set.
-        configuration_settings['cluster_name'] = configuration_settings.get('cluster_name', cluster_resource_id)
+        configuration_settings['clusterArmID'] = configuration_settings.get('cluster_name', cluster_resource_id)
         configuration_settings['extension_name'] = configuration_settings.get('extension_name', name)
         configuration_settings['location'] = configuration_settings.get('location', cluster_location)
 
