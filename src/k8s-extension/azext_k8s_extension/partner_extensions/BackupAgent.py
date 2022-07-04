@@ -35,8 +35,6 @@ class AzureBackupAgent(DefaultExtension):
                scope, auto_upgrade_minor_version, release_train, version, target_namespace,
                release_namespace, configuration_settings, configuration_protected_settings,
                configuration_settings_file, configuration_protected_settings_file):
-
-
         # get the arc's location
         subscription_id = get_subscription_id(cmd.cli_ctx)
         cluster_rp, parent_api_version = get_cluster_rp_api_version(cluster_type)
