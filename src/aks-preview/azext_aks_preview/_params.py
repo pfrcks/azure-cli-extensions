@@ -244,6 +244,7 @@ def load_arguments(self, _):
         c.argument('enable_addons', options_list=['--enable-addons', '-a'], validator=validate_addons)
         c.argument('workspace_resource_id')
         c.argument('enable_msi_auth_for_monitoring', arg_type=get_three_state_flag(), is_preview=True)
+        c.argument('enable_syslog', arg_type=get_three_state_flag(), is_preview=True)
         c.argument('aci_subnet_name')
         c.argument('appgw_name', arg_group='Application Gateway')
         c.argument('appgw_subnet_cidr', arg_group='Application Gateway')
@@ -537,6 +538,7 @@ def load_arguments(self, _):
         c.argument('workspace_resource_id')
         c.argument('enable_msi_auth_for_monitoring',
                    arg_type=get_three_state_flag(), is_preview=True)
+        c.argument('enable_syslog', arg_type=get_three_state_flag(), is_preview=True)
         c.argument('dns-zone-resource-id')
 
     with self.argument_context('aks addon disable') as c:
@@ -566,6 +568,7 @@ def load_arguments(self, _):
         c.argument('workspace_resource_id')
         c.argument('enable_msi_auth_for_monitoring',
                    arg_type=get_three_state_flag(), is_preview=True)
+        c.argument('enable_syslog', arg_type=get_three_state_flag(), is_preview=True)
         c.argument('dns-zone-resource-id')
 
     with self.argument_context('aks disable-addons') as c:
@@ -586,6 +589,7 @@ def load_arguments(self, _):
         c.argument('rotation_poll_interval')
         c.argument('workspace_resource_id')
         c.argument('enable_msi_auth_for_monitoring', arg_type=get_three_state_flag(), is_preview=True)
+        c.argument('enable_syslog', arg_type=get_three_state_flag(), is_preview=True)
         c.argument('dns-zone-resource-id')
 
     with self.argument_context('aks get-credentials') as c:

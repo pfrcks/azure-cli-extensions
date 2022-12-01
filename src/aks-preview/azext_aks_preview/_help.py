@@ -256,6 +256,9 @@ helps['aks create'] = """
         - name: --enable-msi-auth-for-monitoring
           type: bool
           short-summary: Send monitoring data to Log Analytics using the cluster's assigned identity (instead of the Log Analytics Workspace's shared key).
+        - name: --enable-syslog
+          type: bool
+          short-summary: Enable syslog data collection for Monitoring addon
         - name: --enable-cluster-autoscaler
           type: bool
           short-summary: Enable cluster autoscaler, default value is false.
@@ -1413,6 +1416,9 @@ parameters:
   - name: --enable-msi-auth-for-monitoring
     type: bool
     short-summary: Send monitoring data to Log Analytics using the cluster's assigned identity (instead of the Log Analytics Workspace's shared key).
+  - name: --enable-syslog
+    type: bool
+    short-summary: Enable syslog data collection for Monitoring addon
   - name: --subnet-name -s
     type: string
     short-summary: The subnet name for the virtual node to use.
@@ -1471,6 +1477,9 @@ parameters:
   - name: --enable-msi-auth-for-monitoring
     type: bool
     short-summary: Send monitoring data to Log Analytics using the cluster's assigned identity (instead of the Log Analytics Workspace's shared key).
+  - name: --enable-syslog
+    type: bool
+    short-summary: Enable syslog data collection for Monitoring addon
   - name: --subnet-name -s
     type: string
     short-summary: The subnet name for the virtual node to use.
@@ -1543,6 +1552,9 @@ parameters:
   - name: --enable-msi-auth-for-monitoring
     type: bool
     short-summary: Send monitoring data to Log Analytics using the cluster's assigned identity (instead of the Log Analytics Workspace's shared key).
+  - name: --enable-syslog
+    type: bool
+    short-summary: Enable syslog data collection for Monitoring addon
   - name: --subnet-name -s
     type: string
     short-summary: The subnet name for the virtual node to use.
